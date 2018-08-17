@@ -1,0 +1,20 @@
+<?php
+
+namespace App\Transformers;
+use LukeVear\LaravelTransformer\AbstractTransformer;
+
+class EditCreativeTransformer extends AbstractTransformer {
+
+	/**
+	 * @param \App\Models\Creative $model
+	 * @return array
+	 */
+	public function run($model) : array
+	{
+		return [
+			'id' => $model->id,
+			'position' => $model->pivot->position,
+			'role' => $model->pivot->role
+		];
+	}
+}
