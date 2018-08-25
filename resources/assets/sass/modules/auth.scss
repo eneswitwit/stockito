@@ -1,0 +1,49 @@
+.errors {
+  width: 100%;
+  margin-top: .25rem;
+  color: #dc3545;
+  font-size: 80%;
+}
+
+.plan-title {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.plan-name {
+  color: #0765c3;
+}
+
+.plan-info {
+  text-align: center;
+}
+
+.plan-info span {
+  display: block;
+  font-size: 20px;
+  line-height: 22px;
+  margin-bottom: 15px;
+}
+
+.plan-info mark {
+  display: block;
+  font-size: 25px;
+  line-height: 27px;
+  color: #007bff;
+  padding: 0;
+  background: none;
+  margin-bottom: 15px;
+}
+
+.StripeElement {
+  display: block;
+  width: 100%;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  border: 1px solid #ced4da;
+  border-radius: 0.125rem;
+  margin-bottom: 15px;
+}

@@ -103,7 +103,7 @@ class RegisterController extends Controller {
         $brand = $user->brand()->create( $request->except( 'email', 'password' ) );
 
         $brand->makeHomeDir();
-        $ftpUser = $FTPService::makeFTPUserForBrand($brand);
+        $ftpUser = FTPService::makeFTPUserForBrand($brand);
         $ftpUser->save();
 
         $brand->ftpUser()->associate($ftpUser);

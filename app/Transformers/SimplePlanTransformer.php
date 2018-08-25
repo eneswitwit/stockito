@@ -1,11 +1,17 @@
 <?php
 
+// namespace
 namespace App\Transformers;
 
+// use
 use App\Services\UploadService;
 use Illuminate\Support\Arr;
 use LukeVear\LaravelTransformer\AbstractTransformer;
 
+/**
+ * Class SimplePlanTransformer
+ * @package App\Transformers
+ */
 class SimplePlanTransformer extends AbstractTransformer
 {
     /**
@@ -17,6 +23,7 @@ class SimplePlanTransformer extends AbstractTransformer
         return [
             'id' => $model->id,
             'title' => $model->product->name,
+            'stripe_id' => $model->stripe_id,
             'period' => Arr::get($model::getIntervalTitles(), $model->interval, null),
             'price' => $model->price,
             'storage' => $model->product->storage,

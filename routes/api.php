@@ -44,7 +44,7 @@ Route::group(['prefix' => 'products'], function () {
 });
 
 Route::group(['prefix' => 'plans'], function () {
-    Route::get('', 'Api\PlansController@index');
+    Route::get('all', 'Api\PlansController@index');
     Route::get('monthly', 'Api\PlansController@monthly');
     Route::get('{plan}', 'Api\PlansController@show');
 });

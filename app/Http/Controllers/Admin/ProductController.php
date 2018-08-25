@@ -56,6 +56,7 @@ class ProductController extends Controller
     public function addPlan(Request $request): JsonResponse
     {
         $validator = $this->validatorPlan($request->all());
+
         if ($validator->passes()) {
             try {
                 $plan = $this->product->create(array(
@@ -64,7 +65,6 @@ class ProductController extends Controller
                     'title' => $request->input('title'),
                     'interval' => $request->input('interval'),
                     'storage' => $request->input('storage'),
-                    'video_storage' => $request->input('video_storage')
                 ));
             } catch (\Exception $e) {
                 return new JsonResponse(['error' => $e->getMessage()]);

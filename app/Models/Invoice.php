@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Stripe\Invoice as StripeInvoice;
+use Stripe\Customer as StripeCustomer;
 
 /**
  * Class Invoice
@@ -135,4 +136,5 @@ class Invoice extends Model
     {
         return 'invoice-'.$this->number.'.pdf';
     }
+
 }

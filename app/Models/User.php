@@ -202,4 +202,12 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->belongsTo(Plan::class);
     }
+
+    /**
+     * @return \Illuminate\Support\Collection
+     */
+    public function getInvoices() : \Illuminate\Support\Collection
+    {
+        return Invoice::where('customer', $this->stripe_id)->get();
+    }
 }

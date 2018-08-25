@@ -26,11 +26,12 @@ class InvoiceService
 
     /**
      * @param $data
+     *
      * @return Invoice
      */
     public function createInvoice(array $data): Invoice
     {
-        $invoice =  new Invoice();
+        $invoice = new Invoice();
         $invoice->number = $data['number'];
         $invoice->stripe_id = $data['id'];
         $invoice->amount = $data['total'];
@@ -51,6 +52,7 @@ class InvoiceService
 
     /**
      * @param Invoice $invoice
+     *
      * @return View
      */
     public function getView(Invoice $invoice): View
@@ -60,10 +62,11 @@ class InvoiceService
 
     /**
      * @param Invoice $invoice
+     *
      * @return PDF
      * @throws \Throwable
      */
-    public function getPdf (Invoice $invoice): PDF
+    public function getPdf(Invoice $invoice): PDF
     {
         $view = $this->getView($invoice)->render();
 

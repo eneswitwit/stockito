@@ -1,10 +1,16 @@
 <?php
 
+// namespace
 namespace App\Transformers;
 
+// use
 use App\Models\Invoice;
 use LukeVear\LaravelTransformer\AbstractTransformer;
 
+/**
+ * Class InvoiceTransformer
+ * @package App\Transformers
+ */
 class InvoiceTransformer extends AbstractTransformer
 {
     /**

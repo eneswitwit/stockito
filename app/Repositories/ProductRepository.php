@@ -113,6 +113,7 @@ class ProductRepository implements ProductRepositoryInterface
         return Product::create([
             'stripe_id' => $stripeProduct->id,
             'name' => $name,
+
         ]);
     }
 
@@ -182,7 +183,6 @@ class ProductRepository implements ProductRepositoryInterface
             $this->product->interval = $params['interval'];
             $this->product->currency = self::CURRENCY;
             $this->product->storage = $params['storage'];
-            $this->product->video_storage = $params['video_storage'];
             $this->product->plan_for_upgrade_id = $params['plan_for_upgrade_id'] ?? null;
             $this->product->save();
 
@@ -199,7 +199,7 @@ class ProductRepository implements ProductRepositoryInterface
                 'name' => $ftpGroup->groupname,
                 'quota_type' => FTPQuotaLimits::GROUP_QUOTA_TYPE,
                 'limit_type' => FTPQuotaLimits::HARD_TYPE,
-                'bytes_out_avail' => ($this->product->storage + $this->product->video_storage) * 1024 * 1024 * 1024,
+                'bytes_out_avail' => $this->product->storage * 1000000000,
             ]);
             $ftpQuotaLimits->save();
 

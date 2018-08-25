@@ -1,0 +1,11 @@
+.row-plans {
+  margin-bottom: 25px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  .card {
+    cursor: pointer;
+  }
+}

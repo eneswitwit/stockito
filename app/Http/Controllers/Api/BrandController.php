@@ -1,13 +1,14 @@
 <?php
 
+// namespace
 namespace App\Http\Controllers\Api;
 
+// use
 use App\Http\Controllers\Controller;
 use App\Mail\CreativeInviteExist;
 use App\Mail\CreativeInviteNew;
 use App\Models\Brand;
 use App\Models\BrandCreative;
-use App\Models\Creative;
 use App\Models\User;
 use App\Services\UploadService;
 use App\Transformers\BrandCreativesTransformer;
@@ -20,6 +21,10 @@ use Illuminate\Http\Request;
 use LukeVear\LaravelTransformer\TransformerEngine;
 use Illuminate\Support\Facades\Mail;
 
+/**
+ * Class BrandController
+ * @package App\Http\Controllers\Api
+ */
 class BrandController extends Controller
 {
 
@@ -34,9 +39,8 @@ class BrandController extends Controller
         /**
          * @var User $user
          */
-        $user     = $request->user();
-        $brand    = $user->brand;
-        $invoices = $brand->invoices;
+        $user = $request->user();
+        $invoices = $user->getInvoices();
 
         return new JsonResponse(new TransformerEngine($invoices, new InvoiceTransformer()));
     }
@@ -51,8 +55,8 @@ class BrandController extends Controller
      */
     public function getBrandCreatives(Request $request, $brandId = null): JsonResponse
     {
-        $user      = $request->user();
-        $brand     = $user->brand ?? Brand::find($brandId);
+        $user = $request->user();
+        $brand = $user->brand ?? Brand::find($brandId);
         $creatives = $brand->creatives()->get();
 
         return new JsonResponse(new TransformerEngine($creatives, new BrandCreativesTransformer()));
@@ -67,10 +71,10 @@ class BrandController extends Controller
      */
     public function getBrandCreative(Request $request, $id): JsonResponse
     {
-        $barndId   = BrandCreative::whereCreativeId($id)->firstOrFail()->brand_id;
-        $user      = $request->user();
-        $brand     = $user->brand ?? Brand::find($barndId);
-        $creative  = $brand->creatives()->where('creative_id', $id)->firstOrFail();
+        $barndId = BrandCreative::whereCreativeId($id)->firstOrFail()->brand_id;
+        $user = $request->user();
+        $brand = $user->brand ?? Brand::find($barndId);
+        $creative = $brand->creatives()->where('creative_id', $id)->firstOrFail();
 
         return new JsonResponse(new TransformerEngine($creative, new EditCreativeTransformer()));
     }
@@ -85,8 +89,8 @@ class BrandController extends Controller
     public function inviteCreative(Request $request, $brandId = null): JsonResponse
     {
         $this->validate($request, [
-            'email'    => 'required|email',
-            'role'     => 'required|string',
+            'email' => 'required|email',
+            'role' => 'required|string',
             'position' => 'required'
         ]);
 
@@ -94,13 +98,13 @@ class BrandController extends Controller
         /**
          * @var Brand $brand
          */
-        $brand        = $user->brand ?? Brand::find($brandId);
+        $brand = $user->brand ?? Brand::find($brandId);
         $creativeUser = User::where('email', $request->email)->first();
 
         if ($creativeUser) {
             $creative = $creativeUser->creative;
             $brand->creatives()->attach($creative, [
-                'role'     => $request->role,
+                'role' => $request->role,
                 'position' => $request->position
             ]);
             Mail::to($request->email)->send(new CreativeInviteExist($brand->brand_name, $request->role));
@@ -119,18 +123,18 @@ class BrandController extends Controller
     public function editCreative(Request $request): JsonResponse
     {
         $this->validate($request, [
-            'id'       => 'required',
-            'role'     => 'required|string',
+            'id' => 'required',
+            'role' => 'required|string',
             'position' => 'required'
         ]);
 
         $user = $request->user();
-        $barndId   = BrandCreative::whereCreativeId($request->id)->firstOrFail()->brand_id;
-        $brand     = $user->brand ?? Brand::find($barndId);
+        $barndId = BrandCreative::whereCreativeId($request->id)->firstOrFail()->brand_id;
+        $brand = $user->brand ?? Brand::find($barndId);
 
-        if ($creative  = $brand->creatives()->where('creative_id', $request->id)->first()) {
+        if ($creative = $brand->creatives()->where('creative_id', $request->id)->first()) {
             $creative->pivot->update([
-                'role'     => $request->role,
+                'role' => $request->role,
                 'position' => $request->position
             ]);
         }

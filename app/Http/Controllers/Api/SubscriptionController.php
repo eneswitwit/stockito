@@ -1,7 +1,9 @@
 <?php
 
+// namespace
 namespace App\Http\Controllers\Api;
 
+// use
 use App\Http\Requests\Subscriptions\PaySubscriptionRequest;
 use App\Models\Brand;
 use App\Models\Plan;
@@ -15,14 +17,19 @@ use Illuminate\Http\Response;
 use LukeVear\LaravelTransformer\TransformerEngine;
 use Stripe\Error\InvalidRequest;
 
+/**
+ * Class SubscriptionController
+ * @package App\Http\Controllers\Api
+ */
 class SubscriptionController extends Controller
 {
     /**
      * @param PaySubscriptionRequest $request
+     *
      * @return JsonResponse
      * @throws \Exception
      */
-    public function paySubscription (PaySubscriptionRequest $request) : JsonResponse
+    public function paySubscription(PaySubscriptionRequest $request): JsonResponse
     {
         /**
          * @var User $user
@@ -31,8 +38,10 @@ class SubscriptionController extends Controller
 
         $plan = (new Plan)->where('id', $request->input('plan.id'))->first();
 
+        // Stripe plan
         $stripePlan = $plan->getStripePlan();
 
+        // Creditcard details
         $expMount = $request->input('token')['card']['exp_month'];
         $expYear = $request->input('token')['card']['exp_year'];
         $expirationDate = Carbon::createFromDate($expYear, $expMount);
@@ -53,7 +62,8 @@ class SubscriptionController extends Controller
             }
         } else {
             try {
-                $user->newSubscription('main', $stripePlan->id)->create($request->input('selectedCard', false) ? null : $request->input('token.id'), $options);
+                $user->newSubscription('main', $stripePlan->id)->create($request->input('selectedCard',
+                    false) ? null : $request->input('token.id'), $options);
             } catch (InvalidRequest $exception) {
                 return new JsonResponse(['success' => false, 'errors' => ['voucher' => $exception->getMessage()]]);
             }
@@ -66,10 +76,11 @@ class SubscriptionController extends Controller
 
     /**
      * @param Request $request
+     *
      * @return JsonResponse
      * @throws \Exception
      */
-    public function cancelSubscription (Request $request): JsonResponse
+    public function cancelSubscription(Request $request): JsonResponse
     {
         /**
          * @var User $user
@@ -77,18 +88,27 @@ class SubscriptionController extends Controller
         $user = $request->user();
         if ($user->subscription('main')) {
             $user->subscription('main')->cancel();
-            return new JsonResponse(['canceled' => true, 'message' => 'Subscription has been canceled', 'data' => new TransformerEngine($user, new UserTransformer())]);
+            return new JsonResponse([
+                'canceled' => true,
+                'message' => 'Subscription has been canceled',
+                'data' => new TransformerEngine($user, new UserTransformer())
+            ]);
         }
 
-        return new JsonResponse(['canceled' => false, 'message' => 'User is not subscriber!', 'data' => new TransformerEngine($user, new UserTransformer())]);
+        return new JsonResponse([
+            'canceled' => false,
+            'message' => 'User is not subscriber!',
+            'data' => new TransformerEngine($user, new UserTransformer())
+        ]);
     }
 
     /**
      * @param Request $request
+     *
      * @return JsonResponse
      * @throws \Exception
      */
-    public function resumeSubscription (Request $request): JsonResponse
+    public function resumeSubscription(Request $request): JsonResponse
     {
         /**
          * @var User $user
@@ -96,9 +116,17 @@ class SubscriptionController extends Controller
         $user = $request->user();
         if ($user->subscription('main') && $user->subscription('main')->onGracePeriod()) {
             $user->subscription('main')->resume();
-            return new JsonResponse(['resume' => true, 'message' => 'Subscription has been resumed', 'data' => new TransformerEngine($user, new UserTransformer())]);
+            return new JsonResponse([
+                'resume' => true,
+                'message' => 'Subscription has been resumed',
+                'data' => new TransformerEngine($user, new UserTransformer())
+            ]);
         }
 
-        return new JsonResponse(['canceled' => false, 'message' => 'User is not in grace period!!', 'data' => new TransformerEngine($user, new UserTransformer())]);
+        return new JsonResponse([
+            'canceled' => false,
+            'message' => 'User is not in grace period!!',
+            'data' => new TransformerEngine($user, new UserTransformer())
+        ]);
     }
 }

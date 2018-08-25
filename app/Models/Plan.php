@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Arr;
 use Stripe\Plan as StripePlan;
 
@@ -52,6 +51,7 @@ class Plan extends Model
 {
     public const DAY_INTERVAL = 'day';
     public const MONTH_INTERVAL = 'month';
+    public const YEAR_INTERVAL = 'year';
 
     public const CURRENCY_USD = 'usd';
     public const CURRENCY_EUR = 'eur';
@@ -113,6 +113,7 @@ class Plan extends Model
         return [
             self::MONTH_INTERVAL => 'Month',
             self::DAY_INTERVAL => 'Day',
+            self::YEAR_INTERVAL => 'Year'
         ];
     }
 

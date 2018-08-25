@@ -44,7 +44,7 @@ use Stripe\Error\InvalidRequest;
     $model->onCreate(function () {
         return (new FormPanel())->setItems(
             (new Text('name', 'Name'))->required(),
-            (new Text('storage', 'Storage'))->setHelpText('In bytes (Byte)')->required(),
+            (new Text('storage', 'Storage'))->setHelpText('In Gigabytes (GB)')->required(),
             (new Select('product_for_update_id', 'Product for update', Product::class))->setDisplay('name')->nullable()
         );
     });
@@ -53,7 +53,7 @@ use Stripe\Error\InvalidRequest;
         $form = (new FormPanel())->setItems(
             (new Text('name', 'Name'))->setHelpText('The product name does not change in Stripe')->required(),
             (new Text('stripe_id', 'Stripe ID'))->setReadonly(true)->required(),
-            (new Text('storage', 'Storage'))->setHelpText('In Megabytes (Mb)')->required(),
+            (new Text('storage', 'Storage'))->setHelpText('In Byte')->required(),
             (new Select('product_for_update_id', 'Product for update', Product::class))->setDisplay('name')->nullable()
         );
 
@@ -78,6 +78,7 @@ use Stripe\Error\InvalidRequest;
 
     $model->creating(function (ModelConfiguration $modelConfiguration, Product $product) {
         $productRepository = new ProductRepository();
+        $product->storage *= 1000000000;
         $stripeProduct = $productRepository->createStripeProduct($product->name, $product->storage);
         if (!$stripeProduct) {
             return false;

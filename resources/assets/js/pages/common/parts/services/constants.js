@@ -4,3 +4,4 @@ export const SEARCH_ONLY = 3;
 
 export const DAY_INTERVAL = 'day';
 export const MONTH_INTERVAL = 'month';
+export const YEAR_INTERVAL = 'year';

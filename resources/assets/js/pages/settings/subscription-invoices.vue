@@ -34,27 +34,28 @@
 </template>
 
 <script>
-  import SubscriptionDetailsComponent from '../brand/parts/SubscriptionDetailsComponent.vue';
-  import axios from 'axios';
-  import Card from '../../components/Card.vue';
+    import SubscriptionDetailsComponent from '../brand/parts/SubscriptionDetailsComponent.vue';
+    import axios from 'axios';
+    import Card from '../../components/Card.vue';
 
-  export default {
-    components: {
-      Card,
-      SubscriptionDetailsComponent},
-    name: 'subscription-invoices',
-    created () {
-      this.getInvoices();
-    },
-    data: () => ({
-      invoices: [],
-    }),
-    methods: {
-      getInvoices() {
-        axios.get('/api/brand/invoices').then(({ data }) => {
-          this.invoices = data;
-        })
-      }
+    export default {
+        components: {
+            Card,
+            SubscriptionDetailsComponent
+        },
+        name: 'subscription-invoices',
+        created() {
+            this.getInvoices();
+        },
+        data: () => ({
+            invoices: [],
+        }),
+        methods: {
+            getInvoices() {
+                axios.get('/api/brand/invoices').then(({data}) => {
+                    this.invoices = data;
+                })
+            }
+        }
     }
-  }
 </script>

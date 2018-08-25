@@ -1,12 +1,18 @@
 <?php
 
+// namespace
 namespace App\Transformers;
 
+// use
 use App\Classes\DateClass;
 use Carbon\Carbon;
 use LukeVear\LaravelTransformer\AbstractTransformer;
 use LukeVear\LaravelTransformer\TransformerEngine;
 
+/**
+ * Class UserTransformer
+ * @package App\Transformers
+ */
 class UserTransformer extends AbstractTransformer
 {
     /**
@@ -15,7 +21,7 @@ class UserTransformer extends AbstractTransformer
      * @return array
      * @throws \Exception
      */
-    public function run($model) : array
+    public function run($model): array
     {
         $subscription = $model->subscriptions()->first();
         return [
@@ -25,7 +31,8 @@ class UserTransformer extends AbstractTransformer
             'brand' => $model->brand ? new TransformerEngine($model->brand, new BrandTransformer()) : null,
             'subscribed' => $model->subscribed('main'),
             'onGracePeriod' => $model->subscription('main') ? $model->subscription('main')->onGracePeriod() : false,
-            'subscription' => $subscription ? new TransformerEngine($subscription, new SubscriptionTransformer()) : null,
+            'subscription' => $subscription ? new TransformerEngine($subscription,
+                new SubscriptionTransformer()) : null,
             'hasSubscriptions' => (bool)$model->subscriptions()->count(),
             'cardBrand' => $model->card_brand,
             'cardLastFour' => $model->card_last_four,
