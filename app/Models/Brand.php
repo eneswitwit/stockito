@@ -1,7 +1,9 @@
 <?php
 
+// namespace
 namespace App\Models;
 
+// use
 use App\Models\Media\Category;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;

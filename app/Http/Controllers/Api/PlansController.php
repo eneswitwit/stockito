@@ -24,7 +24,7 @@ class PlansController extends Controller
      */
     public function index () : JsonResponse
     {
-        $plans = Plan::all();
+        $plans = Plan::orderBy('price', 'ASC')->get();
         return new JsonResponse(new TransformerEngine($plans, new SimplePlanTransformer()));
     }
 
@@ -34,7 +34,7 @@ class PlansController extends Controller
      */
     public function monthly () : JsonResponse
     {
-        $plans = Plan::all();
+        $plans = Plan::orderBy('price', 'ASC')->get();
         //$plans = Plan::where('interval', Plan::MONTH_INTERVAL)->get();
         return new JsonResponse(new TransformerEngine($plans, new SimplePlanTransformer()));
     }

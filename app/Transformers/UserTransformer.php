@@ -11,6 +11,7 @@ use LukeVear\LaravelTransformer\TransformerEngine;
 
 /**
  * Class UserTransformer
+ *
  * @package App\Transformers
  */
 class UserTransformer extends AbstractTransformer

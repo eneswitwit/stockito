@@ -1,7 +1,9 @@
 <?php
 
+// namespace
 namespace App\Models;
 
+// use
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -20,8 +22,11 @@ use Stripe\Subscription as StripeSubscription;
  * @property int $quantity
  * @property string|null $trial_ends_at
  * @property string|null $ends_at
+ * @property string|null $downgrade_to_stripe_plan
+ *
  * @property-read \App\Models\Plan $plan
  * @property-read \App\Models\User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Subscription whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Subscription whereEndsAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Subscription whereId($value)
@@ -32,10 +37,27 @@ use Stripe\Subscription as StripeSubscription;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Subscription whereTrialEndsAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Subscription whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Subscription whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class Subscription extends Model
 {
+    /**
+     * @var array
+     */
+    protected $fillable = [
+        'stripe_id',
+        'created_at',
+        'updated_at',
+        'user_id',
+        'name',
+        'stripe_plan',
+        'quantity',
+        'trial_ends_at',
+        'ends_at',
+        'downgrade_to_stripe_plan'
+    ];
+
     /**
      * @return BelongsTo
      */
@@ -55,8 +77,30 @@ class Subscription extends Model
     /**
      * @return StripeSubscription
      */
-    public function getStripeSubscription (): StripeSubscription
+    public function getStripeSubscription(): StripeSubscription
     {
         return StripeSubscription::retrieve($this->stripe_id);
     }
+
+    /**
+     * @param string $planId
+     *
+     * @return void
+     */
+    public function downgradeToPlan($stripePlanId): void
+    {
+        $this->downgrade_to_stripe_plan = $stripePlanId;
+        $this->save();
+    }
+
+    /**
+     * @return void
+     */
+    public function cancelDowngrade(): void
+    {
+        $this->downgrade_to_stripe_plan = null;
+        $this->save();
+    }
+
+
 }

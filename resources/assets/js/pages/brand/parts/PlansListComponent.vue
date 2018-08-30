@@ -1,13 +1,47 @@
 <template>
-    <div class="align-items-start mb-4">
-        <div v-for="plan in plans" class="col-lg-4" @click="changePlan(plan)">
-            <card v-if="plan.stripe_id !== currentPlanId" class="text-center"
-                  :class="{'bg-primary text-white': selectedPlanId === plan.id}">
-                <h5>{{ plan.title }}</h5>
-                <p class="card-text">Up to {{ plan.storageGb }} storage</p>
-                <p class="card-text text-success">{{ plan.period }} {{ plan.price }} {{ plan.currencySymbol }}</p>
-            </card>
-        </div>
+
+    <div v-if="currentPlan === null">
+        <b-row>
+            <div v-for="plan in plans" :key="plan.id" @click="changePlan(plan)">
+                <b-col>
+                    <card :title="plan.title" class="text-center"
+                          :class="{'bg-primary': selectedPlanId === plan.id}">
+                        <p class="card-text">Up to {{ plan.storageGb }} storage</p>
+                        <p class="card-text text-success">{{ plan.period }} {{ plan.price }} {{ plan.currencySymbol
+                            }}</p>
+                    </card>
+                </b-col>
+            </div>
+        </b-row>
+    </div>
+
+    <div v-else>
+        <b-row>
+            <h2> Downgrade</h2>
+            <div v-for="plan in plans" :key="plan.id" @click="changePlan(plan)">
+                <b-col v-if="downgradePlan(plan)">
+                    <card :title="plan.title" class="text-center"
+                          :class="{'bg-primary': selectedPlanId === plan.id}">
+                        <p class="card-text">Up to {{ plan.storageGb }} storage</p>
+                        <p class="card-text text-success">{{ plan.period }} {{ plan.price }} {{ plan.currencySymbol
+                            }}</p>
+                    </card>
+                </b-col>
+            </div>
+        </b-row>
+        <b-row>
+            <h2> Upgrade </h2>
+            <div v-for="plan in plans" :key="plan.id" @click="changePlan(plan)">
+                <b-col v-if="upgradePlan(plan)">
+                    <card :title="plan.title" class="text-center"
+                          :class="{'bg-primary': selectedPlanId === plan.id}">
+                        <p class="card-text">Up to {{ plan.storageGb }} storage</p>
+                        <p class="card-text text-success">{{ plan.period }} {{ plan.price }} {{ plan.currencySymbol
+                            }}</p>
+                    </card>
+                </b-col>
+            </div>
+        </b-row>
     </div>
 </template>
 
@@ -26,14 +60,20 @@
             plans: {
                 'default': []
             },
-            currentPlanId: {
-                'default' : 0
+            currentPlan: {
+                'default': null
             }
         },
         methods: {
             changePlan(plan) {
                 this.selectedPlanId = plan.id;
                 this.$emit('select-plan', {plan});
+            },
+            downgradePlan(plan) {
+                return plan.stripe_id !== this.currentPlan.stripe_id && plan.price*100 < this.currentPlan.price;
+            },
+            upgradePlan(plan) {
+                return plan.stripe_id !== this.currentPlan.stripe_id && plan.price*100 > this.currentPlan.price;
             }
         }
     }

@@ -1,16 +1,25 @@
 <?php
 
+// namespace
 namespace App\Transformers;
 
+// use
 use App\Models\Plan;
 use LukeVear\LaravelTransformer\AbstractTransformer;
 use LukeVear\LaravelTransformer\TransformerEngine;
 
+/**
+ * Class SubscriptionTransformer
+ *
+ * @package App\Transformers
+ */
 class SubscriptionTransformer extends AbstractTransformer
 {
     /**
-     * @param \Laravel\Cashier\Subscription $model
+     * @param \Illuminate\Database\Eloquent\Model $model
+     *
      * @return array
+     * @throws \Exception
      */
     public function run($model)
     {
@@ -24,6 +33,7 @@ class SubscriptionTransformer extends AbstractTransformer
             'stripe_id' => $model->stripe_id,
             'trial_ends_at' => $model->trial_ends_at,
             'ends_at' => $model->ends_at,
+            'downgrade_to_stripe_plan' => $model->downgrade_to_stripe_plan,
             'onTrial' => $model->onTrial(),
             'active' => $model->active(),
             'plan' => $plan ? new TransformerEngine($plan, new PlanTransformer()) : null,

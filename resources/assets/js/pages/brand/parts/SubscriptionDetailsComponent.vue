@@ -1,17 +1,20 @@
 <template>
+
     <div>
-        <card>
-            <h4>Subscription</h4>
-            <hr>
+        <card :title="'Subscription'">
+
             <p v-if="user.subscribed">Current plan: {{ user.subscription.product.name }}</p>
             <p v-if="user.subscribed">Subscription expires: {{ expiriesDate(user.subscription.created_at.date) }}</p>
             <p v-if="user.subscribed">Plan will expire in: {{ leftDate() }} days</p>
             <p v-if="user.subscribed">Size: <span class="badge badge-primary">{{ user.subscription.product.storageFormated }}</span>
                 of storage</p>
+            <p v-if="getIfDowngrade()">Plan will be downgraded automatically after expiration.</p>
 
             <div class="form-group">
+
                 <p v-if="user.subscribed && !user.onGracePeriod"> Plan will automatically renew itself</p>
                 <p v-if="user.subscribed && user.onGracePeriod"> Plan will not renew itself automatically</p>
+
                 <button v-if="user.subscribed && !user.onGracePeriod" class="btn btn-warning"
                         @click="cancelSubscription">Cancel
                 </button>
@@ -19,28 +22,21 @@
                         @click="resumeSubscription">Resume
                 </button>
                 <!--<button v-if="!subscription.autoCharge" class="btn btn-primary" @click="showRenewModal = true">{{ $t('renewal') }}</button>-->
-                <router-link :to="{'name': 'select-plan'}" class="btn btn-primary">{{ user.subscribed ? 'Change plan' :
-                    'Subscribe' }}
+                <router-link :to="{'name': 'select-plan'}" class="btn btn-primary">
+                    {{ user.subscribed ? 'Change plan' : 'Subscribe' }}
                 </router-link>
                 <router-link :to="{name: 'payment.details' }" class="btn btn-info">{{ $t('payment_details') }}
                 </router-link>
             </div>
+
         </card>
 
-        <!--<modal v-bind:show="showRenewModal">-->
-        <!--<modal-header>{{ $t('renew_your_subscription') }}</modal-header>-->
-        <!--<modal-body>-->
-        <!--<p v-if="subscription.ends_at">Your subscription for {{ subscription.plan.title }} plan will expire in {{ leftDate(subscription.ends_at.date) }} Days. Renew it now, before it's to late.</p>-->
-        <!--<div class="form-group text-center">-->
-        <!--<button class="btn btn-default">{{ $t('renew') }}</button>-->
-        <!--</div>-->
-        <!--</modal-body>-->
-        <!--</modal>-->
-        
     </div>
 </template>
 
 <script>
+
+    /** import **/
     import axios from 'axios';
     import Moment from 'moment';
     import {DAY_INTERVAL, MONTH_INTERVAL, YEAR_INTERVAL} from './../../common/parts/services/constants';
@@ -50,37 +46,85 @@
     import Card from '../../../components/Card';
 
 
+    /** export **/
     export default {
+
+        name: 'subscription-details-component',
+
         components: {
             Card,
             Modal,
             ModalBody,
             ModalHeader
         },
-        name: 'subscription-details-component',
+
+        /** data **/
         data: () => ({
             showRenewModal: false,
             endsDate: null,
-            user: null
+            user: null,
+            subscription: null,
         }),
+
+        /** created **/
         created() {
             this.getUser();
+            this.getSubscription();
         },
-        computed: {
-            subscription() {
-                return this.$store.getters['auth/user'].subscription;
-            }
-        },
+
+        /** methods **/
         methods: {
+
+
+            /**
+             *
+             * @returns {void}
+             */
             getUser() {
                 this.user = this.$store.getters['auth/user'];
             },
+
+            /**
+             *
+             * @returns {void}
+             */
+            getSubscription() {
+                this.subscription = this.$store.getters['auth/user'].subscription;
+            },
+
+            /**
+             *
+             * @returns {boolean}
+             */
+            getIfDowngrade() {
+                if (this.subscription) {
+                    return this.subscription.downgrade_to_stripe_plan !== null;
+                }
+            },
+
+            /**
+             *
+             * @param {string} date
+             * @param {string} format
+             * @returns {*|string}
+             */
             getDate(date, format) {
                 return new Moment(date).format(format);
             },
+
+            /**
+             *
+             * @returns {number}
+             */
             leftDate() {
                 return new Moment(this.endsDate).diff(new Moment(), 'days');
             },
+
+            /**
+             *
+             * @param date
+             * @returns {*}
+             */
             expiriesDate(date) {
                 let days;
                 let period = this.user.subscription.plan.period.toLowerCase();
@@ -94,18 +138,29 @@
                 this.endsDate = new Moment(date).add(days, 'days');
                 return this.endsDate.format('Do MMMM, YYYY');
             },
+
+            /**
+             *
+             * @returns {void}
+             */
             cancelSubscription() {
                 axios.post('/api/subscription/cancel-subscription').then(({data}) => {
                     this.$store.dispatch('auth/updateUser', {user: data.data});
                     this.$swal(data.message, '', 'success');
                 });
             },
+
+            /**
+             *
+             * @returns {void}
+             */
             resumeSubscription() {
                 axios.post('/api/subscription/resume-subscription').then(({data}) => {
                     this.$store.dispatch('auth/updateUser', {user: data.data});
                     this.$swal(data.message, '', 'success');
                 });
-            },
+            }
+
         }
     }
 </script>

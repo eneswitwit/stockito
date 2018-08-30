@@ -1,20 +1,24 @@
 <template>
     <card :title="'Select your plan'">
-        <div class="row">
-            <div class="col-lg-12">
+        <b-row>
+            <b-col>
                 <plans-list-component @select-plan="changePlan" :plans="plans"
-                                      :currentPlanId="currentPlanId"></plans-list-component>
-            </div>
-            <div v-if="selectedPlanId" class="col-lg-12 text-right">
+                                      :currentPlan="currentPlan"></plans-list-component>
+            </b-col>
+        </b-row>
+        <b-row v-if="selectedPlanId" :class="'text-right'">
+            <b-col>
                 <router-link class="btn btn-primary" :to="{name: 'payment', params: {id: selectedPlanId}}">
                     {{ $t('pay') }}
                 </router-link>
-            </div>
-        </div>
+            </b-col>
+        </b-row>
     </card>
+
 </template>
 
 <script>
+
     import Card from '../../components/Card.vue';
     import axios from 'axios';
     import PlansListComponent from './parts/PlansListComponent.vue';
@@ -27,28 +31,38 @@
 
         name: 'choice-plan-component',
         created() {
+            this.getCurrentPlan();
             this.getPlans();
-            this.getPlanStripeId();
         },
 
         data: () => ({
             plans: [],
-            currentPlanId: 0,
+            currentPlan: null,
             selectedPlanId: null
         }),
 
         methods: {
+
             getPlans() {
                 axios.get('/api/plans/all').then(({data}) => {
                     this.plans = data;
                 });
             },
+
             changePlan(data) {
                 this.selectedPlanId = data.plan.id;
             },
-            getPlanStripeId() {
-                this.currentPlanId = this.$store.getters['auth/user'].subscription.plan.plan.id;
+
+            getCurrentPlan() {
+                var subscription = this.$store.getters['auth/user'].subscription;
+                if (subscription !== null) {
+                    var plan_id = subscription.plan.id;
+                    axios.get('/api/plans/' + plan_id).then(({data}) => {
+                        this.currentPlan = data;
+                    });
+                }
             }
+
         }
     }
 </script>

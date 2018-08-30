@@ -1,7 +1,9 @@
 <?php
 
+// namespace
 namespace App\Models;
 
+// use
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -18,17 +20,28 @@ use Stripe\Plan as StripePlan;
  * @property float $price
  * @property string $stripe_id
  * @property string $interval
- * @property float $storage
+ * @property int $product_id
+ * @property int|null $ftp_group_id
+ *
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
- * @property float $video_storage
- * @property int|null $ftp_group_id
- * @property int|null $plan_for_upgrade_id
+ *
+ * @const string DAY_INTERVAL
+ * @const string MONTH_INTERVAL
+ * @const string YEAR_INTERVAL
+ * @const string CURRENCY_USD
+ * @const string CURRENCY_EUR
+ * @const string CURRENCY_EUR_SYMBOL
+ * @const string CURRENCY_USD_SYMBOL
+ *
  * @property-read \App\Models\FTPGroup|null $ftpGroup
  * @property-read \Stripe\Plan $plan
  * @property-read \App\Models\Plan $planForDowngrade
  * @property-read \App\Models\Plan|null $planForUpgrade
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $users
+ * @property-read \App\Models\Product $product
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Invoice[] $invoices
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Plan whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Plan whereCurrency($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Plan whereFtpGroupId($value)
@@ -41,14 +54,11 @@ use Stripe\Plan as StripePlan;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Plan whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Plan whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Plan whereVideoStorage($value)
- * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Invoice[] $invoices
- * @property int $product_id
- * @property-read \App\Models\Product $product
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Plan whereProductId($value)
  */
 class Plan extends Model
 {
+
     public const DAY_INTERVAL = 'day';
     public const MONTH_INTERVAL = 'month';
     public const YEAR_INTERVAL = 'year';
@@ -79,18 +89,19 @@ class Plan extends Model
         'stripe_id',
         'title',
         'interval',
-        'price'
+        'price',
     ];
+
     /**
-     * @return BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function users (): BelongsToMany
+    public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class);
     }
 
     /**
-     * @return BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function product(): BelongsTo
     {
@@ -98,9 +109,9 @@ class Plan extends Model
     }
 
     /**
-     * @return StripePlan
+     * @return \Stripe\Plan
      */
-    public function getStripePlan (): StripePlan
+    public function getStripePlan(): StripePlan
     {
         return StripePlan::retrieve($this->stripe_id);
     }
@@ -108,7 +119,7 @@ class Plan extends Model
     /**
      * @return array
      */
-    public static function getIntervalTitles (): array
+    public static function getIntervalTitles(): array
     {
         return [
             self::MONTH_INTERVAL => 'Month',
@@ -120,7 +131,7 @@ class Plan extends Model
     /**
      * @return array
      */
-    public static function getCurrencySymbols (): array
+    public static function getCurrencySymbols(): array
     {
         return [
             self::CURRENCY_USD => self::CURRENCY_USD_SYMBOL,
@@ -129,9 +140,9 @@ class Plan extends Model
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getIntervalTitle () : ?string
+    public function getIntervalTitle(): ?string
     {
         return Arr::get(self::getIntervalTitles(), $this->getStripePlan()->interval, null);
     }
@@ -139,7 +150,7 @@ class Plan extends Model
     /**
      * @return null|string
      */
-    public function getCurrencySymbol() : ?string
+    public function getCurrencySymbol(): ?string
     {
         return Arr::get(self::getCurrencySymbols(), $this->currency, null);
     }
@@ -147,13 +158,13 @@ class Plan extends Model
     /**
      * @return \Stripe\Plan
      */
-    public function getPlanAttribute (): \Stripe\Plan
+    public function getPlanAttribute(): \Stripe\Plan
     {
         return $this->getStripePlan();
     }
 
     /**
-     * @return BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function planForUpgrade(): BelongsTo
     {
@@ -162,7 +173,7 @@ class Plan extends Model
 
 
     /**
-     * @return HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function invoices(): HasMany
     {

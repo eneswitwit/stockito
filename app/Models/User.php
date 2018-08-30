@@ -1,7 +1,10 @@
 <?php
 
+// namespace
 namespace App\Models;
 
+
+// use
 use App\Notifications\MailUserRegistration;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,9 +26,24 @@ use App\Notifications\ResetPassword as ResetPasswordNotification;
  * @property string|null $remember_token
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
+ * @property string|null $stripe_id
+ * @property string|null $card_brand
+ * @property string|null $card_last_four
+ * @property string|null $trial_ends_at
+ * @property int $enabled
+ * @property string|null $confirmation_token
+ * @property int|null $plan_id
+ * @property string|null $last_login
+ *
+ * @property-read \App\Models\Brand $brand
+ * @property-read \App\Models\Creative $creative
  * @property-read string $photo_url
- * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
+ * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[]
+ *     $notifications
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\OAuthProvider[] $oauthProviders
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Laravel\Cashier\Subscription[] $subscriptions
+ * @property-read \App\Models\Plan|null $plan
+ *
  * @method static Builder|User whereCreatedAt($value)
  * @method static Builder|User whereEmail($value)
  * @method static Builder|User whereId($value)
@@ -33,32 +51,25 @@ use App\Notifications\ResetPassword as ResetPasswordNotification;
  * @method static Builder|User wherePassword($value)
  * @method static Builder|User whereRememberToken($value)
  * @method static Builder|User whereUpdatedAt($value)
- * @mixin \Eloquent
- * @property-read \App\Models\Brand $brand
- * @property-read \App\Models\Creative $creative
- * @property string|null $stripe_id
- * @property string|null $card_brand
- * @property string|null $card_last_four
- * @property string|null $trial_ends_at
- * @property-read \Illuminate\Database\Eloquent\Collection|\Laravel\Cashier\Subscription[] $subscriptions
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereCardBrand($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereCardLastFour($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereStripeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereTrialEndsAt($value)
- * @property int|null $plan_id
- * @property-read \App\Models\Plan|null $plan
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User wherePlanId($value)
- * @property string|null $last_login
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereLastLogin($value)
- * @property int $enabled
- * @property string|null $confirmation_token
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereConfirmationToken($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereEnabled($value)
+ *
+ * @mixin \Eloquent
+ *
  */
 class User extends Authenticatable implements JWTSubject
 {
+    // use
     use Notifiable;
     use Billable;
+
 
     /**
      * The attributes that are mass assignable.
@@ -66,7 +77,9 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name',
+        'email',
+        'password',
     ];
 
     /**
@@ -75,7 +88,8 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password',
+        'remember_token',
     ];
 
     /**
@@ -92,7 +106,7 @@ class User extends Authenticatable implements JWTSubject
      *
      * @return string
      */
-    public function getPhotoUrlAttribute()
+    public function getPhotoUrlAttribute(): string
     {
         return 'https://www.gravatar.com/avatar/' . md5(strtolower($this->email)) . '.jpg?s=200&d=mm';
     }
@@ -111,6 +125,7 @@ class User extends Authenticatable implements JWTSubject
      * Send the password reset notification.
      *
      * @param  string $token
+     *
      * @return void
      */
     public function sendPasswordResetNotification($token)
@@ -122,6 +137,7 @@ class User extends Authenticatable implements JWTSubject
      * Send mail verification.
      *
      * @param  string $token
+     *
      * @return void
      */
     public function sendConfirmationEmail($token)
@@ -190,7 +206,7 @@ class User extends Authenticatable implements JWTSubject
     /**
      * @return mixed
      */
-    public function getName ()
+    public function getName()
     {
         return $this->getType()->name ?? '';
     }
@@ -198,7 +214,7 @@ class User extends Authenticatable implements JWTSubject
     /**
      * @return BelongsTo
      */
-    public function plan () : BelongsTo
+    public function plan(): BelongsTo
     {
         return $this->belongsTo(Plan::class);
     }
@@ -206,7 +222,7 @@ class User extends Authenticatable implements JWTSubject
     /**
      * @return \Illuminate\Support\Collection
      */
-    public function getInvoices() : \Illuminate\Support\Collection
+    public function getInvoices(): \Illuminate\Support\Collection
     {
         return Invoice::where('customer', $this->stripe_id)->get();
     }
