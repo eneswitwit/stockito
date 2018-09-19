@@ -6,7 +6,7 @@
         @endcomponent
     @endslot
     {{-- Body --}}
-    <p>Hello! You have been added to brand's creative team by brand {{ $brand_name }} with role - {{$role}}! Please, register your account by link below!</p>
+    <p>Hey! You have been added to the creative team of the brand {{ $brand_name }} with the role as {{$role}}. Please sign up to access the platform by clicking on the link below.</p>
     {{-- Footer --}}
 @slot('footer')
     @component('mail::footer')

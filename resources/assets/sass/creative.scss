@@ -4,39 +4,6 @@
   }
 }
 
-.custom-pagination {
-  ul {
-    li {
-      a {
-        position: relative;
-        display: block;
-        padding: .5rem .75rem;
-        margin-left: -1px;
-        line-height: 1.25;
-        color: #007bff;
-        background-color: #fff;
-        border: 1px solid #dee2e6;
-      }
-
-      &.active {
-        a {
-          z-index: 1;
-          color: #fff;
-          background-color: #007bff;
-          border-color: #007bff;
-        }
-      }
-    }
-  }
-}
-
-#uploadModal {
-  overflow: auto;
-}
-
-.modal-lg.mediaModal {
-  max-width: 80%;
-}
 
 .glyphicon {
   position: relative;
@@ -48,15 +15,4 @@
   line-height: 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-.modal {
-  overflow: auto;
-  overflow-x: hidden;
-  overflow-y: scroll;
-}
-
-.btn-link {
-  word-break: break-all;
-  white-space: inherit;
 }

@@ -1,115 +1,118 @@
 <template>
-  <div class="row">
-    <div class="col-lg-8 m-auto">
-      <card :title="$t('login')">
-        <form @submit.prevent="login" @keydown="form.onKeydown($event)">
-          <!-- Email -->
-          <div class="form-group row">
-            <label class="col-md-3 col-form-label text-md-right">{{ $t('email') }}</label>
-            <div class="col-md-7">
-              <input v-model="form.email" type="email" name="email" class="form-control"
-                :class="{ 'is-invalid': form.errors.has('email') }">
-              <has-error :form="form" field="email"/>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-lg-8 m-auto">
+                <card :title="$t('login')">
+                    <form @submit.prevent="login" @keydown="form.onKeydown($event)">
+                        <!-- Email -->
+                        <div class="form-group row">
+                            <label class="col-md-3 col-form-label text-md-right">{{ $t('email') }}</label>
+                            <div class="col-md-7">
+                                <input v-model="form.email" type="email" name="email" class="form-control"
+                                       :class="{ 'is-invalid': form.errors.has('email') }">
+                                <has-error :form="form" field="email"/>
+                            </div>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="form-group row">
+                            <label class="col-md-3 col-form-label text-md-right">{{ $t('password') }}</label>
+                            <div class="col-md-7">
+                                <input v-model="form.password" type="password" name="password" class="form-control"
+                                       :class="{ 'is-invalid': form.errors.has('password') }">
+                                <has-error :form="form" field="password"/>
+                            </div>
+                        </div>
+
+                        <div v-if="confirmEmail" class="form-group row">
+                            <p class="error-email-confirmation">You didn't confirm your email</p>
+                        </div>
+
+                        <!-- Remember Me -->
+                        <div class="form-group row">
+                            <div class="col-md-3"></div>
+                            <div class="col-md-7 d-flex">
+                                <checkbox v-model="remember" name="remember">
+                                    {{ $t('remember_me') }}
+                                </checkbox>
+
+                                <router-link :to="{ name: 'password.request' }" class="small ml-auto my-auto">
+                                    {{ $t('forgot_password') }}
+                                </router-link>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-7 offset-md-3 d-flex">
+                                <!-- Submit Button -->
+                                <v-button :class="btn-block" :loading="form.busy">
+                                    {{ $t('login') }}
+                                </v-button>
+
+                                <!-- GitHub Login Button -->
+                                <login-with-github/>
+                            </div>
+                        </div>
+                    </form>
+                </card>
             </div>
-          </div>
-
-          <!-- Password -->
-          <div class="form-group row">
-            <label class="col-md-3 col-form-label text-md-right">{{ $t('password') }}</label>
-            <div class="col-md-7">
-              <input v-model="form.password" type="password" name="password" class="form-control"
-                :class="{ 'is-invalid': form.errors.has('password') }">
-              <has-error :form="form" field="password"/>
-            </div>
-          </div>
-
-          <div v-if="confirmEmail" class="form-group row">
-            <p class="error-email-confitmation">You didn't confirm your email</p>
-          </div>
-
-          <!-- Remember Me -->
-          <div class="form-group row">
-            <div class="col-md-3"></div>
-            <div class="col-md-7 d-flex">
-              <checkbox v-model="remember" name="remember">
-                {{ $t('remember_me') }}
-              </checkbox>
-
-              <router-link :to="{ name: 'password.request' }" class="small ml-auto my-auto">
-                {{ $t('forgot_password') }}
-              </router-link>
-            </div>
-          </div>
-
-          <div class="form-group row">
-            <div class="col-md-7 offset-md-3 d-flex">
-              <!-- Submit Button -->
-              <v-button :loading="form.busy">
-                {{ $t('login') }}
-              </v-button>
-
-              <!-- GitHub Login Button -->
-              <login-with-github/>
-            </div>
-          </div>
-        </form>
-      </card>
+        </div>
     </div>
-  </div>
 </template>
 
 <script>
-import Form from 'vform'
-import LoginWithGithub from '~/components/LoginWithGithub'
 
-export default {
-  middleware: 'guest',
+    /** import */
+    import Form from 'vform'
+    import LoginWithGithub from '~/components/LoginWithGithub'
 
-  components: {
-    LoginWithGithub
-  },
+    /** export */
+    export default {
 
-  metaInfo () {
-    return { title: this.$t('login') }
-  },
+        middleware: 'guest',
 
-  data: () => ({
-    form: new Form({
-      email: '',
-      password: ''
-    }),
-    remember: false,
-    confirmEmail: false
-  }),
+        components: {
+            LoginWithGithub
+        },
 
-  methods: {
-    async login () {
-      // Submit the form.
-      const { data } = await this.form.post('/api/login')
+        /** meta */
+        metaInfo() {
+            return {title: this.$t('login')}
+        },
 
-      if (data === false) {
-          this.confirmEmail = true;
-      }
+        /** data */
+        data: () => ({
+            form: new Form({
+                email: '',
+                password: ''
+            }),
+            remember: false,
+            confirmEmail: false
+        }),
 
-      // Save the token.
-      this.$store.dispatch('auth/saveToken', {
-        token: data.token,
-        remember: this.remember
-      });
+        /** methods */
+        methods: {
+            async login() {
+                // Submit the form.
+                const {data} = await this.form.post('/api/login')
 
-      // Fetch the user.
-      await this.$store.dispatch('auth/fetchUser');
+                if (data === false) {
+                    this.confirmEmail = true;
+                }
 
-      // Redirect home.
-      await this.$router.push({ name: 'dashboard' })
+                // Save the token.
+                this.$store.dispatch('auth/saveToken', {
+                    token: data.token,
+                    remember: this.remember
+                });
+
+                // Fetch the user.
+                await this.$store.dispatch('auth/fetchUser');
+
+                // Redirect home.
+                await this.$router.push({name: 'dashboard'})
+            }
+        }
     }
-  }
-}
-</script>
 
-<style scoped>
-  .error-email-confitmation {
-    margin: 0 auto;
-    color: red;
-  }
-</style>
+</script>

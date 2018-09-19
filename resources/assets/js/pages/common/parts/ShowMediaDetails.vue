@@ -1,43 +1,43 @@
 <template>
-    <card v-if="media">
+    <card :title="'Basic information'" v-if="media">
         <div class="form-group">
-            <label for="">Title</label>
-            <p>{{ media.title }}</p>
+            <label class="font-weight-bold" for="">Title</label>
+            {{ media.title }}
         </div>
         <div class="form-group">
-            <label for="">File Name</label>
-            <p>{{ media.origin_name }}</p>
-        </div>
-        <div class="form-group">
-            <label for="media-origin-camera">Camera:</label>
-            {{ media.exif ? media.exif.camera : '' }}
+            <label class="font-weight-bold" for="">File Name</label>
+            {{ media.origin_name }}
         </div>
         <div v-if="media.category" class="form-group">
-            <label for="media-origin-gps">Category:</label>
+            <label class="font-weight-bold" for="media-origin-gps">Category</label>
             {{ media.category.name }}
         </div>
-        <div class="form-group">
-            <label for="media-origin-gps">Keywords:</label>
+        <div v-if="media.fileType" class="form-group">
+            <label class="font-weight-bold" for="media-origin-gps">File Type</label>
+            {{ media.fileType }}
+        </div>
+        <div v-if="media.keywords !== null" class="form-group">
+            <label class="font-weight-bold" for="media-origin-gps">Keywords</label>
             {{ media.keywords }}
         </div>
-        <div class="form-group input-group-sm">
-            <label for="media-origin-aperture">Source:</label>
+        <div v-if="media.peoples_attribute !== null" class="form-group">
+            <label class="font-weight-bold" for="media-origin-gps">Peoples Attribute</label>
+            {{ media.peoples_attribute }}
+        </div>
+        <div v-if="media.source !== null" class="form-group input-group-sm">
+            <label class="font-weight-bold" for="media-origin-aperture">Artist/Copyright</label>
             {{ media.source }}
         </div>
         <div class="form-group">
-            <label for="media-origin-copyright">Copyright:</label>
-            {{ media.exif ? media.exif.copyright : '' }}
-        </div>
-        <div class="form-group">
-            <label for="media-origin-author">Author:</label>
-            {{ media.exif ? media.exif.author : '' }}
+            <label class="font-weight-bold" for="media-origin-author">Uploaded by</label>
+            {{ media.created_by.email }}
         </div>
         <div v-if="media.supplier" class="form-group">
-            <label for="media-origin-author">Supplier:</label>
+            <label class="font-weight-bold" for="media-origin-author">Supplier</label>
             {{ media.supplier.name }}
         </div>
         <div v-if="media.licenses && media.licenses.length" class="form-group">
-            <label for="">License</label>
+            <label class="font-weight-bold" for="">License</label>
             <button v-color-license:background.border="media.licenses[0]" type="button"
                     class="btn btn-success brn-xs" @click="showLicenseModal = true">{{ media.licenses[0]
                 ? media.licenses[0].type + ' - license'
@@ -48,7 +48,6 @@
 </template>
 
 <script type="text/babel">
-    import axios from 'axios';
     import ColorLicensesDirective from '../../../directives/ColorLicensesDirective';
 
     Vue.directive('color-license', ColorLicensesDirective);

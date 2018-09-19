@@ -60,6 +60,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('cards', 'Api\CardController@index');
     Route::group(['prefix' => 'licenses'], function () {
         Route::get('types', 'Api\LicensesController@types');
+        Route::get('types-long', 'Api\LicensesController@typesLong');
         Route::get('soon-expiring', 'Api\LicensesController@soonExpiring');
         Route::get('export/{brandId?}', 'Api\LicensesController@exportToPdf');
         Route::get('{brandId?}', 'Api\LicensesController@index');
@@ -85,6 +86,8 @@ Route::group(['middleware' => 'auth:api'], function () {
     });
 
     Route::group(['prefix' => 'medias'], function () {
+        Route::get('get/{id}', 'Api\MediaController@show');
+        Route::get('get-multiple', 'Api\MediaController@getMultiple');
         Route::get('categories', 'Api\MediaController@categories');
         Route::get('types', 'Api\MediaController@types');
         Route::get('uploads/{brandId?}', 'Api\MediaController@uploads');
@@ -96,6 +99,8 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::post('share', 'Api\MediaController@share');
         Route::post('share-to-email', 'Api\MediaController@shareEmail');
         Route::get('download-multiple', 'Api\MediaController@downloadMultiple');
+        Route::post('submit-multiple', 'Api\MediaController@submitMultiple');
+        Route::delete('remove-multiple', 'Api\MediaController@removeMultiple');
 
         Route::group(['prefix' => '{media}'], function () {
             Route::post('submit', 'Api\MediaController@submit');

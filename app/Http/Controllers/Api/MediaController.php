@@ -1,7 +1,9 @@
 <?php
 
+// namespace
 namespace App\Http\Controllers\Api;
 
+// use
 use App\Events\DeletedFileEvent;
 use App\Events\EditedFileEvent;
 use App\Events\UploadedFileEvent;
@@ -16,7 +18,6 @@ use App\ModelManagers\LicenseModelManager;
 use App\Models\FTPFile;
 use App\Models\License;
 use App\Models\Media;
-use App\Models\PeopleAttribute;
 use App\Models\Share;
 use App\Models\Supplier;
 use App\Models\User;
@@ -33,10 +34,15 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Facades\Image;
 use LukeVear\LaravelTransformer\TransformerEngine;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Log;
 
+/**
+ * Class MediaController
+ *
+ * @package App\Http\Controllers\Api
+ */
 class MediaController extends Controller
 {
     /**
@@ -51,6 +57,7 @@ class MediaController extends Controller
 
     /**
      * MediaController constructor.
+     *
      * @param FTPFilesManager $ftpFilesManager
      * @param UploadService $uploadService
      */
@@ -62,6 +69,7 @@ class MediaController extends Controller
 
     /**
      * @param null $brandId
+     *
      * @return JsonResponse
      */
     public function processing($brandId = null): JsonResponse
@@ -72,12 +80,14 @@ class MediaController extends Controller
          */
         $user = auth()->user();
         $brand = $user->brand ?? Brand::find($brandId);
-        if(!$brand) {
+        if (!$brand) {
             return new JsonResponse();
         }
 
-        $result['processing'] = (new FTPFile())::notHandled()->where('username', $brand->ftpUser->userid)->where('processing', true)->count();
-        $result['queuing'] = (new FTPFile())::notHandled()->where('username', $brand->ftpUser->userid)->where('queuing', true)->count();
+        $result['processing'] = (new FTPFile())::notHandled()->where('username',
+            $brand->ftpUser->userid)->where('processing', true)->count();
+        $result['queuing'] = (new FTPFile())::notHandled()->where('username', $brand->ftpUser->userid)->where('queuing',
+            true)->count();
 
         return new JsonResponse($result);
     }
@@ -111,13 +121,13 @@ class MediaController extends Controller
         /**
          * @var User $user
          */
-        $user  = auth()->user();
+        $user = auth()->user();
         $brand = $user->brand;
-        if ( ! $brand && $request->has('selectedBrand')) {
+        if (!$brand && $request->has('selectedBrand')) {
             $brand = Brand::findOrFail($request->selectedBrand);
         }
 
-        if(!$brand) {
+        if (!$brand) {
             return new JsonResponse();
         }
 
@@ -133,10 +143,8 @@ class MediaController extends Controller
             $medias->where('category_id', $request->input('categoryId'));
         }
 
-        if ($request->input('peopleAttributes', false) && $request->input('peopleAttributes.0') != false) {
-            $medias->whereHas('peopleAttributes', function (Builder $builder) use ($request) {
-                $builder->whereIn('people_attributes.id', $request->input('peopleAttributes'));
-            });
+        if ($request->input('peoplesAttribute', false)) {
+            $medias->where('peoples_attribute', $request->input('peoplesAttribute'));
         }
 
         if ($request->input('supplierId', false)) {
@@ -149,11 +157,11 @@ class MediaController extends Controller
 
         if ($request->input('q', false)) {
             $medias->where(function (Builder $builder) use ($request) {
-                $builder->orWhere('keywords', 'LIKE' , '%'.$request->input('q').'%')
-                    ->orWhere('source', 'LIKE', '%'.$request->input('q').'%')
-                    ->orWhere('origin_name', 'LIKE', $request->input('q').'%')
-                    ->orWhere('notes', 'LIKE', '%'.$request->input('q').'%')
-                    ->orWhere('title', 'LIKE', '%'.$request->input('q').'%');
+                $builder->orWhere('keywords', 'LIKE', '%' . $request->input('q') . '%')
+                    ->orWhere('source', 'LIKE', '%' . $request->input('q') . '%')
+                    ->orWhere('origin_name', 'LIKE', $request->input('q') . '%')
+                    ->orWhere('notes', 'LIKE', '%' . $request->input('q') . '%')
+                    ->orWhere('title', 'LIKE', '%' . $request->input('q') . '%');
             });
         }
 
@@ -172,18 +180,18 @@ class MediaController extends Controller
     public function getBrandMedias(Request $request, $id): JsonResponse
     {
         $creative = $request->user()->creative;
-        $brand    = Brand::find($id);
-        if ( ! $brand) {
+        $brand = Brand::find($id);
+        if (!$brand) {
             throw new \Exception('Brand not found!');
         }
         $brandCreative = $brand->creatives()->where('creatives.id', $creative->id)->first();
-        if ( ! $brandCreative) {
+        if (!$brandCreative) {
             throw new \Exception('Creative not in brand team!');
         }
         $medias = $brand->media()->published()->orderBy('created_at', 'decs')->get();
 
         $brandCreativeResponse = new TransformerEngine($brandCreative, new BrandCreativesTransformer());
-        $response              = new TransformerEngine($medias, new MediaTransformer());
+        $response = new TransformerEngine($medias, new MediaTransformer());
 
         return new JsonResponse(['medias' => $response, 'creativeRole' => $brandCreativeResponse]);
     }
@@ -203,7 +211,7 @@ class MediaController extends Controller
          */
         $user = auth()->user();
         $brand = $user->brand ?? Brand::find($brandId);
-        if(!$brand) {
+        if (!$brand) {
             return new JsonResponse();
         }
 
@@ -241,7 +249,7 @@ class MediaController extends Controller
         /**
          * @var User $user
          */
-        $user  = $request->user();
+        $user = $request->user();
         $brand = $user->brand ?? Brand::find($request->brandId);
         try {
             $media = $this->uploadService->uploadMedia($request, $brand);
@@ -253,7 +261,7 @@ class MediaController extends Controller
 
         return new JsonResponse([
             'success' => true,
-            'data'    => new TransformerEngine($media, new MediaTransformer())
+            'data' => new TransformerEngine($media, new MediaTransformer())
         ]);
     }
 
@@ -276,61 +284,119 @@ class MediaController extends Controller
      */
     public function submit(Request $request, Media $media): JsonResponse
     {
-        $this->validate($request, [
-            'title' => 'required',
-        ]);
+
         /**
          * @var Supplier $supplier
          * @var Media\Category $category
          */
         if ($request->input('category.label', false)) {
-            $category           = Media\Category::firstOrCreate(['name' => $request->input('category.label')], ['brand_id' => $media->brand->id]);
+            $category = Media\Category::firstOrCreate(['name' => $request->input('category.label')],
+                ['brand_id' => $media->brand->id]);
             $media->category_id = $category->id;
         }
 
         if ($request->input('category', false)) {
-            $category           = Media\Category::firstOrCreate(['name' => $request->input('category')], ['brand_id' => $media->brand->id]);
+            $category = Media\Category::firstOrCreate(['name' => $request->input('category')],
+                ['brand_id' => $media->brand->id]);
             $media->category_id = $category->id;
         }
 
         if ($request->input('supplier.label', false)) {
-            $supplier           = Supplier::firstOrCreate(['name' => $request->input('supplier.label')], ['brand_id' => $media->brand->id]);
+            $supplier = Supplier::firstOrCreate(['name' => $request->input('supplier.label')],
+                ['brand_id' => $media->brand->id]);
             $media->supplier_id = $supplier->id;
         }
 
         if ($request->input('supplier', false)) {
 
-            $supplier           = Supplier::firstOrCreate(['name' => $request->input('supplier')], ['brand_id' => $media->brand->id]);
+            $supplier = Supplier::firstOrCreate(['name' => $request->input('supplier')],
+                ['brand_id' => $media->brand->id]);
             $media->supplier_id = $supplier->id;
         }
 
-        if ($request->input('peopleAttributes', false)) {
-            $attributes = new Collection();
-            if (\is_array($request->input('peopleAttributes'))) {
-                foreach ($request->input('peopleAttributes') as $key => $value) {
-                    if (\is_string($value)) {
-                        $attributes->push(PeopleAttribute::firstOrCreate(['name' => $value], ['brand_id' => $media->brand->id]));
-                    } elseif (\is_array($value)) {
-                        if (isset($value['label'])) {
-                            $attributes->push(PeopleAttribute::firstOrCreate(['name' => $value['label']], ['brand_id' => $media->brand->id]));
-                        }
-                    }
-                }
-            }
-            $media->peopleAttributes()->sync($attributes->pluck('id')->toArray(), true);
+        if ($request->input('peopleAttributes', null)) {
+            $media->peoples_attribute = $request->input('peopleAttributes');
         }
 
-        $media->title       = $request->input('title', '');
-        $media->file_type   = $request->input('fileType', '');
-        $media->keywords    = $request->input('keywords', '');
-        $media->source      = $request->input('source', '');
-        $media->language    = $request->input('language', '');
+        if ($request->input('title') === null) {
+            $media->title = $request->input('originName', '');
+        } else {
+            $media->title = $request->input('title', '');
+        }
+        $media->file_type = $request->input('fileType', '');
+        $media->keywords = $request->input('keywords', '');
+        $media->source = $request->input('source', '');
+        $media->language = $request->input('language', '');
         $media->origin_name = $request->input('originName', '');
 
         $media->publish()->save();
         event(new EditedFileEvent($media, $media->brand));
 
         return new JsonResponse(new TransformerEngine($media, new MediaTransformer()));
+    }
+
+    /**
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     */
+    public function submitMultiple(Request $request): JsonResponse
+    {
+
+        $mediaFiles = (new Media)->whereIn('id', $request->input('media'))->get();
+
+
+        foreach ($mediaFiles as $media) {
+
+            /**
+             * @var Supplier $supplier
+             * @var Media\Category $category
+             */
+            if ($request->input('form.category.label', false)) {
+                $category = Media\Category::firstOrCreate(['name' => $request->input('form.category.label')],
+                    ['brand_id' => $media->brand->id]);
+                $media->category_id = $category->id;
+            }
+
+            if ($request->input('form.category', false)) {
+                $category = Media\Category::firstOrCreate(['name' => $request->input('form.category')],
+                    ['brand_id' => $media->brand->id]);
+                $media->category_id = $category->id;
+            }
+
+            if ($request->input('form.supplier.label', false)) {
+                $supplier = Supplier::firstOrCreate(['name' => $request->input('form.supplier.label')],
+                    ['brand_id' => $media->brand->id]);
+                $media->supplier_id = $supplier->id;
+            }
+
+            if ($request->input('form.supplier', false)) {
+
+                $supplier = Supplier::firstOrCreate(['name' => $request->input('form.supplier')],
+                    ['brand_id' => $media->brand->id]);
+                $media->supplier_id = $supplier->id;
+            }
+
+            if ($request->input('peopleAttributes', null)) {
+                $media->peoples_attribute = $request->input('peopleAttributes');
+            }
+
+            if ($request->input('form.title') === null) {
+                $media->title = $media->origin_name;
+            } else {
+                $media->title = $request->input('form.title', '');
+            }
+            $media->file_type = $request->input('form.fileType', '');
+            $media->keywords = $request->input('form.keywords', '');
+            $media->source = $request->input('form.source', '');
+            $media->language = $request->input('form.language', '');
+
+            $media->publish()->save();
+            event(new EditedFileEvent($media, $media->brand));
+        }
+
+        return new JsonResponse(new TransformerEngine($mediaFiles, new MediaTransformer()));
     }
 
     /**
@@ -348,7 +414,7 @@ class MediaController extends Controller
         ]);
 
         if ($type === Share::TIME_LIMITED_LINK) {
-            $days              = $request->input('days');
+            $days = $request->input('days');
             $share->expires_at = Carbon::now()->addDay($days)->endOfDay();
         }
 
@@ -384,23 +450,63 @@ class MediaController extends Controller
     }
 
     /**
-     * @param Request $request
-     * @param Media $media
+     * @param int $id
+     *
      * @return JsonResponse
+     * @throws \Exception
+     */
+    public function get($id): JsonResponse
+    {
+        $media = Media::find($id);
+        return new JsonResponse(new TransformerEngine($media, new MediaTransformer()));
+    }
+
+    /**
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     */
+    public function getMultiple(Request $request) : JsonResponse
+    {
+        $mediaFiles = (new Media)->whereIn('id', $request->input('media'))->get();
+        return new JsonResponse(new TransformerEngine($mediaFiles, new MediaTransformer()));
+    }
+
+    /**
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Media $media
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
      */
     public function update(Request $request, Media $media): JsonResponse
     {
+
         if ($request->input('category.label', false)) {
-            $category           = Media\Category::firstOrCreate(['name' => $request->input('category.label')]);
+            $category = Media\Category::firstOrCreate(['name' => $request->input('category.label')]);
             $media->category_id = $category->id;
         }
+        if ($request->input('supplier.label', false)) {
+            $supplier = Supplier::firstOrCreate(['name' => $request->input('form.supplier.label')],
+                ['brand_id' => $media->brand->id]);
+            $media->supplier_id = $supplier->id;
+        }
 
-        $media->file_type   = $request->input('fileType', '');
-        $media->keywords    = $request->input('keywords', '');
-        $media->source      = $request->input('source', '');
-        $media->language    = $request->input('language', '');
+        if ($request->input('supplier', false)) {
+            $supplier = Supplier::firstOrCreate(['name' => $request->input('form.supplier')],
+                ['brand_id' => $media->brand->id]);
+            $media->supplier_id = $supplier->id;
+        }
+
+        $media->peoples_attribute = $request->input('peoplesAttribute', null);
+        $media->title = $request->input('title', '');
+        $media->file_type = Media::getTypeVar($request->input('fileType', ''));
+        $media->keywords = $request->input('keywords', '');
+        $media->source = $request->input('source', '');
+        $media->language = $request->input('language', '');
         $media->origin_name = $request->input('originName', '');
-        $media->notes       = $request->input('notes', '');
+        $media->notes = $request->input('notes', '');
 
         $media->save();
 
@@ -412,6 +518,7 @@ class MediaController extends Controller
     /**
      * @param Media $media
      * @param UploadService $uploadService
+     *
      * @return JsonResponse
      */
     public function remove(Media $media, UploadService $uploadService): JsonResponse
@@ -427,6 +534,35 @@ class MediaController extends Controller
         event(new DeletedFileEvent($media, $media->brand));
 
         return new JsonResponse(['success' => true, 'message' => 'Media file has been deleted']);
+    }
+
+    /**
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Services\UploadService $uploadService
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function removeMultiple(Request $request, UploadService $uploadService): JsonResponse
+    {
+
+        $mediaFiles = (new Media)->whereIn('id', $request->input('media'))->get();
+
+
+        foreach ($mediaFiles as $media) {
+            try {
+                $status = $uploadService->removeMedia($media);
+                if (!$status) {
+                    throw new \Exception('Can\'t remove the file');
+                }
+            } catch (\Exception $exception) {
+                return new JsonResponse(['success' => false, 'message' => $exception->getMessage()]);
+            }
+            event(new DeletedFileEvent($media, $media->brand));
+
+        }
+
+        return new JsonResponse(['success' => true, 'message' => 'Media file has been deleted']);
+
     }
 
     /**
@@ -449,7 +585,7 @@ class MediaController extends Controller
             $license = $licenseModelManager->fillFromRequest($license, $request);
         }
 
-        if ( ! $license) {
+        if (!$license) {
             $license = $licenseModelManager->createFromRequest($request);
             $media->license()->associate($license);
         }
@@ -467,11 +603,11 @@ class MediaController extends Controller
     public function downloadMultiple(Request $request)
     {
         $media = (new Media)->whereIn('id', $request->input('media'))->get();
-
         $fileName = str_random();
-        $zip      = new \ZipArchive();
-        $path     = 'zips/' . $fileName . '.zip';
+        $zip = new \ZipArchive();
+        $path = 'zips/' . $fileName . '.zip';
         $filename = storage_path('app/brands/' . $path);
+
 
         if ($zip->open($filename, \ZipArchive::CREATE) !== true) {
             exit("cannot open <$filename>\n");
@@ -483,6 +619,7 @@ class MediaController extends Controller
              */
             $zip->addFile(storage_path('app/brands/' . $mediaItem->dir . '/' . $mediaItem->file_name),
                 $mediaItem->origin_name);
+
         }
 
         $zip->close();

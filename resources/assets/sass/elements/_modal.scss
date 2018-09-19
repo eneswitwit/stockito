@@ -1,0 +1,22 @@
+.modal-header {
+  background: #272727;
+  color: #FFFFFF;
+}
+
+.close, .close:focus, .close:hover {
+  color: #FFFFFF;
+}
+
+#uploadModal {
+  overflow: auto;
+}
+
+.modal-lg.mediaModal {
+  max-width: 80%;
+}
+
+.modal {
+  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}

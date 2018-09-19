@@ -1,13 +1,20 @@
 <?php
 
+// namespace
 namespace App\Services;
 
+// use
 use App\Models\Invoice;
 use Barryvdh\DomPDF\PDF;
 use Carbon\Carbon;
 use Dompdf\Dompdf;
 use Illuminate\Contracts\View\View;
 
+/**
+ * Class InvoiceService
+ *
+ * @package App\Services
+ */
 class InvoiceService
 {
 //    /**

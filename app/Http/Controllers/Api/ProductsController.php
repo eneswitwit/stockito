@@ -1,17 +1,25 @@
 <?php
 
+// namespace
 namespace App\Http\Controllers\Api;
 
+// use
 use App\Models\Product;
 use App\Transformers\ProductTransformer;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use LukeVear\LaravelTransformer\TransformerEngine;
 
+/**
+ * Class ProductsController
+ *
+ * @package App\Http\Controllers\Api
+ */
 class ProductsController extends Controller
 {
     /**
-     * @return JsonResponse
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
      */
     public function index () : JsonResponse
     {
@@ -20,8 +28,10 @@ class ProductsController extends Controller
     }
 
     /**
-     * @param Product $product
-     * @return JsonResponse
+     * @param \App\Models\Product $product
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
      */
     public function show (Product $product) : JsonResponse
     {

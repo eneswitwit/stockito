@@ -9,10 +9,22 @@
 @import 'elements/navbar';
 @import 'elements/buttons';
 @import 'elements/transitions';
+@import 'elements/img';
+@import 'elements/sweetalert';
+@import 'elements/pricing';
+@import 'elements/modal';
+@import 'elements/pagination';
 @import 'creative';
 
+/** Modules **/
 @import 'modules/auth';
 @import 'modules/plans';
+@import 'modules/landingpage';
+@import 'modules/dashboard';
+@import 'modules/media';
+@import 'modules/upload';
+@import 'modules/licenses';
 
 /** Fonts **/
 @import "~glyphicons-halflings/scss/glyphicons-halflings";
+@import 'elements/fonts';

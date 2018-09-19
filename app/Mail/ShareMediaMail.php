@@ -1,11 +1,21 @@
 <?php
 
+// namespace
 namespace App\Mail;
 
+// use
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Class ShareMediaMail
+ *
+ * @property \Illuminate\Database\Eloquent\Collection $medaias
+ * @property string $text
+ *
+ * @package App\Mail
+ */
 class ShareMediaMail extends Mailable
 {
     use Queueable, SerializesModels;

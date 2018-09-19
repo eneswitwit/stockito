@@ -35,9 +35,12 @@ export default {
     },
     canEdit(media = null) {
       if (media !== null) {
+        console.log('not null');
         if (this.user.creative && !this.selectedBrand) {
+            console.log('not creative and selectedbbrand');
           return false;
         }
+        console.log('other other');
         return this.isHeadOfTeam() || this.isActiveEditing() || this.user.brand;
       }
     },

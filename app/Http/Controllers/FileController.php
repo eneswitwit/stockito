@@ -1,7 +1,9 @@
 <?php
 
+// namespace
 namespace App\Http\Controllers;
 
+// use
 use App\Models\Invoice;
 use App\Models\License;
 use App\Models\Media;
@@ -14,6 +16,11 @@ use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
+/**
+ * Class FileController
+ *
+ * @package App\Http\Controllers
+ */
 class FileController extends Controller
 {
     /**
@@ -23,6 +30,7 @@ class FileController extends Controller
 
     /**
      * FileController constructor.
+     *
      * @param InvoiceService $invoiceService
      */
     public function __construct(InvoiceService $invoiceService)
@@ -31,11 +39,13 @@ class FileController extends Controller
     }
 
     /**
-     * @param Request $request
+     * @param \Illuminate\Http\Request $request
      * @param $name
-     * @return string
+     *
+     * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    public function image (Request $request, $name)
+    public function image(Request $request, $name)
     {
         /**
          * @var User $user
@@ -43,7 +53,7 @@ class FileController extends Controller
 //        $user = $request->user();
         $media = (new Media())->where('file_name', 'LIKE', $name)->firstOrFail();
 //        if ($user->can('showMedia', $media)) {
-            return new Response($media->getFile());
+        return new Response($media->getFile());
 //        }
 //        abort(404);
     }
@@ -51,9 +61,10 @@ class FileController extends Controller
     /**
      * @param Request $request
      * @param $name
+     *
      * @return StreamedResponse
      */
-    public function imageThumbnail (Request $request, $name)
+    public function imageThumbnail(Request $request, $name)
     {
         /**
          * @var User $user
@@ -61,7 +72,7 @@ class FileController extends Controller
 //        $user = $request->user();
         $media = (new Media())->where('thumbnail', 'LIKE', $name)->firstOrFail();
 //        if ($user->can('showMedia', $media)) {
-        return Storage::disk('brands_thumbnail')->response($media->dir.'/'.$media->thumbnail);
+        return Storage::disk('brands_thumbnail')->response($media->dir . '/' . $media->thumbnail);
 //        }
 //        abort(404);
     }
@@ -69,9 +80,10 @@ class FileController extends Controller
     /**
      * @param Request $request
      * @param $name
+     *
      * @return Response
      */
-    public function license (Request $request, $name)
+    public function license(Request $request, $name)
     {
         /**
          * @var User $user
@@ -86,15 +98,17 @@ class FileController extends Controller
 
     /**
      * @param $hash
+     *
      * @return StreamedResponse
      */
     public function downloadZip($hash): StreamedResponse
     {
-        return Storage::disk('brands')->download('zips/'.$hash.'.zip', 'images.zip');
+        return Storage::disk('brands')->download('zips/' . $hash . '.zip', 'images.zip');
     }
 
     /**
      * @param Invoice $invoice
+     *
      * @return Response
      * @throws \Throwable
      */
@@ -106,9 +120,10 @@ class FileController extends Controller
 
     /**
      * @param $hash
+     *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function shareImage ($hash)
+    public function shareImage($hash)
     {
         /**
          * @var User $user

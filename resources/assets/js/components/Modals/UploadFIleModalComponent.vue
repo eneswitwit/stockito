@@ -22,14 +22,11 @@
                     </div>
                     <div class="col-lg-6">
                         <card>
-                            <p>Photos (JPEG ­only)</p>
+                            <p>Photos (JPEG and JPG files)</p>
                             <ul>
-                                <li>- only JPEG files</li>
-                                <li>- minimal image resolution is 4MP</li>
-                                ­
-                                <li>- maximal image resolution is 100 MP</li>
-                                ­
-                                <li>- maximal file size is 45 MB</li>
+                                <li> minimal image resolution is 4MP</li>
+                                <li> maximal image resolution is 100 MP</li>
+                                <li> maximal file size is 45 MB</li>
                             </ul>
                         </card>
                         <br/>
@@ -38,14 +35,13 @@
                         </card>
                         <br/>
                         <card v-if="brand">
-                            <button class="btn btn-link" @click="showFtpSettings = !showFtpSettings">Videos (FTP Upload)</button>
-                            <template v-if="showFtpSettings">
-                                <ul>
-                                    <li>Host: {{ brand.ftp.host }}</li>
-                                    <li>User: {{ brand.ftp.user }}</li>
-                                    <li>Password: {{ brand.ftp.password }}</li>
-                                </ul>
-                            </template>
+                            <p> Videos (FTP Upload) </p>
+                            <p> Host {{ brand.ftp.host }} </p>
+                            <p> User {{ brand.ftp.user }} </p>
+                            <p> Password {{ brand.ftp.password }} </p>
+                            <ul>
+                                <li> Only MP4 files allowed </li>
+                            </ul>
                         </card>
 
                     </div>
@@ -116,7 +112,7 @@
                     this.closeModal();
                 }
             },
-            uploadFile(file, xhr, formData)  {
+            uploadFile(file, xhr, formData) {
                 if (this.selectedBrand) {
                     formData.append('brandId', this.selectedBrand.id);
                 }

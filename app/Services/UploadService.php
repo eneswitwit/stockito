@@ -178,9 +178,6 @@ class UploadService
             $media->width = $image->getImageWidth();
             $media->height = $image->getImageHeight();
         } elseif (\in_array($file->getClientOriginalExtension(), ['mp4'])) {
-//            $mp4FileProcessor = new Mp4FileProcessor($this->imageManager);
-//            $media = $mp4FileProcessor->getMediaForFile($file->getRealPath(), $brand, $media);
-
             $media = $this->setVideoData($media, $file, $brand);
             $status = $this->mediaManager->storeMedia($media, $file);
 

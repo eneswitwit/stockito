@@ -1,11 +1,15 @@
 <template>
+
   <div id="app">
+
     <loading ref="loading"/>
 
     <transition name="page" mode="out-in">
       <component v-if="layout" :is="layout"></component>
     </transition>
+
   </div>
+
 </template>
 
 <script>

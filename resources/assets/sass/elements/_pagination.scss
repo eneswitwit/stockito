@@ -1,0 +1,25 @@
+.custom-pagination {
+  ul {
+    li {
+      a {
+        position: relative;
+        display: block;
+        padding: .5rem .75rem;
+        margin-left: -1px;
+        line-height: 1.25;
+        color: $main-color;
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+      }
+
+      &.active {
+        a {
+          z-index: 1;
+          color: #fff;
+          background-color: $main-color;
+          border-color: $main-color;
+        }
+      }
+    }
+  }
+}

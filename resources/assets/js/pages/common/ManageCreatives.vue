@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="container mt-4 md-4">
         <div class="card">
             <div class="card-header">{{ $t('manage_creatives') }}</div>
             <div class="card-body">
@@ -95,7 +95,3 @@
         }
     }
 </script>
-
-<style scoped>
-
-</style>

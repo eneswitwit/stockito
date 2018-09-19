@@ -1,18 +1,26 @@
 <?php
 
+// namespace
 namespace App\Transformers;
 
+// use
 use App\Managers\MediaManager;
 use App\Services\UploadService;
 use LukeVear\LaravelTransformer\AbstractTransformer;
 use LukeVear\LaravelTransformer\TransformerEngine;
 
+/**
+ * Class MediaExtendedTransformer
+ *
+ * @package App\Transformers
+ */
 class MediaExtendedTransformer extends AbstractTransformer
 {
     /**
-     * @param \App\Models\Media $model
+     * @param \Illuminate\Database\Eloquent\Model $model
+     *
      * @return array
-     * @throws
+     * @throws \Exception
      */
     public function run($model) : array
     {
@@ -30,7 +38,7 @@ class MediaExtendedTransformer extends AbstractTransformer
             'keywords' => $model->keywords,
             'source' => $model->source,
             'supplier' => $model->supplier,
-            'peopleAttributes' => $model->peopleAttributes,
+            'peoples_attribute' => $model->peoples_attribute,
             'category' => $model->category,
             'fileType' => $model->getTypeTitle(),
             'type' => $model->getType(),

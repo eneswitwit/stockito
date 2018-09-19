@@ -1,7 +1,9 @@
 <?php
 
+// namespace
 namespace App\Models;
 
+// use
 use App\Classes\ImageMetadataParser;
 use App\Events\LicenseChangedForMediaEvent;
 use App\Models\Media\Category;
@@ -26,6 +28,7 @@ use PHPExif\Reader\Reader;
  * @property int|null $license_id
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
+ * @property string $peoples_attribute
  * @property-read \App\Models\Brand $brand
  * @property-read \App\Models\License|null $license
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
@@ -119,10 +122,10 @@ class Media extends Model implements TargetActivityInterface
      * @var array
      */
     public static $types = [
-        self::PHOTOS_TYPE => 'Photos',
-        self::ILLUSTRATIONS_TYPE => 'Illustrations',
-        self::VECTORS_TYPE => 'Vectors',
-        self::VIDEO_FOOTAGE_TYPE => 'Video/Footage'
+        self::PHOTOS_TYPE => 'Photo',
+        self::ILLUSTRATIONS_TYPE => 'Illustration',
+        self::VECTORS_TYPE => 'Vector graphic',
+        self::VIDEO_FOOTAGE_TYPE => 'Video'
     ];
 
     /**
@@ -159,10 +162,11 @@ class Media extends Model implements TargetActivityInterface
         'source',
         'notes',
         'supplier_id',
-        'orientation'
+        'orientation',
+        'peoples_attribute'
     ];
 
-    protected static function boot ()
+    protected static function boot()
     {
         parent::boot();
 
@@ -183,22 +187,12 @@ class Media extends Model implements TargetActivityInterface
             }
 
         });
-
-//        self::deleting(function (self $model) {
-//            if ($model->forceDeleting === true) {
-//                Storage::disk('brands')->delete($model->dir.'/'.$model->file_name);
-//                if ($model->targetActivities) {
-//                    $model->targetActivities->each(function (Activity $activity) {
-//                        $activity->delete();
-//                    });
-//                }
-//            }
-//        });
     }
+
     /**
      * @return BelongsTo
      */
-    public function brand () : BelongsTo
+    public function brand(): BelongsTo
     {
         return $this->belongsTo(Brand::class);
     }
@@ -206,7 +200,7 @@ class Media extends Model implements TargetActivityInterface
     /**
      * @return BelongsToMany
      */
-    public function peopleAttributes (): BelongsToMany
+    public function peopleAttributes(): BelongsToMany
     {
         return $this->belongsToMany(PeopleAttribute::class);
     }
@@ -214,7 +208,7 @@ class Media extends Model implements TargetActivityInterface
     /**
      * @return BelongsTo
      */
-    public function supplier (): BelongsTo
+    public function supplier(): BelongsTo
     {
         return $this->belongsTo(Supplier::class);
     }
@@ -222,7 +216,7 @@ class Media extends Model implements TargetActivityInterface
     /**
      * @return BelongsTo
      */
-    public function category () : BelongsTo
+    public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
@@ -230,7 +224,7 @@ class Media extends Model implements TargetActivityInterface
     /**
      * @return BelongsTo
      */
-    public function license () : BelongsTo
+    public function license(): BelongsTo
     {
         return $this->belongsTo(License::class);
     }
@@ -238,7 +232,7 @@ class Media extends Model implements TargetActivityInterface
     /**
      * @return HasMany
      */
-    public function licenses (): HasMany
+    public function licenses(): HasMany
     {
         return $this->hasMany(License::class);
     }
@@ -246,7 +240,7 @@ class Media extends Model implements TargetActivityInterface
     /**
      * @return BelongsToMany
      */
-    public function tags () : BelongsToMany
+    public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class);
     }
@@ -254,7 +248,7 @@ class Media extends Model implements TargetActivityInterface
     /**
      * @return BelongsToMany
      */
-    public function shares (): BelongsToMany
+    public function shares(): BelongsToMany
     {
         return $this->belongsToMany(Share::class);
     }
@@ -262,7 +256,7 @@ class Media extends Model implements TargetActivityInterface
     /**
      * @return MorphMany
      */
-    public function targetActivities (): MorphMany
+    public function targetActivities(): MorphMany
     {
         return $this->morphMany(Activity::class, 'target');
     }
@@ -279,7 +273,7 @@ class Media extends Model implements TargetActivityInterface
      * @return string
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    public function getFile (): string
+    public function getFile(): string
     {
         return Storage::disk('brands')->get($this->getFilePath());
     }
@@ -288,7 +282,7 @@ class Media extends Model implements TargetActivityInterface
      * @return string
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    public function getThumbnailFile (): string
+    public function getThumbnailFile(): string
     {
         return Storage::disk('brands_thumbnail')->get($this->getFilePath());
     }
@@ -296,20 +290,23 @@ class Media extends Model implements TargetActivityInterface
     /**
      * @return string
      */
-    public function getFilePath (): string
+    public function getFilePath(): string
     {
-        return $this->dir.'/'.$this->file_name;
+        return $this->dir . '/' . $this->file_name;
     }
 
     /**
      * @return string
      */
-    public function getType (): string
+    public function getType(): string
     {
         switch ($this->content_type) {
-            case self::JPEG_MIME: return 'Image';
-            case self::MPG_MIME: return 'Video';
-            default: return 'Undefined';
+            case self::JPEG_MIME:
+                return 'Image';
+            case self::MPG_MIME:
+                return 'Video';
+            default:
+                return 'Undefined';
         }
     }
 
@@ -324,18 +321,20 @@ class Media extends Model implements TargetActivityInterface
 
     /**
      * @param Builder $builder
+     *
      * @return Builder
      */
-    public function scopeNotPublished (Builder $builder): Builder
+    public function scopeNotPublished(Builder $builder): Builder
     {
         return $builder->where('published', false);
     }
 
     /**
      * @param Builder $builder
+     *
      * @return Builder
      */
-    public function scopePublished (Builder $builder): Builder
+    public function scopePublished(Builder $builder): Builder
     {
         return $builder->where('published', true);
     }
@@ -343,10 +342,10 @@ class Media extends Model implements TargetActivityInterface
     /**
      * @return ImageMetadataParser|null
      */
-    public function getIPTC (): ?ImageMetadataParser
+    public function getIPTC(): ?ImageMetadataParser
     {
         if (!$this->iptc) {
-            $this->iptc = new ImageMetadataParser(storage_path('app/brands/'.$this->getFilePath()));
+            $this->iptc = new ImageMetadataParser(storage_path('app/brands/' . $this->getFilePath()));
             $this->iptc->parseIPTC();
         }
         return $this->iptc;
@@ -355,10 +354,10 @@ class Media extends Model implements TargetActivityInterface
     /**
      * @return Exif
      */
-    public function getEXIF (): ?Exif
+    public function getEXIF(): ?Exif
     {
         if (!$this->exif) {
-            $exif = Reader::factory(Reader::TYPE_NATIVE)->read(storage_path('app/brands/'.$this->getFilePath()));
+            $exif = Reader::factory(Reader::TYPE_NATIVE)->read(storage_path('app/brands/' . $this->getFilePath()));
             if ($exif) {
                 $this->exif = $exif;
             }
@@ -369,7 +368,7 @@ class Media extends Model implements TargetActivityInterface
     /**
      * @return array
      */
-    public function getAllEXIF (): ?array
+    public function getAllEXIF(): ?array
     {
         if ($this->getEXIF()) {
             return [
@@ -389,23 +388,24 @@ class Media extends Model implements TargetActivityInterface
 
     /**
      * @param array $exif
+     *
      * @return Media
      */
     public function setExif(array $exif): self
     {
-        if(isset($exif['camera'])) {
+        if (isset($exif['camera'])) {
             $this->getEXIF()->setCamera($exif['camera']);
         }
-        if(isset($exif['gps'])) {
+        if (isset($exif['gps'])) {
             $this->getEXIF()->setCamera($exif['gps']);
         }
-        if(isset($exif['aperture'])) {
+        if (isset($exif['aperture'])) {
             $this->getEXIF()->setCamera($exif['aperture']);
         }
-        if(isset($exif['copyright'])) {
+        if (isset($exif['copyright'])) {
             $this->getEXIF()->setCamera($exif['copyright']);
         }
-        if(isset($exif['author'])) {
+        if (isset($exif['author'])) {
             $this->getEXIF()->setCamera($exif['author']);
         }
         return $this;
@@ -414,15 +414,25 @@ class Media extends Model implements TargetActivityInterface
     /**
      * @return string
      */
-    public function getTypeTitle (): string
+    public function getTypeTitle(): string
     {
         return self::$types[$this->file_type] ?? '';
     }
 
     /**
+     * @param string $type
+     *
+     * @return string
+     */
+    public static function getTypeVar($type): string
+    {
+        return array_search($type, self::$types);
+    }
+
+    /**
      * @return BelongsTo
      */
-    public function createdBy (): BelongsTo
+    public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }

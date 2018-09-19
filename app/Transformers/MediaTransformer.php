@@ -1,21 +1,29 @@
 <?php
 
+// namespace
 namespace App\Transformers;
 
+// use
 use App\Managers\MediaManager;
 use App\Services\UploadService;
 use App\Transformers\Media\LicenseTransformer;
 use LukeVear\LaravelTransformer\AbstractTransformer;
 use LukeVear\LaravelTransformer\TransformerEngine;
 
+/**
+ * Class MediaTransformer
+ *
+ * @package App\Transformers
+ */
 class MediaTransformer extends AbstractTransformer
 {
     /**
      * @param \App\Models\Media $model
+     *
      * @return array
      * @throws \Exception
      */
-    public function run($model) : array
+    public function run($model): array
     {
         return [
             'id' => $model->id,
@@ -25,16 +33,17 @@ class MediaTransformer extends AbstractTransformer
             'file_name' => $model->file_name,
             'content_type' => $model->content_type,
             'origin_name' => $model->origin_name,
+            'peoples_attribute' => $model->peoples_attribute,
             'thumbnail' => MediaManager::getThumbnailUrl($model),
             'url' => MediaManager::getMediaUrl($model),
             'type' => $model->getType(),
             'source' => $model->source,
             'keywords' => $model->keywords,
-            'filetype' => $model->getTypeTitle(),
+            'fileType' => $model->getTypeTitle(),
             'category' => $model->category,
             'iptc' => $model->getIPTC()->all(),
             'exif' => $model->getAllEXIF(),
-            'downloadLink' => url('/api/medias/'.$model->id.'/download'),
+            'downloadLink' => url('/api/medias/' . $model->id . '/download'),
             'imageInfo' => [
                 'width' => $model->width,
                 'height' => $model->height,

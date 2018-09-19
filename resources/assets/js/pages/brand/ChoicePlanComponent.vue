@@ -1,5 +1,5 @@
 <template>
-    <card :title="'Select your plan'">
+    <div class="container mt-4">
         <b-row>
             <b-col>
                 <plans-list-component @select-plan="changePlan" :plans="plans"
@@ -13,7 +13,7 @@
                 </router-link>
             </b-col>
         </b-row>
-    </card>
+    </div>
 
 </template>
 

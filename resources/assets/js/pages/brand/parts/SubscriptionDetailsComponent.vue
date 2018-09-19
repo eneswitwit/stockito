@@ -3,17 +3,31 @@
     <div>
         <card :title="'Subscription'">
 
-            <p v-if="user.subscribed">Current plan: {{ user.subscription.product.name }}</p>
-            <p v-if="user.subscribed">Subscription expires: {{ expiriesDate(user.subscription.created_at.date) }}</p>
-            <p v-if="user.subscribed">Plan will expire in: {{ leftDate() }} days</p>
-            <p v-if="user.subscribed">Size: <span class="badge badge-primary">{{ user.subscription.product.storageFormated }}</span>
-                of storage</p>
-            <p v-if="getIfDowngrade()">Plan will be downgraded automatically after expiration.</p>
+            <p v-if="user.subscribed">
+                <span class="font-weight-bold"> Current plan </span>
+                {{ user.subscription.product.name }}
+            </p>
+            <p v-if="user.subscribed">
+                <span class="font-weight-bold">Subscription expires </span>
+                {{ expiriesDate(user.subscription.created_at.date) }}
+            </p>
+            <p v-if="user.subscribed">
+                <span class="font-weight-bold"> Plan will expire in </span>
+                {{ leftDate() }} days
+            </p>
+
 
             <div class="form-group">
 
-                <p v-if="user.subscribed && !user.onGracePeriod"> Plan will automatically renew itself</p>
-                <p v-if="user.subscribed && user.onGracePeriod"> Plan will not renew itself automatically</p>
+                <span>
+                    <div v-if="getIfDowngrade()" class="alert alert-warning" role="alert">
+                        <p>Plan will be downgraded automatically after expiration.</p>
+                    </div>
+                    <div class="alert alert-info">
+                        <p v-if="user.subscribed && !user.onGracePeriod"> Plan will automatically renew itself</p>
+                        <p v-if="user.subscribed && user.onGracePeriod"> Plan will not renew itself automatically</p>
+                    </div>
+                </span>
 
                 <button v-if="user.subscribed && !user.onGracePeriod" class="btn btn-warning"
                         @click="cancelSubscription">Cancel

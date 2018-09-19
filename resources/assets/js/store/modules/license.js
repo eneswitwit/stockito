@@ -53,6 +53,9 @@ export const actions = {
   },
   createLicense({ commit }, { form }) {
     return new Promise((resolve) => {
+        if (!form.billFile) {
+            delete form.billFile;
+        }
       form.post('/api/licenses').then(({ data }) => {
         commit(types.CREATE_LICENSE, { license: data });
         resolve({ data })

@@ -1,26 +1,27 @@
 <template>
+    <div class="container mt-4">
+        <new-subscription-component v-if="currentPlan === null"
+                                    :plan="plan"
+                                    :cards="cards"
+                                    :stripe="stripe"
+        ></new-subscription-component>
 
-    <new-subscription-component v-if="currentPlan === null"
-                                :plan="plan"
-                                :cards="cards"
-                                :stripe="stripe"
-    ></new-subscription-component>
+        <div v-else>
 
-    <div v-else>
+            <upgrade-component v-if="upgrade()"
+                               :plan="plan"
+                               :currentPlan="currentPlan"
+                               :stripe="stripe"
+                               :cards="cards"
+            ></upgrade-component>
+            <downgrade-component v-else
+                                 :plan="plan"
+                                 :currentPlan="currentPlan"
+                                 :stripe="stripe"
+                                 :cards="cards"
+            ></downgrade-component>
 
-        <upgrade-component v-if="upgrade()"
-                           :plan="plan"
-                           :currentPlan="currentPlan"
-                           :stripe="stripe"
-                           :cards="cards"
-        ></upgrade-component>
-        <downgrade-component v-else
-                             :plan="plan"
-                             :currentPlan="currentPlan"
-                             :stripe="stripe"
-                             :cards="cards"
-        ></downgrade-component>
-
+        </div>
     </div>
 
 </template>

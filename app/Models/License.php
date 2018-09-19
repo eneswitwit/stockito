@@ -1,7 +1,9 @@
 <?php
 
+// namespace
 namespace App\Models;
 
+// use
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -88,21 +90,11 @@ class License extends AbstractUserIdentitiesModel
      */
     protected $dates = ['expired_at', 'start_at'];
 
-//    protected static function boot ()
-//    {
-//        parent::boot();
-//
-//        self::updating(function (self $model)  {
-//            if ($model->media_id && $model->media) {
-//                $model->brand_id = $model->media->brand_id;
-//            }
-//        });
-//    }
 
     /**
      * @return HasOne
      */
-    public function media () : HasOne
+    public function media(): HasOne
     {
         return $this->hasOne(Media::class);
     }
@@ -110,7 +102,7 @@ class License extends AbstractUserIdentitiesModel
     /**
      * @return BelongsTo
      */
-    public function mediaBelongs (): BelongsTo
+    public function mediaBelongs(): BelongsTo
     {
         return $this->belongsTo(Media::class, 'media_id');
     }
@@ -118,7 +110,7 @@ class License extends AbstractUserIdentitiesModel
     /**
      * @return array
      */
-    public static function getLicenses () : array
+    public static function getLicenses(): array
     {
         return [
             self::RF,
@@ -131,7 +123,7 @@ class License extends AbstractUserIdentitiesModel
     /**
      * @return array
      */
-    public static function getLicensesWithTitle () : array
+    public static function getLicensesWithTitle(): array
     {
         return [
             self::RF => 'RF',
@@ -144,7 +136,20 @@ class License extends AbstractUserIdentitiesModel
     /**
      * @return array
      */
-    public static function getLicensesWithColor () : array
+    public static function getLicensesWithTitleLong(): array
+    {
+        return [
+            self::RF => 'RF (Royalty Free)',
+            self::RM => 'RM (Rights Managed)',
+            self::RE => 'RE (Rights Easy)',
+            self::BO => 'BO (Buy Out/Shooting)',
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public static function getLicensesWithColor(): array
     {
         return [
             self::RF => 'green',
@@ -157,7 +162,7 @@ class License extends AbstractUserIdentitiesModel
     /**
      * @return string
      */
-    public function getLicenseTitle () : string
+    public function getLicenseTitle(): string
     {
         return self::getLicensesWithTitle()[$this->license_type];
     }
@@ -165,16 +170,17 @@ class License extends AbstractUserIdentitiesModel
     /**
      * @return string
      */
-    public function getLicenseColor () : string
+    public function getLicenseColor(): string
     {
         return self::getLicensesWithColor()[$this->license_type];
     }
 
     /**
      * @param Builder $q
+     *
      * @return Builder
      */
-    public function scopeSoonExpiring (Builder $q) : Builder
+    public function scopeSoonExpiring(Builder $q): Builder
     {
         return $q->orderBy('expired_at', 'DESC');
     }
@@ -182,9 +188,10 @@ class License extends AbstractUserIdentitiesModel
     /**
      * @param Request $request
      * @param bool $addFile
+     *
      * @return License
      */
-    public function fillFromRequest (Request $request, $addFile = false): self
+    public function fillFromRequest(Request $request, $addFile = false): self
     {
         $this->fill([
             'license_type' => (int)$request->input('type'),
@@ -242,16 +249,17 @@ class License extends AbstractUserIdentitiesModel
      * @return string
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    public function getFile (): string
+    public function getFile(): string
     {
-        return \Storage::disk('brands')->get('licenses/'.$this->bill_file);
+        return \Storage::disk('brands')->get('licenses/' . $this->bill_file);
     }
 
     /**
      * @return StreamedResponse
      */
-    public function downloadFile (): StreamedResponse
+    public function downloadFile(): StreamedResponse
     {
-        return \Storage::disk('bill_licenses')->download($this->media->brand->id.'/'.$this->bill_file, $this->bill_file_origin_name);
+        return \Storage::disk('bill_licenses')->download($this->media->brand->id . '/' . $this->bill_file,
+            $this->bill_file_origin_name);
     }
 }

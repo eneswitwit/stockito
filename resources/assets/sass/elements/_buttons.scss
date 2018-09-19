@@ -1,3 +1,78 @@
+.btn {
+  text-transform: uppercase;
+  font-size: 14px;
+  border-radius: 5px;
+  -webkit-transition: all .3s ease;
+  -o-transition: all .3s ease;
+  transition: all .3s ease
+}
+
+.navbar-nav .btn {
+  margin-left: 10px;
+  margin-right: 10px;
+  padding-left: 15px;
+  padding-right: 15px
+}
+
+.btn-lg {
+  font-size: 16px;
+  letter-spacing: 2px;
+  padding: 17px 35px
+}
+
+.btn-lg:hover, .btn-lg:active {
+  -webkit-transform: translateY(-2px);
+  -ms-transform: translateY(-2px);
+  transform: translateY(-2px)
+}
+
+.btn-xl {
+  padding: 12px 35px
+}
+
+.btn-sm {
+  font-size: 14px;
+  letter-spacing: 0
+}
+
+.btn-primary, .btn-primary:focus {
+  background-color: $main-color;
+  border-color: $main-color;
+  color: #fff
+}
+
+.btn-primary:hover, .btn-primary:active, .btn-primary:focus:hover, .btn-primary:focus:active {
+  color: #fff;
+  background-color: $main-color;
+  border-color: $main-color;
+}
+
+.btn-outline, .btn-outline:focus {
+  color: #fff;
+  background-image: none;
+  background-color: transparent;
+  border-color: #fff
+}
+
+.btn-outline:hover, .btn-outline:active, .btn-outline:focus:hover, .btn-outline:focus:active {
+  color: #292b2c;
+  background-color: #fff;
+  border-color: #fff
+}
+
+.btn-outline-primary {
+  color: $main-color;
+  background-image: none;
+  background-color: transparent;
+  border-color: $main-color;
+}
+
+.btn-outline-primary:hover, .btn-outline-primary:active {
+  color: #fff;
+  background-color: $main-color;
+  border-color: $main-color;
+}
+
 .btn-loading {
   position: relative;
   pointer-events: none;
@@ -17,6 +92,17 @@
     left: calc(50% - (1em / 2));
     top: calc(50% - (1em / 2));
   }
+}
+
+.btn-link {
+  color: black;
+  text-decoration: none;
+  word-break: break-all;
+  white-space: inherit;
+}
+
+.remove-btn {
+  color: white;
 }
 
 @keyframes spinAround {

@@ -1,11 +1,18 @@
 <?php
 
+// namespace
 namespace App\Transformers;
 
+// use
 use App\Classes\DateClass;
 use LukeVear\LaravelTransformer\AbstractTransformer;
 use LukeVear\LaravelTransformer\TransformerEngine;
 
+/**
+ * Class LicenseTransformer
+ *
+ * @package App\Transformers
+ */
 class LicenseTransformer extends AbstractTransformer
 {
     /**

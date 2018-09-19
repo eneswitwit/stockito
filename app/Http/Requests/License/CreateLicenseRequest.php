@@ -1,13 +1,20 @@
 <?php
 
+// namespace
 namespace App\Http\Requests\License;
 
+// use
 use App\Models\Brand;
 use App\Models\License;
 use App\Rules\ExtensionsRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 
+/**
+ * Class CreateLicenseRequest
+ *
+ * @package App\Http\Requests\License
+ */
 class CreateLicenseRequest extends FormRequest
 {
     /**
@@ -36,17 +43,10 @@ class CreateLicenseRequest extends FormRequest
     {
         return [
             'type' => 'required|in:'.implode(',', License::getLicenses()),
-//            'usage' => 'required_if:type,'.License::RM,
-//            'printrun' => 'required_if:type,'.implode(',', [License::RM, License::RF]),
-//            'anyLimitations' => 'required_if:type,'.License::BO,
             'startDate' => 'required_if:type,'.implode(',', [License::RM, License::RE, License::BO]),
             'expireDate' => 'required_if:type,'.implode(',', [License::RM, License::RE, License::BO]),
-//            'territory' => 'required_if:type,'.License::RE,
-//            'invoiceNumber' => 'required',
-//            'invoiceNumberBy' => 'required',
-//            'billFile' => 'mimes:pdf',
             'billFile' => [new ExtensionsRule(['pdf'])],
-            'mediaId' => 'required'
+            'selectedMedia' => 'required'
         ];
     }
 }

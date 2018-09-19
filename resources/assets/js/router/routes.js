@@ -20,6 +20,7 @@ const EmailConfirmation = () => import('~/pages/auth/password/emailConfirmation'
 const Payment = () => import('~/pages/payment/payment').then(m => m.default || m)
 const PaymentDetails = () => import('~/pages/payment/PaymentDetails').then(m => m.default || m)
 const SelectPlan = () => import('~/pages/brand/ChoicePlanComponent').then(m => m.default || m)
+const ChangeCreditcard = () => import('~/pages/payment/ChangeCreditcard').then(m => m.default || m)
 
 const Settings = () => import('~/pages/settings/index').then(m => m.default || m)
 const SettingsProfile = () => import('~/pages/settings/profile').then(m => m.default || m)
@@ -52,6 +53,7 @@ export default [
     {path: '/uploaded', name: 'uploaded', component: Uploaded},
     {path: '/payment/:id', name: 'payment', component: Payment},
     {path: '/payment-details', name: 'payment.details', component: PaymentDetails},
+    {path: '/change-creditcard', name: 'change.creditcard', component: ChangeCreditcard},
     {path: '/select-plan', name: 'select-plan', component: SelectPlan},
     {path: '/licenses', name: 'licenses', component: LicensesComponent},
     {path: '/licenses/:id/edit', name: 'licenses.edit', component: EditLicense},

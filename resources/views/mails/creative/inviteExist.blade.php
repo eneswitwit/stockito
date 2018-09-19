@@ -7,7 +7,7 @@
     @endslot
 
     {{-- Body --}}
-    {{ 'Hello! You have been added to brand\'s team by brand ' . $brand_name . ', with role - ' . $role .'!'   }}
+    {{ 'Hey! You have been added to the creative team of the brand ' . $brand_name . ', with the role as ' . $role .'.'   }}
 
     {{-- Footer --}}
     @slot('footer')

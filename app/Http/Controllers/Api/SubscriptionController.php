@@ -10,7 +10,6 @@ use App\Models\Plan;
 use App\Models\Subscription;
 use App\Models\User;
 use App\Transformers\UserTransformer;
-use App\Transformers\SubscriptionTransformer;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;

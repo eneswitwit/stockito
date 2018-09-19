@@ -1,0 +1,29 @@
+
+.pricing {
+  text-align: center;
+  padding: 20px;
+  border: 0;
+  border-radius: 15px;
+  margin-bottom: 30px
+}
+
+.pricing small {
+  letter-spacing: 2px
+}
+
+.pricing .card-title {
+  font-size: 65px;
+  font-family: product sans, Helvetica, Arial, serif;
+  font-weight: 700;
+  margin: 10px 0 15px
+}
+
+.pricing .plan-muted {
+  text-decoration: line-through;
+  opacity: .5
+}
+
+.pricing ul {
+  line-height: 2.5;
+  margin: 0 0 20px
+}

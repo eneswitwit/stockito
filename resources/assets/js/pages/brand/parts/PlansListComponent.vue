@@ -1,47 +1,76 @@
 <template>
 
-    <div v-if="currentPlan === null">
-        <b-row>
-            <div v-for="plan in plans" :key="plan.id" @click="changePlan(plan)">
-                <b-col>
-                    <card :title="plan.title" class="text-center"
-                          :class="{'bg-primary': selectedPlanId === plan.id}">
-                        <p class="card-text">Up to {{ plan.storageGb }} storage</p>
-                        <p class="card-text text-success">{{ plan.period }} {{ plan.price }} {{ plan.currencySymbol
-                            }}</p>
-                    </card>
-                </b-col>
-            </div>
-        </b-row>
-    </div>
+    <div>
+        <div v-if="currentPlan === null">
+            <card :title="'Select your plan'">
+                <b-row>
+                    <b-col v-for="plan in plans" :key="plan.id" @click="changePlan(plan)">
+                        <div class="card pricing" :class="{'bg-primary': selectedPlanId === plan.id}">
+                            <div class="card-body">
+                                <small class="text-muted"> {{ plan.title }}</small>
+                                <h5 class="card-title">{{ plan.price }} {{ plan.currencySymbol }}</h5>
+                                <p class="card-text"> yearly </p>
+                                <ul class="list-unstyled">
+                                    <li> {{ plan.storageGb }} GB Storage</li>
+                                    <li>Team Collaboration</li>
+                                    <li>Analytics &amp; Reports</li>
+                                </ul>
+                                <p></p>
+                                <a href="#" class="btn btn-xl btn-outline-primary">Choose this plan</a>
+                            </div>
+                        </div>
+                    </b-col>
+                </b-row>
+            </card>
+        </div>
 
-    <div v-else>
-        <b-row>
-            <h2> Downgrade</h2>
-            <div v-for="plan in plans" :key="plan.id" @click="changePlan(plan)">
-                <b-col v-if="downgradePlan(plan)">
-                    <card :title="plan.title" class="text-center"
-                          :class="{'bg-primary': selectedPlanId === plan.id}">
-                        <p class="card-text">Up to {{ plan.storageGb }} storage</p>
-                        <p class="card-text text-success">{{ plan.period }} {{ plan.price }} {{ plan.currencySymbol
-                            }}</p>
-                    </card>
-                </b-col>
-            </div>
-        </b-row>
-        <b-row>
-            <h2> Upgrade </h2>
-            <div v-for="plan in plans" :key="plan.id" @click="changePlan(plan)">
-                <b-col v-if="upgradePlan(plan)">
-                    <card :title="plan.title" class="text-center"
-                          :class="{'bg-primary': selectedPlanId === plan.id}">
-                        <p class="card-text">Up to {{ plan.storageGb }} storage</p>
-                        <p class="card-text text-success">{{ plan.period }} {{ plan.price }} {{ plan.currencySymbol
-                            }}</p>
-                    </card>
-                </b-col>
-            </div>
-        </b-row>
+        <div v-else>
+            <card :title="'Downgrade'" class="mt-2">
+                <b-row>
+                    <div v-for="plan in plans" :key="plan.id" @click="changePlan(plan)">
+                        <b-col v-if="downgradePlan(plan)" @click="changePlan(plan)">
+                            <div class="card pricing" :class="{'bg-primary': selectedPlanId === plan.id}">
+                                <div class="card-body">
+                                    <small class="text-muted"> {{ plan.title }}</small>
+                                    <h5 class="card-title">{{ plan.price }} {{ plan.currencySymbol }}</h5>
+                                    <p class="card-text"> yearly </p>
+                                    <ul class="list-unstyled">
+                                        <li> {{ plan.storageGb }} GB Storage</li>
+                                        <li>Team Collaboration</li>
+                                        <li>Analytics &amp; Reports</li>
+                                    </ul>
+                                    <p></p>
+                                    <a href="#" class="btn btn-xl btn-outline-primary">Choose this plan</a>
+                                </div>
+                            </div>
+                        </b-col>
+                    </div>
+
+                </b-row>
+            </card>
+            <card :title="'Upgrade'" class="mt-2">
+                <b-row>
+                    <div v-for="plan in plans" :key="plan.id" @click="changePlan(plan)">
+                        <b-col v-if="upgradePlan(plan)" @click="changePlan(plan)">
+                            <div class="card pricing" :class="{'bg-primary': selectedPlanId === plan.id}">
+                                <div class="card-body">
+                                    <small class="text-muted"> {{ plan.title }}</small>
+                                    <h5 class="card-title">{{ plan.price }} {{ plan.currencySymbol }}</h5>
+                                    <p class="card-text"> yearly </p>
+                                    <ul class="list-unstyled">
+                                        <li> {{ plan.storageGb }} GB Storage</li>
+                                        <li>Team Collaboration</li>
+                                        <li>Analytics &amp; Reports</li>
+                                    </ul>
+                                    <p></p>
+                                    <a href="#" class="btn btn-xl btn-outline-primary">Choose this plan</a>
+                                </div>
+                            </div>
+                        </b-col>
+                    </div>
+                </b-row>
+            </card>
+        </div>
     </div>
 </template>
 
@@ -70,10 +99,10 @@
                 this.$emit('select-plan', {plan});
             },
             downgradePlan(plan) {
-                return plan.stripe_id !== this.currentPlan.stripe_id && plan.price*100 < this.currentPlan.price;
+                return plan.stripe_id !== this.currentPlan.stripe_id && plan.price * 100 < this.currentPlan.price;
             },
             upgradePlan(plan) {
-                return plan.stripe_id !== this.currentPlan.stripe_id && plan.price*100 > this.currentPlan.price;
+                return plan.stripe_id !== this.currentPlan.stripe_id && plan.price * 100 > this.currentPlan.price;
             }
         }
     }

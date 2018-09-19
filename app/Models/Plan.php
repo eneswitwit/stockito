@@ -15,7 +15,6 @@ use Stripe\Plan as StripePlan;
  * App\Models\Plan
  *
  * @property int $id
- * @property string $title
  * @property string $currency
  * @property float $price
  * @property string $stripe_id
@@ -87,9 +86,9 @@ class Plan extends Model
     protected $fillable = [
         'product_id',
         'stripe_id',
-        'title',
         'interval',
         'price',
+        'ftp_group_id'
     ];
 
     /**
