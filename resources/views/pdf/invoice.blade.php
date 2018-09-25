@@ -1,32 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>Invoice</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Customer Invoice">
-    <meta name="author" content="5marks">
+    <head>
+        <meta charset="utf-8">
+        <title>Invoice</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Customer Invoice">
+        <meta name="author" content="5marks">
 
-    <link rel="stylesheet" href="{{ asset('admin-invoice/css/bootstrap.css') }}">
-    <style>
-        .invoice-head td {
-            padding: 0 8px;
-        }
-        .container {
-            padding-top:30px;
-        }
-        .invoice-body{
-            background-color:transparent;
-        }
-        .invoice-thank{
-            margin-top: 60px;
-            padding: 5px;
-        }
-        address{
-            margin-top:15px;
-        }
-    </style>
-</head>
+        <link rel="stylesheet" href="{{ asset('admin-invoice/css/bootstrap.css') }}">
+        <style>
+            .pdf-root {
+                background-image: url('{{ asset('images/PDF-background.jpg') }}');
+                background-repeat: no-repeat;
+                width: 760px;
+                height: 1074px;
+                margin: 25px auto;
+            }
+            .header {
+                width: 100%;
+                height: 103px;
+            }
+            .title {
+                width: calc(100% - (88px + 58px));
+                padding-left: 88px;
+                padding-right: 58px;
+                padding-top: 70px;
+            }
+            .stokito-address {
+                font-size: 10px;
+            }
+            .title-blocks {
+                margin-top: 25px;
+                height: 100px;
+            }
+            .title-block {
+                display: inline-table;
+                height: 100%;
+            }
+            .left-block {
+                width: 167px;
+            }
+            .right-block {
+                width: 243px;
+                margin-left: 200px;
+                line-height: 15px;
+            }
+            .invoice-address {
+                font-size: 13px;
+                margin-top: 2px;
+                margin-left: 5px;
+                margin-right: 5px;
+                line-height: 15px;
+            }
+            .invoice-data-title {
+                display: inline-block;
+                width: 41%;
+                text-align: right;
+            }
+            .invoice-data-value {
+                display: inline-block;
+                width: 55%;
+                margin-left: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="pdf-root">
+            <div class="header">
+                header
+            </div>
+            <div class="title">
+                <div class="stokito-address">Stockito GmbH, Address, Austria</div>
+                <div class="title-blocks">
+                    <div class="title-block left-block">
+                        <div class="invoice-address">Invoice Address</div>
+                        <div class="invoice-address">some long address some long address some long address some long address some long address </div>
+                    </div>
+                    <div class="title-block right-block">
+                        <div class="invoice-data-row">
+                            <div class="invoice-data-title">Invoice Date</div>
+                            <div class="invoice-data-value">xxxxxxxxxx</div>
+                        </div>
+                        <div class="invoice-data-row">
+                            <div class="invoice-data-title">Invoice ID</div>
+                            <div class="invoice-data-value">xxxxxxxxxx</div>
+                        </div>
+                        <div class="invoice-data-row">
+                            <div class="invoice-data-title">Client ID</div>
+                            <div class="invoice-data-value">xxxxxxxxxx</div>
+                        </div>
+                        <div class="invoice-data-row">
+                            <div class="invoice-data-title">License Holder</div>
+                            <div class="invoice-data-value">xxxxxxxxxx</div>
+                        </div>
+                        <div class="invoice-data-row">
+                            <div class="invoice-data-title">Client VAT ID</div>
+                            <div class="invoice-data-value">xxxxxxxxxx</div>
+                        </div>
+                        <div class="invoice-data-row">
+                            <div class="invoice-data-title">Page</div>
+                            <div class="invoice-data-value">x/x</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="data">
+                data
+            </div>
+        </div>
+    </body>
+</html>
+<!--
 
 <body>
 <div class="container">
@@ -112,4 +196,5 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <script type="text/javascript" src="{{ asset('admin-invoice/js/bootstrap.min.js') }}"></script>
 </body>
-</html>
+
+-->
