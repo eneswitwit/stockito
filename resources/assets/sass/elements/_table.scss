@@ -1,0 +1,27 @@
+.table {
+  margin-bottom: 0;
+}
+
+.widget-table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.widget-table tr td {
+  vertical-align: top;
+}
+
+.card-body-table {
+  padding: 0;
+}
+
+.licenses-table {
+  img.preview-img {
+    width: 50px;
+    height: 35px;
+  }
+  .table th, .table td {
+    vertical-align: middle;
+  }
+}
+

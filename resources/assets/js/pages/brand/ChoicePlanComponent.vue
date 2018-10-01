@@ -1,16 +1,16 @@
 <template>
     <div class="container mt-4">
+        <b-row v-if="selectedPlanId" :class="'text-right mt-4 mb-4'">
+            <b-col>
+                <router-link class="btn btn-success btn-block" :to="{name: 'payment', params: {id: selectedPlanId}}">
+                    {{ $t('pay') }}
+                </router-link>
+            </b-col>
+        </b-row>
         <b-row>
             <b-col>
                 <plans-list-component @select-plan="changePlan" :plans="plans"
                                       :currentPlan="currentPlan"></plans-list-component>
-            </b-col>
-        </b-row>
-        <b-row v-if="selectedPlanId" :class="'text-right'">
-            <b-col>
-                <router-link class="btn btn-primary" :to="{name: 'payment', params: {id: selectedPlanId}}">
-                    {{ $t('pay') }}
-                </router-link>
             </b-col>
         </b-row>
     </div>

@@ -1,49 +1,65 @@
 <template>
     <card :title="'Basic information'" v-if="media">
-        <div class="form-group">
-            <label class="font-weight-bold" for="">Title</label>
-            {{ media.title }}
-        </div>
-        <div class="form-group">
-            <label class="font-weight-bold" for="">File Name</label>
-            {{ media.origin_name }}
-        </div>
-        <div v-if="media.category" class="form-group">
-            <label class="font-weight-bold" for="media-origin-gps">Category</label>
-            {{ media.category.name }}
-        </div>
-        <div v-if="media.fileType" class="form-group">
-            <label class="font-weight-bold" for="media-origin-gps">File Type</label>
-            {{ media.fileType }}
-        </div>
-        <div v-if="media.keywords !== null" class="form-group">
-            <label class="font-weight-bold" for="media-origin-gps">Keywords</label>
-            {{ media.keywords }}
-        </div>
-        <div v-if="media.peoples_attribute !== null" class="form-group">
-            <label class="font-weight-bold" for="media-origin-gps">Peoples Attribute</label>
-            {{ media.peoples_attribute }}
-        </div>
-        <div v-if="media.source !== null" class="form-group input-group-sm">
-            <label class="font-weight-bold" for="media-origin-aperture">Artist/Copyright</label>
-            {{ media.source }}
-        </div>
-        <div class="form-group">
-            <label class="font-weight-bold" for="media-origin-author">Uploaded by</label>
-            {{ media.created_by.email }}
-        </div>
-        <div v-if="media.supplier" class="form-group">
-            <label class="font-weight-bold" for="media-origin-author">Supplier</label>
-            {{ media.supplier.name }}
-        </div>
-        <div v-if="media.licenses && media.licenses.length" class="form-group">
-            <label class="font-weight-bold" for="">License</label>
-            <button v-color-license:background.border="media.licenses[0]" type="button"
-                    class="btn btn-success brn-xs" @click="showLicenseModal = true">{{ media.licenses[0]
-                ? media.licenses[0].type + ' - license'
-                : 'Set license' }}
-            </button>
-        </div>
+        <table class="widget-table">
+
+            <tr>
+                <td><label class="font-weight-bold">Title</label></td>
+                <td v-if="media.title"> {{ media.title }}</td>
+            </tr>
+
+            <tr>
+                <td><label class="font-weight-bold">File name</label></td>
+                <td v-if="media.origin_name"> {{ media.origin_name }}</td>
+            </tr>
+
+            <tr>
+                <td><label class="font-weight-bold">Category</label></td>
+                <td v-if="media.category"> {{ media.category.name }}</td>
+            </tr>
+
+            <tr>
+                <td><label class="font-weight-bold">File type</label></td>
+                <td v-if="media.fileType "> {{ media.fileType }}</td>
+            </tr>
+
+            <tr>
+                <td><label class="font-weight-bold">Keywords</label></td>
+                <td v-if="media.keywords"> {{ media.keywords }}</td>
+            </tr>
+
+            <tr>
+                <td><label class="font-weight-bold"> Peoples Attribute </label></td>
+                <td v-if="media.peoples_attribute "> {{ media.peoples_attribute }}</td>
+            </tr>
+
+            <tr>
+                <td><label class="font-weight-bold"> Artist/Copyright </label></td>
+                <td v-if="media.source"> {{ media.source }}</td>
+            </tr>
+
+            <tr>
+                <td><label class="font-weight-bold"> Uploaded by </label></td>
+                <td v-if="media.created_by"> {{ media.created_by.email }}</td>
+            </tr>
+
+            <tr>
+                <td><label class="font-weight-bold"> Supplier </label></td>
+                <td v-if="media.supplier"> {{ media.supplier.name}}</td>
+            </tr>
+
+            <tr>
+                <td><label class="font-weight-bold"> License </label></td>
+                <td>
+                    <button v-color-license:background.border="media.licenses[0]" type="button"
+                            class="btn btn-success brn-xs" @click="showLicenseModal = true">{{ media.licenses[0]
+                        ? media.licenses[0].type + ' - license'
+                        : 'Set license' }}
+                    </button>
+                </td>
+            </tr>
+
+        </table>
+
     </card>
 </template>
 

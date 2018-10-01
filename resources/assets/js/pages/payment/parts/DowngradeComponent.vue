@@ -1,12 +1,13 @@
 <template>
     <form action="" method="post" id="payment-form" @submit.prevent="downgradeSubscription">
+
         <card class="downgrade-template" :title="'Downgrade your plan'">
-            Your plan will automatically downgraded to Plan {{ plan.title }} after the expiration of the current plan in {{ leftDays() }} days.
-            <div class="form-group text-center">
-                <button class="btn btn-primary" type="submit">{{ 'Submit' }}
-                </button>
-            </div>
+            Your plan will automatically downgraded to Plan {{ plan.title }} after the expiration of the current plan in
+            {{ leftDays() }} days
+            <button class="btn btn-primary float-right" type="submit">{{ 'Submit' }}
+            </button>
         </card>
+
     </form>
 </template>
 
@@ -38,9 +39,9 @@
             }
         },
 
-         created() {
+        created() {
             this.getUser();
-         },
+        },
 
         computed: {
             subscription() {
@@ -57,9 +58,9 @@
                 return new Moment(date).format(format);
             },
 
-             leftDays() {
+            leftDays() {
                 return new Moment(new Moment(this.user.subscription.created_at.date).add(365, 'days')).diff(new Moment(), 'days');
-             },
+            },
 
             async downgradeSubscription() {
 

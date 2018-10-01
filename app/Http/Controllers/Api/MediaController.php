@@ -487,14 +487,16 @@ class MediaController extends Controller
             $category = Media\Category::firstOrCreate(['name' => $request->input('category.label')]);
             $media->category_id = $category->id;
         }
+
         if ($request->input('supplier.label', false)) {
-            $supplier = Supplier::firstOrCreate(['name' => $request->input('form.supplier.label')],
+            $supplier = Supplier::firstOrCreate(['name' => $request->input('supplier.label')],
                 ['brand_id' => $media->brand->id]);
             $media->supplier_id = $supplier->id;
         }
 
         if ($request->input('supplier', false)) {
-            $supplier = Supplier::firstOrCreate(['name' => $request->input('form.supplier')],
+
+            $supplier = Supplier::firstOrCreate(['name' => $request->input('supplier')],
                 ['brand_id' => $media->brand->id]);
             $media->supplier_id = $supplier->id;
         }
@@ -504,7 +506,6 @@ class MediaController extends Controller
         $media->file_type = Media::getTypeVar($request->input('fileType', ''));
         $media->keywords = $request->input('keywords', '');
         $media->source = $request->input('source', '');
-        $media->language = $request->input('language', '');
         $media->origin_name = $request->input('originName', '');
         $media->notes = $request->input('notes', '');
 

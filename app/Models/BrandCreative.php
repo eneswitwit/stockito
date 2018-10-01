@@ -1,8 +1,9 @@
 <?php
 
+// namespace
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
+// use
 use Illuminate\Database\Eloquent\Model;
 
 /**

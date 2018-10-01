@@ -1,8 +1,13 @@
 <template>
     <div class="container mt-4">
-        <div class="card">
+
+        <div v-if="this.dataTable.selectedRows.length" class="button-top">
+            <button class="btn btn-primary btn-block" @click="exportAsPDF">{{ $t('export_as_pdf') }}</button>
+        </div>
+
+        <div class="card mb-4">
             <div class="card-header">{{ $t('licenses') }}</div>
-            <div class="card-body">
+            <div class="card-body card-body-table">
                 <div class="col-xs-12 table-responsive licenses-table">
 
                     <datatable :columns="dataTable.columns" :data="licenses">
@@ -30,19 +35,6 @@
                 </div>
             </div>
 
-            <div class="card-footer">
-                <datatable-pager
-                        class="custom-pagination"
-                        v-model="dataTable.page"
-                        type="abbreviated"
-                        :per-page="dataTable.perPage"
-                ></datatable-pager>
-            </div>
-
-            <div v-if="this.dataTable.selectedRows.length" class="card-footer">
-                <button class="btn btn-primary" @click="exportAsPDF">{{ $t('export_as_pdf') }}</button>
-            </div>
-
             <set-license-modal-component :show.sync="showLicenseModal"
                                          :media="media"
                                          :license="license"
@@ -50,6 +42,14 @@
             ></set-license-modal-component>
 
         </div>
+
+        <datatable-pager
+                class="custom-pagination mb-6"
+                v-model="dataTable.page"
+                type="abbreviated"
+                :per-page="dataTable.perPage"
+        ></datatable-pager>
+
     </div>
 </template>
 
@@ -125,13 +125,13 @@
                     {
                         label: 'File', representedAs: function (media) {
                             return '<img class="preview-img" src="' + media.media.thumbnail + '" />';
-                        }, interpolate: true
+                        }, interpolate: true, filterable: false, sortable: false
                     },
-                    {label: 'Number', field: 'id', filterable: false},
-                    {label: 'License', field: 'type'},
-                    {label: 'Origin', field: 'origin'},
-                    {label: 'Added By', field: 'createdBy'},
-                    {label: 'Expiration date', field: 'expiredAt.dMY'},
+                    {label: 'Number', field: 'id', filterable: true},
+                    {label: 'License', field: 'type', filterable: false},
+                    {label: 'Origin', field: 'origin', filterable: false},
+                    {label: 'Added By', field: 'createdBy', filterable: false},
+                    {label: 'Expiration date', field: 'expiredAt.dMY', filterable: false},
                 ],
                 page: 1,
                 perPage: 10

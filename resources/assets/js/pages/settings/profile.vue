@@ -1,9 +1,7 @@
 <template>
-    <div class="container mt-4">
-        <card :title="$t('your_info')">
-            <creative-form v-if="user && user.creative"></creative-form>
-            <brand-form v-if="user && user.brand"></brand-form>
-        </card>
+    <div class="container">
+        <creative-form v-if="user && user.creative"></creative-form>
+        <brand-form v-if="user && user.brand"></brand-form>
     </div>
 </template>
 

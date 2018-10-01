@@ -1,9 +1,12 @@
 <template>
     <div>
+
         <subscription-details-component></subscription-details-component>
-        <div class="card">
-            <div class="card-header"><h4 class="card-title">Invoices</h4></div>
+
+        <card :title="'Invoices'" :class="'mt-4 mb-4'">
+
             <table class="table">
+
                 <thead>
                 <tr>
                     <th>Number</th>
@@ -14,6 +17,7 @@
                     </th>
                 </tr>
                 </thead>
+
                 <tbody>
                 <tr v-for="invoice in invoices">
                     <td>{{ invoice.number }}</td>
@@ -28,9 +32,11 @@
                     </td>
                 </tr>
                 </tbody>
+
             </table>
-        </div>
+        </card>
     </div>
+
 </template>
 
 <script>

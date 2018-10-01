@@ -1,5 +1,4 @@
 import * as types from '../mutation-types'
-import Cookies from "js-cookie";
 import axios from "axios/index";
 
 // state

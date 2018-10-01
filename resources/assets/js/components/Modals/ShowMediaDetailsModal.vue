@@ -7,19 +7,7 @@
 
                 <div class="col-lg-3 flex-column">
                     <show-media-details v-bind:media="media" v-bind:submit="false"></show-media-details>
-                </div>
-
-
-                <div class="col-lg-7 flex-column">
-                    <video-image-component
-                            v-bind:media="media"
-                            v-bind:stopPlayer="show">
-                    </video-image-component>
-                </div>
-
-
-                <div class="col-lg-2">
-                    <div class="row mb-4">
+                    <div class="row mb-2 mt-2">
                         <div class="col-lg-12">
                             <router-link v-if="canAccess(media)" class="btn btn-primary btn-block"
                                          :to="{ name: 'medias.edit', params: {id: media.id} }">{{ $t('edit') }}
@@ -33,43 +21,48 @@
                                 }}</a>
                         </div>
                     </div>
-                    <div v-if="media.license && media.license.billFile" class="row">
-                        <div class="col-lg-12 text-center">
-                            <b>{{ $t('bill') }}</b>
-                            <a :href="media.license.url" class="btn btn-link btn block">{{
-                                media.license.billFileOriginName }}</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="row mb-4">
-                <div class="col-lg-3 flex-column">
-                    <card title="Meta data">
-                        <table>
+                    <card class="mb-2" title="Meta data">
+                        <table class="widget-table">
                             <tr>
-                                <td><b>File info:</b></td>
+                                <td><b>File info</b></td>
                                 <td>{{ media.imageInfo.width }}px x {{ media.imageInfo.height }}px</td>
                             </tr>
                             <tr>
-                                <td><b>File Size</b></td>
+                                <td><b>File size</b></td>
                                 <td>{{ media.imageInfo.fileSize }}</td>
                             </tr>
                             <tr>
-                                <td><b>Uploaded:</b></td>
+                                <td><b>Uploaded</b></td>
                                 <td>{{ media.uploadedAt }}</td>
                             </tr>
                         </table>
                     </card>
-                </div>
-                <div class="col-lg-9 flex-column">
-                    <card title="Note">
+
+                    <card class="mb-2" title="Note" v-if="media.notes && media.notes.length">
                         {{ media.notes }}
                     </card>
-                </div>
-            </div>
 
+                    <card title="License Bill" v-if="media.license">
+                        <div v-if="media.license.billFile" class="row">
+                            <div class="col-lg-12 text-center">
+                                <a :href="media.license.url" class="btn btn-link btn block">
+                                    {{ media.license.billFileOriginName }}
+                                </a>
+                            </div>
+
+                        </div>
+                    </card>
+                </div>
+
+
+                <div class="col-lg-9 flex-column">
+                    <video-image-component
+                            v-bind:media="media"
+                            v-bind:stopPlayer="show">
+                    </video-image-component>
+                </div>
+
+            </div>
 
             <div class="row">
                 <div class="col-lg-12">

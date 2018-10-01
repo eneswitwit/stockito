@@ -4,7 +4,6 @@
   }
 }
 
-
 .glyphicon {
   position: relative;
   top: 1px;
@@ -15,4 +14,12 @@
   line-height: 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.bg-warning {
+  background-color: #ffe0e0 !important;
+}
+
+.creative-table {
+  width: 100%;
 }

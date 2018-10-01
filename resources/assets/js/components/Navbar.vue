@@ -28,6 +28,9 @@
 
         <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
             <ul class="navbar-nav ml-auto">
+                <li v-if="selectedBrand" class="nav-item">
+                    <img v-if="selectedBrand.logo" :class="'brand-logo-nav'" :src="logoConvert(selectedBrand.logo)">
+                </li>
                 <li v-if="user && canUpload()" class="nav-item">
                     <button class="btn btn-primary" @click="showUploadModal = true">Upload File</button>
                 </li>
@@ -47,6 +50,12 @@
                             <fa icon="certificate" fixed-width/>
                             {{ $t('brands') }}
                         </router-link>
+                        <router-link :to="{ name: 'settings.profile' }" class="dropdown-item pl-3">
+                            <fa icon="cog" fixed-width/>
+                            {{ $t('settings') }}
+                        </router-link>
+                        <div v-if="user.creative && selectedBrand" class="dropdown-divider"></div>
+                        <div v-if="selectedBrand"> {{ selectedBrand.company_name }} </div>
                         <router-link
                                 v-if="user && (user.brand || ((isHeadOfTeam() || isActiveEditing()) && selectedBrand))"
                                 :to="{ name: 'brand.creatives' }" class="dropdown-item pl-3">
@@ -58,6 +67,7 @@
                             {{ $t('media') }}
                         </router-link>
                         <router-link v-if="user.brand" class="dropdown-item pl-3" :to="{ name: 'licenses' }">
+                            <fa icon="list-ul" fixed-width/>
                             {{ $t('licenses') }}
                         </router-link>
                         <router-link v-if="user.creative && selectedBrand"
@@ -66,14 +76,17 @@
                             <fa icon="image" fixed-width/>
                             {{ $t('media') }}
                         </router-link>
-                        <router-link v-if="!isSearchOnly()" :to="{ name: 'uploaded' }" class="dropdown-item pl-3">
+                        <router-link v-if="user.brand" :to="{ name: 'uploaded' }" class="dropdown-item pl-3">
                             <fa icon="image" fixed-width/>
                             {{ $t('uploads') }}
                         </router-link>
-                        <router-link :to="{ name: 'settings.profile' }" class="dropdown-item pl-3">
-                            <fa icon="cog" fixed-width/>
-                            {{ $t('settings') }}
+                        <router-link v-if="user.creative && !isSearchOnly() && selectedBrand"
+                                     :to="{ name: 'uploaded', params: { creative_brand_id: selectedBrand.id  }}"
+                                     class="dropdown-item pl-3">
+                            <fa icon="image" fixed-width/>
+                            {{ $t('uploads') }}
                         </router-link>
+
 
                         <div class="dropdown-divider"></div>
                         <a @click.prevent="logout" class="dropdown-item pl-3" href="#">
@@ -129,6 +142,12 @@
             creativeRole: 'media/creativeRole'
         }),
 
+        computed: {
+            selectedBrand() {
+                return this.$store.getters['creative/selectedBrand'];
+            },
+        },
+
         components: {
             UploadFileModalComponent,
             Card,
@@ -167,6 +186,10 @@
 
                 this.$store.dispatch('media/setFilterQuery', {query: this.searchQuery});
                 this.$router.push({name: 'medias'})
+            },
+
+            logoConvert(path) {
+                return path.replace("public", "/storage");
             }
         }
     }

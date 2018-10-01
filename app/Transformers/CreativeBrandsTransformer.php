@@ -1,10 +1,18 @@
 <?php
 
+// namespace
 namespace App\Transformers;
 
+// use
 use App\Models\User;
 use LukeVear\LaravelTransformer\AbstractTransformer;
 
+
+/**
+ * Class CreativeBrandsTransformer
+ *
+ * @package App\Transformers
+ */
 class CreativeBrandsTransformer extends AbstractTransformer
 {
     /**

@@ -128,7 +128,7 @@ class Brand extends AbstractBrandModel
     /**
      * @return array
      */
-    public static function getPermissions () : array
+    public static function getPermissions(): array
     {
         return [
             self::SEARCH_ONLY_USER_PERMISSION,
@@ -140,7 +140,7 @@ class Brand extends AbstractBrandModel
     /**
      * @return HasMany
      */
-    public function peopleAttributes (): HasMany
+    public function peopleAttributes(): HasMany
     {
         return $this->hasMany(PeopleAttribute::class);
     }
@@ -148,7 +148,7 @@ class Brand extends AbstractBrandModel
     /**
      * @return BelongsTo
      */
-    public function country (): BelongsTo
+    public function country(): BelongsTo
     {
         return $this->belongsTo(Country::class);
     }
@@ -156,7 +156,7 @@ class Brand extends AbstractBrandModel
     /**
      * @return HasMany
      */
-    public function suppliers (): HasMany
+    public function suppliers(): HasMany
     {
         return $this->hasMany(Supplier::class);
     }
@@ -164,7 +164,7 @@ class Brand extends AbstractBrandModel
     /**
      * @return HasMany
      */
-    public function categories (): HasMany
+    public function categories(): HasMany
     {
         return $this->hasMany(Category::class);
     }
@@ -172,7 +172,7 @@ class Brand extends AbstractBrandModel
     /**
      * @return BelongsTo
      */
-    public function ftpUser (): BelongsTo
+    public function ftpUser(): BelongsTo
     {
         return $this->belongsTo(FTPUser::class, 'ftp_user_id');
     }
@@ -188,7 +188,7 @@ class Brand extends AbstractBrandModel
     /**
      * @return HasMany
      */
-    public function invites () : HasMany
+    public function invites(): HasMany
     {
         return $this->hasMany(Invite::class);
     }
@@ -196,7 +196,7 @@ class Brand extends AbstractBrandModel
     /**
      * @return BelongsToMany
      */
-    public function creatives () : BelongsToMany
+    public function creatives(): BelongsToMany
     {
         return $this->belongsToMany(Creative::class)->withPivot('role', 'position');
     }
@@ -204,7 +204,7 @@ class Brand extends AbstractBrandModel
     /**
      * @return HasMany
      */
-    public function media () : HasMany
+    public function media(): HasMany
     {
         return $this->hasMany(Media::class);
     }
@@ -212,7 +212,7 @@ class Brand extends AbstractBrandModel
     /**
      * @return BelongsTo
      */
-    public function license () : BelongsTo
+    public function license(): BelongsTo
     {
         return $this->belongsTo(License::class);
     }
@@ -220,7 +220,7 @@ class Brand extends AbstractBrandModel
     /**
      * @return HasMany
      */
-    public function activities () : HasMany
+    public function activities(): HasMany
     {
         return $this->hasMany(Activity::class);
     }
@@ -243,6 +243,7 @@ class Brand extends AbstractBrandModel
 
     /**
      * @param $value
+     *
      * @return string
      */
     public function getNameAttribute($value): string
@@ -250,31 +251,31 @@ class Brand extends AbstractBrandModel
         return $this->brand_name;
     }
 
-//	/**
-//	 * @return string
-//	 */
-	public function getFormatUsedStorageAttribute(): string
-	{
-		$size = $this->used_storage;
+    /**
+     * @return string
+     */
+    public function getFormatUsedStorageAttribute(): string
+    {
+        $size = $this->used_storage;
 
-		if (empty($size)) {
-			return '0';
-		}
-		if ($size < 1024) {
-			return "{$size}  KB";
-		} elseif ($size > 1024 && $size < 1048576) {
-			$mb = round(($size / 1000), 2);
-			return "{$mb}  MB";
-		} elseif ($size > 1048576) {
-			$gb = round(($size / 1000000), 2);
-			return "{$gb}  GB";
-		}
-	}
+        if (empty($size)) {
+            return '0';
+        }
+        if ($size < 1024) {
+            return "{$size}  KB";
+        } elseif ($size > 1024 && $size < 1048576) {
+            $mb = round(($size / 1000), 2);
+            return "{$mb}  MB";
+        } elseif ($size > 1048576) {
+            $gb = round(($size / 1000000), 2);
+            return "{$gb}  GB";
+        }
+    }
 
     /**
      * @return BelongsTo
      */
-    public function plan (): BelongsTo
+    public function plan(): BelongsTo
     {
         return $this->belongsTo(Plan::class);
     }
@@ -290,7 +291,7 @@ class Brand extends AbstractBrandModel
     /**
      * @return string
      */
-    public function getImagePath (): string
+    public function getImagePath(): string
     {
         return (string)$this->id;
     }
@@ -299,9 +300,9 @@ class Brand extends AbstractBrandModel
      * @return Brand
      * @throws \Exception
      */
-    public function makeHomeDir (): self
+    public function makeHomeDir(): self
     {
-        $dir = storage_path('app/brands/'.$this->getImagePath());
+        $dir = storage_path('app/brands/' . $this->getImagePath());
         if (!mkdir($dir) && !is_dir($dir)) {
             throw new \Exception('Can\'t create homedir');
         }
@@ -334,7 +335,7 @@ class Brand extends AbstractBrandModel
     /**
      * @return null|string
      */
-    public function getLogoUrl (): ?string
+    public function getLogoUrl(): ?string
     {
         return Storage::url($this->logo);
     }
@@ -342,7 +343,7 @@ class Brand extends AbstractBrandModel
     /**
      * @return string
      */
-    public static function getLogoPath (): string
+    public static function getLogoPath(): string
     {
         return 'public/brands_logo';
     }

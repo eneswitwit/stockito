@@ -1,7 +1,9 @@
 <?php
 
+// namespace
 namespace App\Http\Controllers\Api;
 
+// use
 use App\Models\BrandCreative;
 use App\Transformers\CreativeBrandsTransformer;
 use App\Transformers\UserTransformer;
@@ -11,6 +13,11 @@ use Illuminate\Support\Facades\Auth;
 use LukeVear\LaravelTransformer\TransformerEngine;
 use App\Http\Controllers\Controller;
 
+/**
+ * Class CreativeController
+ *
+ * @package App\Http\Controllers\Api
+ */
 class CreativeController extends Controller
 {
     /**
@@ -41,4 +48,5 @@ class CreativeController extends Controller
 	    $user = $request->user();
 	    return new JsonResponse(new TransformerEngine($user, new CreativeBrandsTransformer()));
     }
+
 }

@@ -2,27 +2,25 @@
 
     <div>
 
-        <div class="row">
-            <a @click.prevent="showSearch = true">
-                <div v-if="!showSearch" class="advanced-search">
+        <a @click.prevent="showSearch = true">
+            <div v-if="!showSearch" class="advanced-search">
 
-                    <div class="advanced-search-text">
-                        <p>Advanced</p>
-                        <p>Search</p>
-                    </div>
-
+                <div class="advanced-search-text">
+                    <p>Advanced</p>
+                    <p>Search</p>
                 </div>
-            </a>
-        </div>
+
+            </div>
+        </a>
 
         <div class="container-fluid">
             <div class="row show-page" v-if="showPage">
 
-                <div v-if="showSearch" class="col-lg-3">
+                <div v-if="showSearch" class="col-lg-2 nopadding">
                     <search-media-component @closeAdvancedSearch="showSearch = $event"></search-media-component>
                 </div>
 
-                <div :class="showSearch ? 'col-lg-9' : 'col-lg-12'">
+                <div :class="showSearch ? 'col-lg-10 nopadding' : 'col-lg-12 nopadding'">
 
                     <card class="mb-4" v-if="selectedMedia.length">
                         <button @click="deleteMultipleMedia" class="btn btn-link">Delete ({{ selectedMedia.length }}

@@ -3,23 +3,39 @@
     <div>
         <card :title="'Subscription'">
 
-            <p v-if="user.subscribed">
-                <span class="font-weight-bold"> Current plan </span>
-                {{ user.subscription.product.name }}
-            </p>
-            <p v-if="user.subscribed">
-                <span class="font-weight-bold">Subscription expires </span>
-                {{ expiriesDate(user.subscription.created_at.date) }}
-            </p>
-            <p v-if="user.subscribed">
-                <span class="font-weight-bold"> Plan will expire in </span>
-                {{ leftDate() }} days
-            </p>
+            <table class="widget-table mb-4" v-if="user.subscribed">
+                <tr>
+                    <td>
+                        <span class="font-weight-bold"> Current plan </span>
+                    </td>
+                    <td>
+                        {{ user.subscription.product.name }}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <span class="font-weight-bold">Subscription expires </span>
+                    </td>
+                    <td>
+                        {{ expiriesDate(user.subscription.created_at.date) }}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <span class="font-weight-bold"> Plan will expire in </span>
+                    </td>
+                    <td>
+                        {{ leftDate() }} days
+                    </td>
+                </tr>
+            </table>
 
 
             <div class="form-group">
 
-                <span>
+                <span class="mb-4">
                     <div v-if="getIfDowngrade()" class="alert alert-warning" role="alert">
                         <p>Plan will be downgraded automatically after expiration.</p>
                     </div>

@@ -47,7 +47,10 @@ export default [
     {path: '/dashboard', name: 'dashboard', component: Dashboard},
     {path: '/brand/details/:id', name: 'creative.brand.details', component: Dashboard},
     {path: '/medias', name: 'medias', component: Medias},
+
     {path: '/medias/:creative_brand_id', name: 'creative.brand.medias', component: Medias, props: true},
+    {path: '/uploaded/:creative_brand_id', name: 'creative.brand.uploaded', component: Uploaded, props: true},
+
     {path: '/medias/:id/show', name: 'medias.show', component: ShowMedia},
     {path: '/medias/:id/edit', name: 'medias.edit', component: EditMedia},
     {path: '/uploaded', name: 'uploaded', component: Uploaded},

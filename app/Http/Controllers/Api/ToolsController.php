@@ -1,11 +1,18 @@
 <?php
 
+// namespace
 namespace App\Http\Controllers\Api;
 
+// use
 use App\Http\Requests\Tools\ImgToBase64Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 
+/**
+ * Class ToolsController
+ *
+ * @package App\Http\Controllers\Api
+ */
 class ToolsController extends Controller
 {
     /**

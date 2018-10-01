@@ -1,7 +1,10 @@
 <template>
-    <div>
+
+    <div class="container mt-2">
+
         <div class="card">
             <div class="card-header">Brands Involved</div>
+
             <div class="card-body">
                 <div class="col-xs-12 table-responsive">
                     <datatable v-if="brands" :columns="dataTable.columns" :data="brands">
@@ -15,11 +18,14 @@
                     </datatable>
                 </div>
             </div>
+
             <div class="card-footer">
                 <datatable-pager class="custom-pagination" v-model="dataTable.page" type="abbreviated" :per-page="dataTable.perPage"></datatable-pager>
             </div>
+
         </div>
     </div>
+
 </template>
 
 <script>
@@ -61,30 +67,3 @@
     }
 </script>
 
-<style lang="scss">
-    .custom-pagination {
-        ul {
-            li {
-                a {
-                    position: relative;
-                    display: block;
-                    padding: .5rem .75rem;
-                    margin-left: -1px;
-                    line-height: 1.25;
-                    color: #007bff;
-                    background-color: #fff;
-                    border: 1px solid #dee2e6;
-                }
-
-                &.active {
-                    a {
-                        z-index: 1;
-                        color: #fff;
-                        background-color: #007bff;
-                        border-color: #007bff;
-                    }
-                }
-            }
-        }
-    }
-</style>
