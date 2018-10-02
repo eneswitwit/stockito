@@ -64,7 +64,9 @@ class InvoiceService
      */
     public function getView(Invoice $invoice): View
     {
-        return view('pdf.invoice', ['invoice' => $invoice, 'stripeInvoice' => $invoice->getStripeObject()]);
+        return view('pdf.invoice', [
+            'stripeInvoice' => $invoice->getStripeObject()
+        ]);
     }
 
     /**
@@ -76,7 +78,6 @@ class InvoiceService
     public function getPdf(Invoice $invoice): PDF
     {
         $view = $this->getView($invoice)->render();
-
         $pdf = \App::make('dompdf.wrapper');
         $pdf->loadHTML($view);
 
