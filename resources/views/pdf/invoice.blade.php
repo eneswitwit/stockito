@@ -76,12 +76,14 @@
                     </tr>
                     @foreach($stripeInvoice->lines->data as $subscription)
                         @php($amount = $subscription->amount / 100)
+                        @php($amountPlan = $subscription->plan->amount / 100)
+                        @php($total = ($subscription->plan->amount * $subscription->quantity) / 100)
                             <tr>
                                 <td class="invoice-data-row-td table-values">
-                                    <div class="table-value data-value">{{ $subscription->plan->name }} ($ {{number_format($subscription->plan->amount / 100,2) }}/{{ $subscription->plan->interval }})</div>
-                                    <div class="table-value data-value">???</div>
+                                    <div class="table-value data-value">{{ $subscription->description }}</div>
+                                    <div class="table-value data-value">{{ number_format($amountPlan, 2) }}</div>
                                     <div class="table-value data-value">{{ $subscription->quantity }}</div>
-                                    <div class="table-value data-value">{{ $amount }}</div>
+                                    <div class="table-value data-value">{{ number_format($amount, 2) }}</div>
                                 </td>
                             </tr>
                     @endforeach
