@@ -39,7 +39,8 @@ class LicenseTransformer extends AbstractTransformer
             'createdBy' => $model->createdBy->getType()->name,
             'billFile' => $model->bill_file,
             'billFileOriginName' => $model->bill_file_origin_name,
-            'brandName' => $model->media->brand ? $model->media->brand->name : ''
+            'brandName' => $model->media->brand ? $model->media->brand->name : '',
+            'origin' => $model->media->origin_name ? $model->media->origin_name : ''
         ];
     }
 }
