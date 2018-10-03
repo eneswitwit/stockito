@@ -1,0 +1,157 @@
+.main-table {
+    background-image: url("../../images/background.jpg");
+    background-repeat: no-repeat;
+    max-width: 760px;
+    width: 100%;
+    margin-left: 25px;
+}
+.stokito-address-td {
+    font-size: 9px;
+    width: 100%;
+    padding-top: 173px;
+    padding-left: 55px;
+    padding-right: 50px;
+}
+.title-blocks-td,
+.invoice-data-row-td,
+.data-terms.invoice-data-row,
+.data-note.invoice-data-row,
+.data-details.invoice-data-row {
+    width: 100%;
+    padding-left: 55px;
+    padding-right: 50px;
+    padding-top: 24px;
+}
+.invoice-data-row-td {
+    padding-top: 6px;
+}
+.first-table,
+.first-table tr {
+    width: 100%;
+}
+.title-block-td {
+    background: #fff;
+    border: 1px dashed #666;
+    vertical-align: top;
+    font-size: 13px;
+    padding: 5px 5px 5px 5px;
+}
+.title-block-td.left-block {
+    width: 175px;
+    max-width: 175px;
+}
+.title-block-td.right-block {
+    float: right;
+    line-height: 15px;
+    min-width: 250px;
+    padding-top: 8px;
+}
+.invoice-address {
+    margin-left: 5px;
+    margin-right: 5px;
+    line-height: 15px;
+}
+.invoice-data-title {
+    display: inline-block;
+    width: 100px;
+    text-align: right;
+}
+.invoice-data-value {
+    display: inline-block;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+.data {
+    padding-top: 90px;
+}
+.data-title {
+    font-size: 14px;
+    font-weight: 700;
+}
+.data-value {
+    font-size: 13px;
+}
+.table-title,
+.table-value {
+    display: inline-block;
+}
+.table-titles div:nth-child(1),
+.table-values div:nth-child(1) {
+    width: 50%;
+}
+.table-titles div:nth-child(2),
+.table-values div:nth-child(2) {
+    width: 19%;
+    text-align: center;
+}
+.table-titles div:nth-child(3),
+.table-values div:nth-child(3) {
+    width: 19%;
+    text-align: center;
+}
+.table-titles div:nth-child(4),
+.table-values div:nth-child(4) {
+    width: 10%;
+    text-align: center;
+}
+.line {
+    border-top: 2px solid #000;
+    width: 100% !important;
+}
+.table-titles-line {
+    padding-top: 0px !important;
+}
+.invoice-data-row-td.table-values {
+    padding-top: 0px !important;
+}
+.invoice-data-row.table-totals {
+    margin-bottom: 5px;
+}
+.table-totals {
+    text-align: right;
+    width: 100%;
+}
+.data-total-title {
+    font-weight: 700;
+    font-size: 14px;
+    margin-right: 5px;
+    width: 550px;
+}
+.data-total-value {
+    width: 100px;
+    text-transform: uppercase;
+}
+.table-total {
+    display: inline-block;
+}
+.invoice-data-row.data-terms,
+.invoice-data-row.data-note {
+    font-weight: 700;
+    font-size: 14px;
+    padding-left: 75px;
+}
+.invoice-data-row.data-terms {
+    padding-top: 5px;
+}
+.invoice-data-row.data-note {
+    padding-top: 124px;
+}
+.invoice-data-row.data-details {
+    padding-top: 153px;
+    font-size: 12px;
+    text-align: center;
+    padding-left: 45px;
+}
+.clean {
+    height: 70px;
+}
+.invoice-data-row-td.table-totals {
+    line-height: 10px;
+}
+.invoice-data-row-td.table-totals.first {
+    padding-top: 10px;
+}
+.first-table.listing {
+    height: 220px;
+    background: #fff;
+}
