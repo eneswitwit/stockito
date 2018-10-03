@@ -1,9 +1,11 @@
 <template>
-    <div class="container mt-4">
+    <div class="container mt-4 mb-4">
         <div class="row brand-registration">
             <div class="col-lg-12 m-auto">
                 <form @submit.prevent="register" @keydown="form.onKeydown($event)">
-                    <card :title="$t('brand_details')">
+
+                    <card :title="$t('brand_details')" class="mb-2">
+
                         <!-- Name -->
                         <div class="form-group row">
                             <label class="col-md-3 col-form-label text-md-right">{{ $t('brand_name') }}</label>
@@ -38,7 +40,7 @@
 
                     </card>
 
-                    <card :title="$t('billing_address')">
+                    <card :title="$t('billing_address')" class="mb-2">
 
                         <div class="form-group row">
                             <label class="col-md-3 col-form-label text-md-right">{{ $t('company_name') }}</label>
@@ -127,11 +129,9 @@
                                 <has-error :form="form" field="phone"/>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-7">
-                                <h5>{{ $t('contact_person') }}</h5>
-                            </div>
-                        </div>
+                    </card>
+
+                    <card :title="'Contact Details'" class="mb-2">
 
                         <div class="form-group row">
                             <label class="col-md-3 col-form-label text-md-right">{{ $t('first_name') }}</label>
@@ -167,9 +167,6 @@
 
                         <div class="form-group row">
                             <div class="col-md-7 offset-md-3 d-flex">
-                                <!--<stripe-checkout v-if="selectedPlan !== null" stripe-key="pk_test_liDTANMEZoxjT5okqvFofeUO" :product-id="selectedPlan.plan.stripe_id">-->
-                                <!--{{ $t('continue_to_payment') }}-->
-                                <!--</stripe-checkout>-->
                                 <v-button :loading="form.busy">{{ $t('continue_to_payment') }}</v-button>
                             </div>
                         </div>
@@ -194,6 +191,7 @@
     import ModalError from '../../components/Modal/ModalError';
 
     export default {
+
         middleware: 'guest',
 
         components: {
@@ -220,7 +218,7 @@
                 password: '',
                 companyname: '',
                 address_1: '',
-                address_2: '',
+                address_2: null,
                 city: '',
                 country_id: '',
                 zip: '',
@@ -229,7 +227,7 @@
                 phone: '',
                 firstname: '',
                 lastname: '',
-                title: '',
+                title: null,
                 plan_id: ''
             }),
             plans: [],
@@ -241,6 +239,7 @@
         }),
 
         methods: {
+
             async register() {
                 // Register the user.
                 const {data} = await this.form.post('/api/register/brand');
@@ -250,44 +249,24 @@
                 } else {
                     this.showModal = true;
                 }
-
-                // // Log in the user.
-                // const {data: {token}} = await this.form.post('/api/login');
-                //
-                // Save the token.
-                //this.$store.dispatch('auth/saveToken', {token});
-
-                // Update the user.
-                // await this.$store.dispatch('auth/updateUser', {user: data});
-                //
-                // // Redirect home.
-                // this.$router.push({name: 'payment', params : {id: this.form.plan_id} });
             },
+
             getPlans() {
                 axios.get('/api/plans/monthly').then(({data}) => {
                     this.plans = data;
                 });
             },
+
             getCountries() {
                 axios.get('/api/countries').then(({data}) => {
                     this.countries = data;
                 });
             },
+
             changePlan(data) {
                 this.form.plan_id = data.plan.id;
             }
+
         },
     };
 </script>
-
-<style lang="scss">
-    .brand-registration {
-        .card {
-            .card-header {
-                font-size: 18px;
-                text-align: center;
-                font-weight: bold;
-            }
-        }
-    }
-</style>

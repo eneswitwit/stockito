@@ -2,11 +2,11 @@
     <div>
         <modal v-bind:show="show">
             <div class="modal-block">
-            <modal-header @close="onClose"></modal-header>
+            <modal-header @close="onClose"> Email Confirmation </modal-header>
             <modal-body>
-                <h2 class="text-center">An email with an account activation link has been sent to your email address</h2>
+                <h2 class="text-center">Thank you for signing up. An email with an account activation link has been sent to your email address.</h2>
             </modal-body>
-            <button class="btn btn-primary" @click="onClose">Ok</button>
+            <button class="btn btn-primary btn-block" @click="onClose">Ok</button>
             </div>
         </modal>
     </div>

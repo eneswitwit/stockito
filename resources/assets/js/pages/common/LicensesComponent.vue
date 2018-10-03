@@ -131,7 +131,23 @@
                     {label: 'License', field: 'type', filterable: false},
                     {label: 'Origin', field: 'origin', filterable: false},
                     {label: 'Added By', field: 'createdBy', filterable: false},
-                    {label: 'Expiration date', field: 'expiredAt.dMY', filterable: false},
+                    {
+                        label: 'Expiration date', representedAs: function (license) {
+                            var expirationDate = license.expiredAt.dMY;
+                            var daysDifference = license.expiredAt.difference;
+                            if(expirationDate === undefined) {
+                                return '<span style="color: green"> unlimited </span>';
+                            } else {
+                                if(daysDifference < 0) {
+                                    return '<span style="color: red"> expired at ' + expirationDate  +  '</span>';
+                                } else if (daysDifference < 60) {
+                                    return '<span style="color: orange"> ' + expirationDate  +  ' </span>';
+                                } else {
+                                    return '<span style="color: green"> ' + expirationDate  +  ' </span>';
+                                }
+                            }
+                        }, interpolate: true, filterable: false
+                    },
                 ],
                 page: 1,
                 perPage: 10
@@ -152,6 +168,7 @@
         },
 
         methods: {
+
             exportAsPDF() {
                 let url = this.selectedBrand ? `api/licenses/export/${this.selectedBrand.id}` : 'api/licenses/export';
                 axios({
@@ -172,12 +189,14 @@
                     link.click();
                 });
             },
+
             getLicenses() {
                 let url = this.selectedBrand ? `api/licenses/${this.selectedBrand.id}` : 'api/licenses';
                 axios.get(url).then(response => {
                     this.licenses = response.data;
                 });
             },
+
             selectRow(row) {
                 if (this.dataTable.selectedRows.indexOf(row) !== -1) {
                     let index = this.dataTable.selectedRows.indexOf(row);
@@ -186,12 +205,28 @@
                 }
                 this.dataTable.selectedRows.push(row);
             },
+
             showModal(row) {
                 this.media = row.media;
                 this.selectedMedia = [this.media.id];
                 this.license = row.media.license;
                 this.showLicenseModal = true;
+            },
+
+            transformExpiredDate(expirationDate, daysDifference) {
+                if(expirationDate === undefined) {
+                    return '<span style="color: green"> unlimited </span>';
+                } else {
+                    if(daysDifference < 0) {
+                        return '<span style="color: red"> expired at ' + expirationDate  +  '</span>';
+                    } else if (daysDifference < 60) {
+                        return '<span style="color: yellow"> ' + expirationDate  +  ' </span>';
+                    } else {
+                        return '<span style="color: green"> ' + expirationDate  +  ' </span>';
+                    }
+                }
             }
+
         }
     }
 </script>

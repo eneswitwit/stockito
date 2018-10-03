@@ -135,7 +135,7 @@ class Invoice extends Model
      */
     public function getFileName (): string
     {
-        return 'invoice-'.$this->number.'.pdf';
+        return 'invoice-'.$this->id.'.pdf';
     }
 
 }

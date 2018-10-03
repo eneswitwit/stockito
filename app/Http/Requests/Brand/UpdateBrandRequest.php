@@ -1,9 +1,16 @@
 <?php
 
+// namespace
 namespace App\Http\Requests\Brand;
 
+// use
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class UpdateBrandRequest
+ *
+ * @package App\Http\Requests\Brand
+ */
 class UpdateBrandRequest extends FormRequest
 {
     /**
@@ -28,7 +35,7 @@ class UpdateBrandRequest extends FormRequest
             'company_name' => 'required',
             'email' => 'required|email',
             'address_1' => 'required',
-            'address_2' => 'required',
+            'address_2' => 'string|max:255|nullable',
             'city' => 'required',
             'zip' => 'required',
             'country_id' => 'required',
@@ -37,7 +44,7 @@ class UpdateBrandRequest extends FormRequest
             'phone' => 'required',
             'contact_first_name' => 'required',
             'contact_last_name' => 'required',
-            'contact_title' => 'required',
+            'contact_title' => 'string|max:255|nullable',
         ];
     }
 }

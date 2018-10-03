@@ -78,15 +78,17 @@
                 </div>
             </div>
         </div>
+
         <div class="form-group">
             <div class="custom-file">
                 <input id="form-bill-file" class="custom-file-input" name="billFile"
                        :class="{ 'is-invalid': form.errors.has('billFile') }" @change="setFile" type="file"
                        ref="fileInput">
                 <has-error :form="form" field="billFile"/>
-                <label class="custom-file-label" for="form-bill-file">Upload license invoice</label>
+                <label id="fileName" class="custom-file-label" for="form-bill-file">Upload license invoice</label>
             </div>
         </div>
+
         <div v-if="license && license.billFile && !form.removeBill" class="form-group">
             <div class="input-group">
                 <a :href="license.url" class="btn btn-link">Download bill file ({{ license.billFileOriginName }})</a>
@@ -94,6 +96,7 @@
                 </button>
             </div>
         </div>
+
         <div class="form-group">
             <button type="button" v-if="!form.id" @click="submitCreateLicense" :disabled="form.busy"
                     class="btn btn-primary btn-block">{{ $t('save') }}
@@ -106,6 +109,7 @@
 </template>
 
 <script>
+
     import axios from 'axios';
     import moment from 'moment';
     import Card from '../../../../components/Card.vue';
@@ -283,14 +287,12 @@
                     delete this.form.billFile;
                     delete this.form.removeBill;
                     this.$swal('Successfully updated', '', 'success');
-
-                    //this.$emit('saved', data);
-                    //this.form.reset();
                 });
             },
 
             setFile(e) {
                 this.form.billFile = e.target.files[0];
+                document.getElementById('fileName').innerHTML = e.target.files[0]['name'];
             },
 
         },

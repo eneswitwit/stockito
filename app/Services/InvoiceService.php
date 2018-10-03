@@ -5,6 +5,7 @@ namespace App\Services;
 
 // use
 use App\Models\Invoice;
+use App\Models\User;
 use Barryvdh\DomPDF\PDF;
 use Carbon\Carbon;
 use Dompdf\Dompdf;
@@ -17,19 +18,6 @@ use Illuminate\Contracts\View\View;
  */
 class InvoiceService
 {
-//    /**
-//     * @var View
-//     */
-//    protected $view;
-//
-//    /**
-//     * InvoiceService constructor.
-//     * @param View $view
-//     */
-//    public function __construct(View $view)
-//    {
-//        $this->view = $view;
-//    }
 
     /**
      * @param $data
@@ -64,7 +52,12 @@ class InvoiceService
      */
     public function getView(Invoice $invoice): View
     {
+        $brand = User::where('stripe_id', $invoice->customer)->first()->brand;
+        $country = $brand->country;
         return view('pdf.invoice', [
+            'brand' => $brand,
+            'country' => $country,
+            'invoice' => $invoice,
             'stripeInvoice' => $invoice->getStripeObject()
         ]);
     }

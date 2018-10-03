@@ -197,7 +197,8 @@ class MediaController extends Controller
     }
 
     /**
-     * @param null $brandId
+     * @param null|int $brandId
+     * @param null|int $userId
      *
      * @return JsonResponse
      * @throws \Exception
@@ -227,7 +228,7 @@ class MediaController extends Controller
             ProcessFTPFile::dispatch($FTPFile);
         });
 
-        $medias = $brand->media()->notPublished()->orderBy('created_at', 'decs')->get();
+        $medias = $brand->media()->notPublished()->where('created_by', $user->id)->orderBy('created_at', 'decs')->get();
 
         $medias->map(function (Media $media) {
             if (!Storage::disk('brands')->exists($media->getFilePath())) {

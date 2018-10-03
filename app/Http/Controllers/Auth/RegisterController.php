@@ -1,7 +1,9 @@
 <?php
 
+// namespace
 namespace App\Http\Controllers\Auth;
 
+// use
 use App\Models\Brand;
 use App\Models\User;
 use App\Services\FTPService;
@@ -13,76 +15,39 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Auth\Events\Registered;
 use LukeVear\LaravelTransformer\TransformerEngine;
+use Log;
 
-class RegisterController extends Controller {
-	use RegistersUsers;
+/**
+ * Class RegisterController
+ *
+ * @package App\Http\Controllers\Auth
+ */
+class RegisterController extends Controller
+{
+    use RegistersUsers;
 
-	/**
-	 * Create a new controller instance.
-	 *
-	 * @return void
-	 */
-	public function __construct() {
-		$this->middleware( 'guest' );
-	}
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('guest');
+    }
 
-	/**
-	 * Handle a registration request for the application.
-	 *
-	 * @param  \Illuminate\Http\Request $request
-	 *
-	 * @return \Illuminate\Http\Response
-	 * @throws \Exception
-	 */
-	public function registerCreative( Request $request ) {
-		$this->validatorCreative( $request->all() )->validate();
-        $user = $this->create( $request->only( 'email', 'password' ) );
-
-        $confirmationToken = md5(time());
-        User::where('id', $user->id)->update(['confirmation_token' => $confirmationToken]);
-
-        try {
-            $user->sendConfirmationEmail($confirmationToken);
-        } catch (\Exception $e) {
-            $user->delete();
-            return new JsonResponse(['error'=> true]);
-            throw new \Exception($e);
-        }
-
-		event( new Registered( $user ) );
-		$user->creative()->create( $request->only( 'first_name', 'last_name', 'company' ) );
-
-		$confirmationToken = md5(time());
-		User::where('id', $user->id)->update(['confirmation_token' => $confirmationToken]);
-		$user->sendConfirmationEmail($confirmationToken);
-
-		if ( $request->input( 'invite_token', false ) ) {
-			$data = json_decode( decrypt( $request->invite_token ), true );
-			if ( isset( $data['brand_id'], $data['role'], $data['position'] ) && $brand = Brand::find( $data['brand_id'] ) ) {
-				$brand->creatives()->attach( $user->creative, [
-					'role'     => $data['role'],
-					'position' => $data['position']
-				] );
-			}
-		}
-
-		$this->guard()->login( $user );
-
-		return $this->registered( $request, $user )
-			?: redirect( $this->redirectPath() );
-	}
-
-	/**
-	 * @param Request $request
-	 *
-	 * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
-	 * @throws \Exception
-	 */
-	public function registerBrand( Request $request, FTPService $FTPService) {
-	    $data = $request->all();
-
-		$this->validatorBrand( $data )->validate();
-        $user = $this->create( $request->only( 'email', 'password' ) );
+    /**
+     * Handle a registration request for the application.
+     *
+     * @param  \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\Response
+     * @throws \Exception
+     */
+    public function registerCreative(Request $request)
+    {
+        $this->validatorCreative($request->all())->validate();
+        $user = $this->create($request->only('email', 'password'));
 
         $confirmationToken = md5(time());
         User::where('id', $user->id)->update(['confirmation_token' => $confirmationToken]);
@@ -91,118 +56,31 @@ class RegisterController extends Controller {
             $user->sendConfirmationEmail($confirmationToken);
         } catch (\Exception $e) {
             $user->delete();
-            return new JsonResponse(['error'=> true]);
+            return new JsonResponse(['error' => true]);
             throw new \Exception($e);
         }
 
-        event( new Registered( $user ) );
+        event(new Registered($user));
+        $user->creative()->create($request->only('first_name', 'last_name', 'company'));
 
-        /**
-         * @var Brand $brand
-         */
-        $brand = $user->brand()->create( $request->except( 'email', 'password' ) );
+        $confirmationToken = md5(time());
+        User::where('id', $user->id)->update(['confirmation_token' => $confirmationToken]);
+        $user->sendConfirmationEmail($confirmationToken);
 
-        $brand->makeHomeDir();
-        $ftpUser = FTPService::makeFTPUserForBrand($brand);
-        $ftpUser->save();
+        if ($request->input('invite_token', false)) {
+            $data = json_decode(decrypt($request->invite_token), true);
+            if (isset($data['brand_id'], $data['role'], $data['position']) && $brand = Brand::find($data['brand_id'])) {
+                $brand->creatives()->attach($user->creative, [
+                    'role' => $data['role'],
+                    'position' => $data['position']
+                ]);
+            }
+        }
 
-        $brand->ftpUser()->associate($ftpUser);
-        $brand->save();
+        $this->guard()->login($user);
 
-		$this->guard()->login( $user );
-
-		return $this->registered( $request, $user )
-			?: redirect( $this->redirectPath() );
-	}
-
-	/**
-	 * The user has been registered.
-	 *
-	 * @param  \Illuminate\Http\Request $request
-	 * @param  mixed $user
-	 *
-	 * @return mixed
-	 * @throws \Exception
-	 */
-	protected function registered( Request $request, $user ) {
-		return new JsonResponse( new TransformerEngine( $user, new UserTransformer() ) );
-	}
-
-	/**
-	 * Get a validator for an incoming registration request.
-	 *
-	 * @param  array $data
-	 *
-	 * @return \Illuminate\Contracts\Validation\Validator
-	 */
-	protected function validator( array $data ) {
-		return Validator::make( $data, [
-			'email'    => 'required|email|max:255|unique:users',
-			'password' => 'required|min:6',
-		] );
-	}
-
-	/**
-	 * Get a validator for an incoming registration request.
-	 *
-	 * @param  array $data
-	 *
-	 * @return \Illuminate\Contracts\Validation\Validator
-	 */
-	protected function validatorCreative( array $data ) {
-		return Validator::make( $data, [
-			'email'      => 'required|email|max:255|unique:users',
-			'password'   => 'required|min:6|confirmed',
-			'first_name' => 'required|min:2',
-			'last_name'  => 'required|min:2',
-			'company'    => 'required|min:2',
-		] );
-	}
-
-	/**
-	 * Get a validator for an incoming registration request.
-	 *
-	 * @param  array $data
-	 *
-	 * @return \Illuminate\Contracts\Validation\Validator
-	 */
-	protected function validatorBrand( array $data ) {
-		return Validator::make( $data, [
-			'email'              => 'required|email|max:255|unique:users',
-			'password'           => 'required|min:6',
-			'company_name'       => 'required',
-			'brand_name'         => 'required',
-			'address_1'          => 'required',
-			'address_2'          => 'required',
-			'city'               => 'required',
-			'country_id'         => 'required',
-			'zip'                => 'required',
-			'eur_uid'            => 'required',
-			'homepage'           => 'required',
-			'phone'              => 'required',
-			'contact_first_name' => 'required',
-			'contact_last_name'  => 'required',
-			'contact_title'      => 'required'
-		], [], [
-			'zip'        => 'ZIP Code',
-			'eur_uid'    => 'European UID Number',
-			'country_id' => 'Country'
-		] );
-	}
-
-	/**
-	 * Create a new user instance after a valid registration.
-	 *
-	 * @param  array $data
-	 *
-	 * @return User
-	 */
-	protected function create( array $data ) {
-		return User::create( [
-			'email'    => $data['email'],
-			'password' => bcrypt( $data['password'] ),
-		] );
-	}
+        return $this->registered($user) ?: redirect($this->redirectPath());
+    }
 
     /**
      * @param Request $request
@@ -210,7 +88,145 @@ class RegisterController extends Controller {
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      * @throws \Exception
      */
-    public function confirmEmail(Request $request) {
+    public function registerBrand(Request $request)
+    {
+        $data = $request->all();
+        $validator = $this->validatorBrand($data);
+
+        if (!$validator->fails()) {
+
+            Log::info('We are here');
+            $user = $this->create($request->only('email', 'password'));
+            $confirmationToken = md5(time());
+            User::where('id', $user->id)->update(['confirmation_token' => $confirmationToken]);
+
+            try {
+                $user->sendConfirmationEmail($confirmationToken);
+            } catch (\Exception $e) {
+                $user->delete();
+                return new JsonResponse(['error' => true]);
+                throw new \Exception($e);
+            }
+
+            event(new Registered($user));
+
+            /**
+             * @var Brand $brand
+             */
+            $brand = $user->brand()->create($request->except('email', 'password'));
+
+            $brand->makeHomeDir();
+            $ftpUser = FTPService::makeFTPUserForBrand($brand);
+            $ftpUser->save();
+
+            $brand->ftpUser()->associate($ftpUser);
+            $brand->save();
+
+            $this->guard()->login($user);
+
+            return $this->registered($user) ?: redirect($this->redirectPath());
+        } else {
+            return redirect()->back()->withErrors($validator);
+        }
+    }
+
+    /**
+     * The user has been registered.
+     *
+     * @param  mixed $user
+     *
+     * @return mixed
+     * @throws \Exception
+     */
+    protected function registered($user)
+    {
+        return new JsonResponse(new TransformerEngine($user, new UserTransformer()));
+    }
+
+    /**
+     * Get a validator for an incoming registration request.
+     *
+     * @param  array $data
+     *
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    protected function validator(array $data)
+    {
+        return Validator::make($data, [
+            'email' => 'required|email|max:255|unique:users',
+            'password' => 'required|min:6',
+        ]);
+    }
+
+    /**
+     * Get a validator for an incoming registration request.
+     *
+     * @param  array $data
+     *
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    protected function validatorCreative(array $data)
+    {
+        return Validator::make($data, [
+            'email' => 'required|email|max:255|unique:users',
+            'password' => 'required|min:6|confirmed',
+            'first_name' => 'required|min:2',
+            'last_name' => 'required|min:2',
+            'company' => 'required|min:2',
+        ]);
+    }
+
+    /**
+     * Get a validator for an incoming registration request.
+     *
+     * @param  array $data
+     *
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    protected function validatorBrand(array $data)
+    {
+        return Validator::make($data, [
+            'email' => 'required|email|max:255|unique:users',
+            'password' => 'required|min:6',
+            'company_name' => 'required',
+            'brand_name' => 'required',
+            'address_1' => 'required',
+            'address_2' => 'string|max:255|nullable',
+            'city' => 'required',
+            'country_id' => 'required',
+            'zip' => 'required',
+            'eur_uid' => 'required',
+            'homepage' => 'required',
+            'phone' => 'required',
+            'contact_first_name' => 'required',
+            'contact_last_name' => 'required',
+            'contact_title' => 'string|max:255|nullable'
+        ]);
+    }
+
+    /**
+     * Create a new user instance after a valid registration.
+     *
+     * @param  array $data
+     *
+     * @return User
+     */
+    protected function create(array $data)
+    {
+        return User::create([
+            'email' => $data['email'],
+            'password' => bcrypt($data['password']),
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @throws \Exception
+     */
+    public function confirmEmail(Request $request)
+    {
         $confirmationToken = $request->confirmationToken;
 
         $user = User::where('confirmation_token', $confirmationToken);

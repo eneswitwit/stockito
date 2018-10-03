@@ -9,6 +9,7 @@ use LukeVear\LaravelTransformer\AbstractTransformer;
 
 /**
  * Class InvoiceTransformer
+ *
  * @package App\Transformers
  */
 class InvoiceTransformer extends AbstractTransformer
@@ -20,7 +21,7 @@ class InvoiceTransformer extends AbstractTransformer
     public function run($model): array
     {
         return [
-            'number' => $model->number,
+            'number' => $model->id,
             'amount' => $model->amount,
             'date' => $model->date,
             'paid' => $model->paid,

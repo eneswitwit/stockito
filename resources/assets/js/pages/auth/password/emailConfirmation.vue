@@ -6,8 +6,8 @@
                 <div v-if="!showLoader">
                     <div v-if="status">
                         <card>
-                            <h2>You have successfully registered, you can login</h2>
-                            <button class="btn btn-primary" @click="goToRedirect()">OK</button>
+                            <h2> You have successfully registered. You can login now.</h2>
+                            <button class="btn btn-primary btn-block" @click="goToRedirect()"> Login </button>
                         </card>
                     </div>
                     <div v-if="!status">

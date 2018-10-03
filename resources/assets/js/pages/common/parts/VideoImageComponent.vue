@@ -1,7 +1,7 @@
 <template>
     <div v-if="checkPlay">
         <div v-if="!checkMediaType(media)">
-            <img class="img-fluid" :src="media.url" alt="">
+            <img class="img-fluid" :src="media.thumbnail" alt="">
         </div>
         <div v-if="checkMediaType(media)">
             <video-player class="vjs-custom-skin big-size-video"

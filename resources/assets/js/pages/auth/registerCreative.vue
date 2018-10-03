@@ -4,6 +4,7 @@
             <div class="col-lg-8 m-auto">
                 <card :title="$t('register_creative')">
                     <form @submit.prevent="register" @keydown="form.onKeydown($event)">
+
                         <!-- First Name -->
                         <div class="form-group row">
                             <label class="col-md-3 col-form-label text-md-right">{{ $t('first_name') }}</label>
@@ -73,6 +74,7 @@
                                 </v-button>
                             </div>
                         </div>
+
                     </form>
                 </card>
 
