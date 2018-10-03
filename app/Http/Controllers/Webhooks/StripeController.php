@@ -27,6 +27,7 @@ class StripeController extends Controller
     public function index(Request $request): JsonResponse
     {
         $data = $request->all();
+
         if ($data['type'] === 'coupon.created') {
             $this->createCoupon($data['data']['object']);
         } elseif ($data['type'] === 'coupon.deleted') {
@@ -36,6 +37,7 @@ class StripeController extends Controller
         } elseif ($data['type'] === 'invoice.payment_succeeded') {
             $this->invoicePaid($data['data']['object']);
         }
+
         return new JsonResponse ($data['type']);
     }
 
@@ -69,6 +71,7 @@ class StripeController extends Controller
     private function deleteCoupon($data)
     {
         $voucher = Voucher::where('code', '=', $data['id'])->first();
+
         if ($voucher) {
             $voucher->delete();
         }
@@ -81,6 +84,7 @@ class StripeController extends Controller
     {
         $number = $data['number'];
         $invoice = Invoice::where('number', $number)->first();
+
         if (!$invoice) {
             $invoiceStripe = new Invoice();
             $invoiceStripe->number = $number;
@@ -98,6 +102,11 @@ class StripeController extends Controller
             $invoiceStripe->quantity = $data['lines']['data'][0]['quantity'];
             $invoiceStripe->subscription = $data['lines']['data'][0]['subscription_item'];
             $invoiceStripe->save();
+
+            if ($invoiceStripe->user && $invoiceStripe->user->brand) {
+                $invoiceStripe->brand()->associate($invoiceStripe->user->brand);
+                $invoiceStripe->save();
+            }
         }
 
     }
