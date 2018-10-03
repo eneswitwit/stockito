@@ -182,13 +182,11 @@ class RegisterController extends Controller {
 			'phone'              => 'required',
 			'contact_first_name' => 'required',
 			'contact_last_name'  => 'required',
-			'contact_title'      => 'required',
-			'plan_id'            => 'required|exists:plans,id'
+			'contact_title'      => 'required'
 		], [], [
 			'zip'        => 'ZIP Code',
 			'eur_uid'    => 'European UID Number',
-			'country_id' => 'Country',
-			'plan_id'    => 'Subscription Plan',
+			'country_id' => 'Country'
 		] );
 	}
 

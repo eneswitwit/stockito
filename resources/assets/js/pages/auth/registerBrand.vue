@@ -3,9 +3,6 @@
         <div class="row brand-registration">
             <div class="col-lg-12 m-auto">
                 <form @submit.prevent="register" @keydown="form.onKeydown($event)">
-                    <card class="plans-card">
-                        <plans-list-component @select-plan="changePlan" :plans="plans"></plans-list-component>
-                    </card>
                     <card :title="$t('brand_details')">
                         <!-- Name -->
                         <div class="form-group row">
