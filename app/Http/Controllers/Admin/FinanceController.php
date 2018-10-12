@@ -58,7 +58,6 @@ class FinanceController extends Controller
     {
         $invoice = Invoice::findOrFail($id);
         $stripeInvoice = $invoice->getStripeObject();
-//        $stripeInvoice = \Stripe\Invoice::retrieve('in_1CJKFKLloMr0VF0MWM6a0f40');
         return AdminSection::view(view('admin.invoices.show', ['invoice' => $stripeInvoice, 'in' => $invoice]),
             'Invoice #' . $invoice->number);
     }
@@ -71,7 +70,15 @@ class FinanceController extends Controller
     public function download ($id)
     {
         $invoice = Invoice::findOrFail($id);
-        $pdf = $this->invoiceService->getPdf($invoice);
-        return $pdf->download($invoice->getFileName());
+        $html = $this->invoiceService->getView($invoice);
+        $snappy = \App::make('snappy.pdf');
+        return new Response(
+            $snappy->getOutputFromHtml($html),
+            200,
+            array(
+                'Content-Type'          => 'application/pdf',
+                'Content-Disposition'   => 'attachment; filename="'.$invoice->getFileName().'"'
+            )
+        );
     }
 }

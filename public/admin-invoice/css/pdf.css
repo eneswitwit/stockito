@@ -1,16 +1,30 @@
+@font-face {
+    font-family: UniversLTStd-Bold;
+    src: url(../../fonts/UniversLTStd-Bold.otf);
+}
+@font-face {
+    font-family: UniversLTStd-Light;
+    src: url(../../fonts/UniversLTStd-Light.otf);
+}
+body{
+    font-family: UniversLTStd-Light;
+    margin: 0 !important;
+    padding: 0 !important;
+}
 .main-table {
-    background-image: url("../../images/background.jpg");
+    background-image: url("../../images/bg1.png");
     background-repeat: no-repeat;
-    max-width: 760px;
-    width: 100%;
-    margin-left: 25px;
+    width: 880px;
+    height: 1220px;
+    margin: 0 auto;
 }
 .stokito-address-td {
     font-size: 9px;
     width: 100%;
-    padding-top: 173px;
-    padding-left: 55px;
+    padding-top: 200px;
+    padding-left: 97px;
     padding-right: 50px;
+    height: 10px;
 }
 .title-blocks-td,
 .invoice-data-row-td,
@@ -18,12 +32,10 @@
 .data-note.invoice-data-row,
 .data-details.invoice-data-row {
     width: 100%;
-    padding-left: 55px;
+    padding-left: 97px;
     padding-right: 50px;
-    padding-top: 24px;
-}
-.invoice-data-row-td {
-    padding-top: 6px;
+    padding-top: 21px;
+    height: 140px;
 }
 .first-table,
 .first-table tr {
@@ -37,12 +49,11 @@
     padding: 5px 5px 5px 5px;
 }
 .title-block-td.left-block {
-    width: 175px;
-    max-width: 175px;
+    width: 190px;
 }
 .title-block-td.right-block {
     float: right;
-    line-height: 15px;
+    line-height: 17px;
     min-width: 250px;
     padding-top: 8px;
 }
@@ -50,6 +61,10 @@
     margin-left: 5px;
     margin-right: 5px;
     line-height: 15px;
+}
+.invoice-data-row-td {
+    padding-top: 6px;
+    height: 0px;
 }
 .invoice-data-title {
     display: inline-block;
@@ -62,14 +77,28 @@
     margin-right: 5px;
 }
 .data {
-    padding-top: 90px;
+    padding-top: 50px;
+    height: 295px;
+}
+.first-table.listing {
+    background: #fff;
+}
+.invoice-data-row-td.table-values {
+    padding-top: 0px !important;
+}
+.invoice-data-row-td.table-totals {
+    line-height: 10px;
+}
+.invoice-data-row-td.table-totals.first {
+    padding-top: 10px;
+}
+.data-value {
+    font-size: 13px;
 }
 .data-title {
     font-size: 14px;
     font-weight: 700;
-}
-.data-value {
-    font-size: 13px;
+    font-family: UniversLTStd-Bold;
 }
 .table-title,
 .table-value {
@@ -95,13 +124,13 @@
     text-align: center;
 }
 .line {
-    border-top: 2px solid #000;
+    border-top: 1px solid #000;
     width: 100% !important;
 }
-.table-titles-line {
+.invoice-data-row-td.table-titles-line {
     padding-top: 0px !important;
 }
-.invoice-data-row-td.table-values {
+.table-titles-line {
     padding-top: 0px !important;
 }
 .invoice-data-row.table-totals {
@@ -113,6 +142,7 @@
 }
 .data-total-title {
     font-weight: 700;
+    font-family: UniversLTStd-Bold;
     font-size: 14px;
     margin-right: 5px;
     width: 550px;
@@ -127,31 +157,16 @@
 .invoice-data-row.data-terms,
 .invoice-data-row.data-note {
     font-weight: 700;
+    font-family: UniversLTStd-Bold;
     font-size: 14px;
-    padding-left: 75px;
-}
-.invoice-data-row.data-terms {
-    padding-top: 5px;
+    height: 14px;
 }
 .invoice-data-row.data-note {
-    padding-top: 124px;
+    padding-top: 148px;
 }
 .invoice-data-row.data-details {
-    padding-top: 153px;
+    padding-top: 112px;
     font-size: 12px;
     text-align: center;
     padding-left: 45px;
-}
-.clean {
-    height: 70px;
-}
-.invoice-data-row-td.table-totals {
-    line-height: 10px;
-}
-.invoice-data-row-td.table-totals.first {
-    padding-top: 10px;
-}
-.first-table.listing {
-    height: 220px;
-    background: #fff;
 }
