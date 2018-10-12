@@ -1,21 +1,29 @@
 <?php
 
+// namespace
 namespace App\Services;
 
+// use
 use App\Models\FTPUser;
 use App\Models\Brand;
 
+/**
+ * Class FTPService
+ *
+ * @package App\Services
+ */
 class FTPService
 {
     /**
      * @param Brand $brand
+     * @param string $password
      * @return FTPUser
      */
-    public static function makeFTPUserForBrand(Brand $brand): FTPUser
+    public static function makeFTPUserForBrand(Brand $brand, $password): FTPUser
     {
         return new FTPUser([
-            'userid' => self::getUniqueUserId(),
-            'passwd' => str_random(8),
+            'userid' => $brand->user->email,
+            'passwd' => $password,
             'homedir' => storage_path('app/brands/'.$brand->getImagePath()),
             'uid' => 33,
             'gid' => 33

@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Mail;
 
 /**
  * Class BrandController
+ *
  * @package App\Http\Controllers\Api
  */
 class BrandController extends Controller

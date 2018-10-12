@@ -291,27 +291,32 @@ class MediaController extends Controller
          * @var Media\Category $category
          */
         if ($request->input('category.label', false)) {
-            $category = Media\Category::firstOrCreate(['name' => $request->input('category.label')],
-                ['brand_id' => $media->brand->id]);
+            $category = Media\Category::firstOrCreate(
+                ['name' => $request->input('category.label'), 'brand_id' => $media->brand->id]
+            );
             $media->category_id = $category->id;
         }
 
         if ($request->input('category', false)) {
-            $category = Media\Category::firstOrCreate(['name' => $request->input('category')],
-                ['brand_id' => $media->brand->id]);
+            $category = Media\Category::firstOrCreate(
+                ['name' => $request->input('category'), 'brand_id' => $media->brand->id]
+            );
             $media->category_id = $category->id;
         }
 
         if ($request->input('supplier.label', false)) {
-            $supplier = Supplier::firstOrCreate(['name' => $request->input('supplier.label')],
-                ['brand_id' => $media->brand->id]);
+
+            $supplier = Supplier::firstOrCreate(
+                ['name' => $request->input('supplier.label'), 'brand_id' => $media->brand->id]
+            );
             $media->supplier_id = $supplier->id;
         }
 
         if ($request->input('supplier', false)) {
 
-            $supplier = Supplier::firstOrCreate(['name' => $request->input('supplier')],
-                ['brand_id' => $media->brand->id]);
+            $supplier = Supplier::firstOrCreate(
+                ['name' => $request->input('supplier'), 'brand_id' => $media->brand->id]
+            );
             $media->supplier_id = $supplier->id;
         }
 
@@ -354,28 +359,33 @@ class MediaController extends Controller
              * @var Supplier $supplier
              * @var Media\Category $category
              */
-            if ($request->input('form.category.label', false)) {
-                $category = Media\Category::firstOrCreate(['name' => $request->input('form.category.label')],
-                    ['brand_id' => $media->brand->id]);
+            if ($request->input('category.label', false)) {
+                $category = Media\Category::firstOrCreate(
+                    ['name' => $request->input('category.label'), 'brand_id' => $media->brand->id]
+                );
                 $media->category_id = $category->id;
             }
 
             if ($request->input('form.category', false)) {
-                $category = Media\Category::firstOrCreate(['name' => $request->input('form.category')],
-                    ['brand_id' => $media->brand->id]);
+                $category = Media\Category::firstOrCreate(
+                    ['name' => $request->input('category'), 'brand_id' => $media->brand->id]
+                );
                 $media->category_id = $category->id;
             }
 
-            if ($request->input('form.supplier.label', false)) {
-                $supplier = Supplier::firstOrCreate(['name' => $request->input('form.supplier.label')],
-                    ['brand_id' => $media->brand->id]);
+            if ($request->input('supplier.label', false)) {
+
+                $supplier = Supplier::firstOrCreate(
+                    ['name' => $request->input('supplier.label'), 'brand_id' => $media->brand->id]
+                );
                 $media->supplier_id = $supplier->id;
             }
 
-            if ($request->input('form.supplier', false)) {
+            if ($request->input('supplier', false)) {
 
-                $supplier = Supplier::firstOrCreate(['name' => $request->input('form.supplier')],
-                    ['brand_id' => $media->brand->id]);
+                $supplier = Supplier::firstOrCreate(
+                    ['name' => $request->input('supplier'), 'brand_id' => $media->brand->id]
+                );
                 $media->supplier_id = $supplier->id;
             }
 
@@ -468,7 +478,7 @@ class MediaController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws \Exception
      */
-    public function getMultiple(Request $request) : JsonResponse
+    public function getMultiple(Request $request): JsonResponse
     {
         $mediaFiles = (new Media)->whereIn('id', $request->input('media'))->get();
         return new JsonResponse(new TransformerEngine($mediaFiles, new MediaTransformer()));
@@ -485,20 +495,17 @@ class MediaController extends Controller
     {
 
         if ($request->input('category.label', false)) {
-            $category = Media\Category::firstOrCreate(['name' => $request->input('category.label')]);
+            $category = Media\Category::firstOrCreate(
+                ['name' => $request->input('category.label'), 'brand_id' => $media->brand->id]
+            );
             $media->category_id = $category->id;
         }
 
         if ($request->input('supplier.label', false)) {
-            $supplier = Supplier::firstOrCreate(['name' => $request->input('supplier.label')],
-                ['brand_id' => $media->brand->id]);
-            $media->supplier_id = $supplier->id;
-        }
 
-        if ($request->input('supplier', false)) {
-
-            $supplier = Supplier::firstOrCreate(['name' => $request->input('supplier')],
-                ['brand_id' => $media->brand->id]);
+            $supplier = Supplier::firstOrCreate(
+                ['name' => $request->input('supplier.label'), 'brand_id' => $media->brand->id]
+            );
             $media->supplier_id = $supplier->id;
         }
 

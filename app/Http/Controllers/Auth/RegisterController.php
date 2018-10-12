@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Auth\Events\Registered;
 use LukeVear\LaravelTransformer\TransformerEngine;
+use Carbon;
 use Log;
 
 /**
@@ -47,10 +48,17 @@ class RegisterController extends Controller
     public function registerCreative(Request $request)
     {
         $this->validatorCreative($request->all())->validate();
+
         $user = $this->create($request->only('email', 'password'));
 
         $confirmationToken = md5(time());
         User::where('id', $user->id)->update(['confirmation_token' => $confirmationToken]);
+
+        // GDPR
+        User::where('id', $user->id)->update(['agree_privacy_policy' => Carbon\Carbon::now()]);
+        if ($request->get('newsletter')) {
+            User::where('id', $user->id)->update(['agree_newsletter' => Carbon\Carbon::now()]);
+        }
 
         try {
             $user->sendConfirmationEmail($confirmationToken);
@@ -90,44 +98,44 @@ class RegisterController extends Controller
      */
     public function registerBrand(Request $request)
     {
-        $data = $request->all();
-        $validator = $this->validatorBrand($data);
+        $this->validatorBrand($request->all())->validate();
 
-        if (!$validator->fails()) {
+        $user = $this->create($request->only('email', 'password'));
+        $confirmationToken = md5(time());
+        User::where('id', $user->id)->update(['confirmation_token' => $confirmationToken]);
 
-            Log::info('We are here');
-            $user = $this->create($request->only('email', 'password'));
-            $confirmationToken = md5(time());
-            User::where('id', $user->id)->update(['confirmation_token' => $confirmationToken]);
-
-            try {
-                $user->sendConfirmationEmail($confirmationToken);
-            } catch (\Exception $e) {
-                $user->delete();
-                return new JsonResponse(['error' => true]);
-                throw new \Exception($e);
-            }
-
-            event(new Registered($user));
-
-            /**
-             * @var Brand $brand
-             */
-            $brand = $user->brand()->create($request->except('email', 'password'));
-
-            $brand->makeHomeDir();
-            $ftpUser = FTPService::makeFTPUserForBrand($brand);
-            $ftpUser->save();
-
-            $brand->ftpUser()->associate($ftpUser);
-            $brand->save();
-
-            $this->guard()->login($user);
-
-            return $this->registered($user) ?: redirect($this->redirectPath());
-        } else {
-            return redirect()->back()->withErrors($validator);
+        // GDPR
+        User::where('id', $user->id)->update(['agree_privacy_policy' => Carbon\Carbon::now()]);
+        if ($request->get('newsletter')) {
+            User::where('id', $user->id)->update(['agree_newsletter' => Carbon\Carbon::now()]);
         }
+
+        try {
+            $user->sendConfirmationEmail($confirmationToken);
+        } catch (\Exception $e) {
+            $user->delete();
+            return new JsonResponse(['error' => true]);
+            throw new \Exception($e);
+        }
+
+        event(new Registered($user));
+
+        /**
+         * @var Brand $brand
+         */
+        $brand = $user->brand()->create($request->except('email', 'password'));
+
+        $brand->makeHomeDir();
+        $ftpUser = FTPService::makeFTPUserForBrand($brand, $request->get('password'));
+        $ftpUser->save();
+
+        $brand->ftpUser()->associate($ftpUser);
+        $brand->save();
+
+        $this->guard()->login($user);
+
+        return $this->registered($user) ?: redirect($this->redirectPath());
+
     }
 
     /**
@@ -173,6 +181,8 @@ class RegisterController extends Controller
             'first_name' => 'required|min:2',
             'last_name' => 'required|min:2',
             'company' => 'required|min:2',
+            'terms_conditions' => 'accepted',
+            'privacy_policy' => 'accepted'
         ]);
     }
 
@@ -200,7 +210,9 @@ class RegisterController extends Controller
             'phone' => 'required',
             'contact_first_name' => 'required',
             'contact_last_name' => 'required',
-            'contact_title' => 'string|max:255|nullable'
+            'contact_title' => 'string|max:255|nullable',
+            'terms_conditions' => 'accepted',
+            'privacy_policy' => 'accepted'
         ]);
     }
 

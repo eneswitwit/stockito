@@ -1,7 +1,9 @@
 <?php
 
+// namespace
 namespace App\Admin\ModelConfiguration;
 
+// use
 use App\Models\Plan;
 use App\Models\Product;
 use App\Repositories\ProductRepository;
@@ -37,7 +39,7 @@ use Stripe\Error\InvalidRequest;
     $model->onCreate(function () {
         return (new FormPanel())->setItems([
             (new Select('product_id', 'Product', Product::class))->setDisplay('name')->required(),
-            (new Text('price', 'Annually Price ($)'))->setValidationRules('numeric')->required(),
+            (new Text('price', 'Annually Price (€)'))->setValidationRules('numeric')->required(),
             (new Select('interval', 'Interval'))->setOptions(Plan::getIntervalTitles())->required(),
         ]);
     });

@@ -35,10 +35,11 @@
                         </card>
                         <br/>
                         <card v-if="brand">
-                            <p> Videos (FTP Upload) </p>
-                            <p> Host {{ brand.ftp.host }} </p>
+                            <p> Videos (SFTP Upload) </p>
+                            <p> Host stockito.com </p>
+                            <p> Port 2222 </p>
                             <p> User {{ brand.ftp.user }} </p>
-                            <p> Password {{ brand.ftp.password }} </p>
+                            <p> Password Your account password </p>
                             <ul>
                                 <li> Only MP4 files allowed </li>
                             </ul>

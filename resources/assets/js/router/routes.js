@@ -17,6 +17,9 @@ const PasswordReset = () => import('~/pages/auth/password/reset').then(m => m.de
 const PasswordRequest = () => import('~/pages/auth/password/email').then(m => m.default || m)
 const EmailConfirmation = () => import('~/pages/auth/password/emailConfirmation').then(m => m.default || m)
 
+const TermsConditions = () => import('~/pages/terms').then(m => m.default || m)
+const PrivacyPolicy = () => import('~/pages/privacy').then(m => m.default || m)
+
 const Payment = () => import('~/pages/payment/payment').then(m => m.default || m)
 const PaymentDetails = () => import('~/pages/payment/PaymentDetails').then(m => m.default || m)
 const SelectPlan = () => import('~/pages/brand/ChoicePlanComponent').then(m => m.default || m)
@@ -43,6 +46,11 @@ export default [
     {path: '/password/reset', name: 'password.request', component: PasswordRequest},
     {path: '/password/reset/:token', name: 'password.reset', component: PasswordReset},
     {path: '/email/confirm/:confirmationToken', name: 'email.confirm', component: EmailConfirmation},
+
+    // GDPR
+
+    {path: '/terms-and-conditions', name: 'gdpr.terms-conditions', component: TermsConditions},
+    {path: '/privacy-policy', name: 'gdpr.privacy-policy', component: PrivacyPolicy},
 
     {path: '/dashboard', name: 'dashboard', component: Dashboard},
     {path: '/brand/details/:id', name: 'creative.brand.details', component: Dashboard},

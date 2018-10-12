@@ -71,7 +71,7 @@
                 </button>
             </div>
 
-            <div class="form-group">
+            <div v-if="media.license" class="form-group">
                 <button class="btn btn-primary" type="submit" @click="clearAll()">Submit</button>
             </div>
 
@@ -144,7 +144,7 @@
                 </button>
             </div>
 
-            <div class="form-group">
+            <div v-if="media.license" class="form-group">
                 <button class="btn btn-primary" type="submit">Submit</button>
             </div>
 
@@ -339,8 +339,13 @@
                 if (value.category) {
                     this.form.category = {label: value.category.name, value: value.category.id};
                 }
+                if(value.supplier) {
+                    console.log('set value supplier');
+                    this.form.supplier = value.supplier;
+                }
                 this.form.language = value.language;
                 this.form.source = value.source;
+
             },
 
             async getCategories() {

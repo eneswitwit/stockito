@@ -52,7 +52,7 @@
                         <option v-for="supplier in suppliers" :value="supplier.id">{{ supplier.name }}</option>
                     </select>
                 </div>
-                <div class="form-group">
+                <!--<div class="form-group">
                     <label for="filter-orientation">Orientation</label>
                     <select id="filter-orientation" v-model="localFilter.orientation" @change="setFilter"
                             class="form-control">
@@ -60,7 +60,7 @@
                         <option value="portrait">Portrait</option>
                         <option value="landscape">Landscape</option>
                     </select>
-                </div>
+                </div>-->
             </div>
         </div>
     </div>

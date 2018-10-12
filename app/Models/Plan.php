@@ -72,7 +72,7 @@ class Plan extends Model
      * @var array
      */
     protected $attributes = [
-        'currency' => self::CURRENCY_USD
+        'currency' => self::CURRENCY_EUR
     ];
 
     /**
@@ -151,7 +151,7 @@ class Plan extends Model
      */
     public function getCurrencySymbol(): ?string
     {
-        return Arr::get(self::getCurrencySymbols(), $this->currency, null);
+        return Arr::get(self::getCurrencySymbols(), $this->currency, '€');
     }
 
     /**

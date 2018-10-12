@@ -26,10 +26,14 @@ use App\Notifications\ResetPassword as ResetPasswordNotification;
  * @property string|null $remember_token
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
+ * @property \Carbon\Carbon|null $agree_newsletter
+ * @property \Carbon\Carbon|null $agree_privacy_policy
+ *
  * @property string|null $stripe_id
  * @property string|null $card_brand
  * @property string|null $card_last_four
  * @property string|null $trial_ends_at
+ *
  * @property int $enabled
  * @property string|null $confirmation_token
  * @property int|null $plan_id
@@ -79,7 +83,7 @@ class User extends Authenticatable implements JWTSubject
     protected $fillable = [
         'name',
         'email',
-        'password',
+        'password'
     ];
 
     /**

@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Requests\Subscriptions\PaySubscriptionRequest;
 use App\Http\Requests\Subscriptions\SwapSubscriptionRequest;
 use App\Models\Plan;
+use App\Models\GDPR;
 use App\Models\Subscription;
 use App\Models\User;
 use App\Transformers\UserTransformer;
@@ -16,6 +17,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use LukeVear\LaravelTransformer\TransformerEngine;
 use Stripe\Error\InvalidRequest;
+use Log;
 
 /**
  * Class SubscriptionController
@@ -52,6 +54,12 @@ class SubscriptionController extends Controller
             // Delete if there are any downgrade plans
             Subscription::where('user_id', $user->id)->first()->cancelDowngrade();
 
+            // Create GDPR entry
+            $gdpr = new GDPR;
+            $gdpr->user_id = $user->id;
+            $gdpr->stripe_plan_id = $plan->stripe_id;
+            $gdpr->save();
+
 
         } catch (InvalidRequest $exception) {
             return new JsonResponse(['success' => false, 'errors' => ['voucher' => $exception->getMessage()]]);
@@ -84,10 +92,63 @@ class SubscriptionController extends Controller
         try {
 
             Subscription::where('user_id', $user->id)->first()->downgradeToPlan($stripePlan->id);
+            $user->subscription('main')->resume();
+            // Create GDPR entry
+            $gdpr = new GDPR;
+            $gdpr->user_id = $user->id;
+            $gdpr->stripe_plan_id = $plan->stripe_id;
+            $gdpr->save();
 
         } catch (InvalidRequest $exception) {
             return new JsonResponse(['success' => false, 'errors' => ['voucher' => $exception->getMessage()]]);
         }
+        return new JsonResponse(['success' => true, 'data' => new TransformerEngine($user, new UserTransformer())]);
+    }
+
+    /**
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     */
+    public function downgradeSubscription(Request $request): JsonResponse
+    {
+
+        /**
+         * @var User $user
+         */
+        $user = $request->user();
+
+        /**
+         * @var Plan $plan
+         */
+        $plan = (new Plan)->where('id', $request->input('plan.id'))->first();
+        Log::info($plan);
+
+
+        // Stripe plan
+        $stripePlan = $plan->getStripePlan();
+
+        // downgrade
+        $subscription = $user->subscription('main');
+        $subscription->cancel();
+        Subscription::where('user_id', $user->id)->first()->downgradeToPlan($stripePlan->id);
+
+        $newSub = $user->newSubscription('main', $stripePlan->id)->create();
+
+        $stripeNewSub = $newSub->asStripeSubscription();
+        $stripeNewSub->plan = $stripePlan;
+        $stripeNewSub->cancel_at_period_end = false;
+        $stripeNewSub->prorate = false;
+        $stripeNewSub->trial_end = $subscription->ends_at;
+        $stripeNewSub->save();
+
+        // Create GDPR entry
+        $gdpr = new GDPR;
+        $gdpr->user_id = $user->id;
+        $gdpr->stripe_plan_id = $plan->stripe_id;
+        $gdpr->save();
+
         return new JsonResponse(['success' => true, 'data' => new TransformerEngine($user, new UserTransformer())]);
     }
 
@@ -154,6 +215,12 @@ class SubscriptionController extends Controller
         // Update expiration date
         User::where('id', $user->id)->update(['trial_ends_at' => $expirationDate]);
 
+        // Create GDPR entry
+        $gdpr = new GDPR;
+        $gdpr->user_id = $user->id;
+        $gdpr->stripe_plan_id = $plan->stripe_id;
+        $gdpr->save();
+
         return new JsonResponse(['success' => true, 'data' => new TransformerEngine($user, new UserTransformer())]);
     }
 
@@ -182,7 +249,7 @@ class SubscriptionController extends Controller
 
         return new JsonResponse([
             'canceled' => false,
-            'message' => 'User is not subscriber!',
+            'message' => 'User is not subscribed.',
             'data' => new TransformerEngine($user, new UserTransformer())
         ]);
     }

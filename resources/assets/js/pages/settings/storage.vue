@@ -12,13 +12,17 @@
 
         <div class="card">
 
-            <div class="card-header">FTP Access</div>
+            <div class="card-header">SFTP Access</div>
 
             <table class="table">
                 <tbody>
                 <tr>
                     <th>Host</th>
-                    <td>{{ brand.ftp.host }}</td>
+                    <td>stockito.com</td>
+                </tr>
+                <tr>
+                    <th>Port</th>
+                    <td>2222</td>
                 </tr>
                 <tr>
                     <th>User</th>
@@ -26,7 +30,7 @@
                 </tr>
                 <tr>
                     <th>Password</th>
-                    <td>{{ brand.ftp.password }}</td>
+                    <td> Your account password</td>
                 </tr>
                 </tbody>
             </table>

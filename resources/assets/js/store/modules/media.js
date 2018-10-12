@@ -82,13 +82,23 @@ export const mutations = {
         state.medias = []
     },
     [types.SET_FILTER](state, {filter}) {
-        state.filter = filter;
+        if(state.filter.q !== undefined) {
+            if(filter === "") {
+                var newFilter = {};
+                newFilter["q"]  = state.filter.q;
+                state.filter = newFilter;
+            } else {
+                filter["q"] = state.filter.q;
+                state.filter = filter;
+            }
+        } else {
+            state.filter = filter;
+        }
     },
     [types.SET_SELECTED_MEDIA](state, {selectedMedia}) {
         state.selectedMedia = selectedMedia;
     },
     [types.SET_FILTER_QUERY](state, {query}) {
-        console.log('Set Filter query ' + query);
         state.filter = query;
     },
     [types.FETCH_PROCESSING_SUCCESS](state, {processing}) {

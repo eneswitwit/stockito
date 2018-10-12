@@ -1,20 +1,38 @@
 <template>
-    <div class="container mt-4">
+    <div class="container mt-4 mb-2">
         <b-row>
             <b-col>
                 <plans-list-component @select-plan="changePlan" :plans="plans"
                                       :currentPlan="currentPlan"></plans-list-component>
             </b-col>
         </b-row>
-        <b-row v-if="selectedPlanId" :class="'text-right mt-4 mb-4'">
+        <b-row>
             <b-col>
-                <router-link class="btn btn-success btn-block" :to="{name: 'payment', params: {id: selectedPlanId}}">
+                <card :title="'Terms and Conditions'" :class="'mt-2 mb-4'">
+                    <div class="form-check">
+                        <input type="checkbox" v-model="checked" class="form-check-input col-md-2"
+                               name="terms_conditions" id="terms_conditions">
+                        <label class="form-check-label" for="terms_conditions">
+                            I have read and accept the Stockito <u>
+                            <router-link :to="{ name: 'gdpr.terms-conditions' }">
+                                Terms and Conditions
+                            </router-link>
+                        </u> <strong>
+                            (required) </strong>
+                        </label>
+                    </div>
+                </card>
+            </b-col>
+        </b-row>
+        <b-row v-if="selectedPlanId && checked" :class="'text-right mb-4'">
+            <b-col>
+                <router-link class="btn btn-success btn-block"
+                             :to="{name: 'payment', params: {id: selectedPlanId}}">
                     {{ $t('pay') }}
                 </router-link>
             </b-col>
         </b-row>
     </div>
-
 </template>
 
 <script>
@@ -38,7 +56,8 @@
         data: () => ({
             plans: [],
             currentPlan: null,
-            selectedPlanId: null
+            selectedPlanId: null,
+            checked: false
         }),
 
         methods: {

@@ -1,7 +1,9 @@
 <?php
 
+// namesapce
 namespace App\Models;
 
+// use
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

@@ -1,7 +1,9 @@
 <?php
 
+// namespace
 namespace App\Models;
 
+// use
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -62,7 +64,7 @@ class FTPUser extends Model
      */
     public function getFtpGroup(): ?FTPGroup
     {
-        return (new FTPGroup)->where('members', 'LIKE', '%'.$this->groupname.'%')->first();
+        return (new FTPGroup)->where('members', 'LIKE', '%' . $this->groupname . '%')->first();
     }
 
     /**
@@ -85,7 +87,7 @@ class FTPUser extends Model
     /**
      * @return FTPGroup|null
      */
-    public function getFtpGroupAttribute (): ?FTPGroup
+    public function getFtpGroupAttribute(): ?FTPGroup
     {
         return $this->getFtpGroup();
     }

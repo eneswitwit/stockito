@@ -1,7 +1,9 @@
 <?php
 
+// namespace
 namespace App\Repositories;
 
+// use
 use App\Models\FTPGroup;
 use App\Models\FTPQuotaLimits;
 use App\Models\Plan;
@@ -18,7 +20,7 @@ use Stripe\Plan as StripePlan;
  */
 class ProductRepository implements ProductRepositoryInterface
 {
-    public const CURRENCY = 'usd';
+    public const CURRENCY = 'eur';
     public const INTERVAL = ['day', 'week', 'month', 'year'];
 
     /**

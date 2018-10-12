@@ -1,7 +1,9 @@
 <?php
 
+// namespace
 namespace App\Services;
 
+// use
 use App\Managers\MediaManager;
 use App\Managers\Processors\Mp4FileProcessor;
 use App\Models\Brand;
@@ -11,6 +13,11 @@ use FFMpeg\FFMpeg;
 use Illuminate\Http\Request;
 use Intervention\Image\ImageManager;
 
+/**
+ * Class UploadService
+ *
+ * @package App\Services
+ */
 class UploadService
 {
     /**
@@ -25,6 +32,7 @@ class UploadService
 
     /**
      * UploadService constructor.
+     *
      * @param MediaManager $mediaManager
      */
     public function __construct(MediaManager $mediaManager, ImageManager $imageManager)
@@ -35,13 +43,14 @@ class UploadService
 
     /**
      * @param Brand $brand
+     *
      * @return array
      */
     public static function calculateUsedStorage(Brand $brand): array
     {
         $sData = [];
 
-        $dir = storage_path('app/brands/'.$brand->getImagePath());
+        $dir = storage_path('app/brands/' . $brand->getImagePath());
 
 //        $sData['photo'] = self::folderSize($dir, ['jpg', 'pjpg', 'jpeg']);
 //        $sData['illustration'] = self::folderSize($dir, ['ai', 'eps']);
@@ -54,16 +63,18 @@ class UploadService
 
     /**
      * @param Brand $brand
+     *
      * @return int
      */
     public static function calculateUsedStorageFull(Brand $brand): int
     {
-        $dir = storage_path('app/brands/'.$brand->getImagePath());
+        $dir = storage_path('app/brands/' . $brand->getImagePath());
         return self::folderSize($dir);
     }
 
     /**
      * @param Brand $brand
+     *
      * @return array
      */
     public static function formatedUsedStorage(Brand $brand): array
@@ -71,7 +82,7 @@ class UploadService
         $sData = self::calculateUsedStorage($brand);
 
         foreach ($sData as $key => $data) {
-            $sData[$key.'Formated'] = self::getUnitsOfBytes($sData[$key]);
+            $sData[$key . 'Formated'] = self::getUnitsOfBytes($sData[$key]);
         }
 
         return $sData;
@@ -80,23 +91,24 @@ class UploadService
     /**
      * @param string $dir
      * @param array $extensions
+     *
      * @return int
      */
     protected static function folderSize(string $dir, array $extensions = []): int
     {
         $size = 0;
-        foreach (glob(rtrim($dir, '/').'/*', GLOB_NOSORT) as $each) {
+        foreach (glob(rtrim($dir, '/') . '/*', GLOB_NOSORT) as $each) {
             if ($extensions) {
                 if (is_file($each) && \in_array((new \SplFileInfo($each))->getExtension(), $extensions)) {
-                    $size +=  filesize($each);
+                    $size += filesize($each);
                 } else {
-                    $size +=  self::folderSize($each, $extensions);
+                    $size += self::folderSize($each, $extensions);
                 }
             } else {
                 if (is_file($each)) {
-                    $size +=  filesize($each);
+                    $size += filesize($each);
                 } else {
-                    $size +=  self::folderSize($each);
+                    $size += self::folderSize($each);
                 }
             }
 
@@ -107,9 +119,10 @@ class UploadService
     /**
      * @param int $bytes
      * @param int $precision
+     *
      * @return string
      */
-    public static function getUnitsOfBytes (int $bytes, int $precision = 2): string
+    public static function getUnitsOfBytes(int $bytes, int $precision = 2): string
     {
         $units = ['B', 'KB', 'MB', 'GB', 'TB'];
 
@@ -118,7 +131,7 @@ class UploadService
         $pow = min($pow, \count($units) - 1);
 
         // Uncomment one of the following alternatives
-         $bytes /= 1000 ** $pow;
+        $bytes /= 1000 ** $pow;
 //         $bytes /= (1 << (10 * $pow));
 
         return round($bytes, $precision) . ' ' . $units[$pow];
@@ -126,18 +139,19 @@ class UploadService
 
     /**
      * @param Media $media
+     *
      * @return bool
      * @throws \Exception
      */
     public function removeMedia(Media $media): bool
     {
         $status = true;
-        if (file_exists(storage_path('app/brands/'.$media->getFilePath()))) {
-            $status = $status && unlink(storage_path('app/brands/'.$media->getFilePath()));
+        if (file_exists(storage_path('app/brands/' . $media->getFilePath()))) {
+            $status = $status && unlink(storage_path('app/brands/' . $media->getFilePath()));
         }
 
-        if (file_exists(storage_path('app/brands_thumbnail/'.$media->getFilePath()))) {
-            $status = $status && unlink(storage_path('app/brands_thumbnail/'.$media->getFilePath()));
+        if (file_exists(storage_path('app/brands_thumbnail/' . $media->getFilePath()))) {
+            $status = $status && unlink(storage_path('app/brands_thumbnail/' . $media->getFilePath()));
         }
 
         return $status && $media->delete();
@@ -146,6 +160,7 @@ class UploadService
     /**
      * @param Request $request
      * @param Brand $brand
+     *
      * @return Media
      * @throws \Exception
      */
@@ -154,18 +169,18 @@ class UploadService
         if ($brand->user->cant('upload', Media::class)) {
             throw new \LogicException('You can\'t upload more files');
         }
-        $file  = $request->file('file');
+        $file = $request->file('file');
         if (self::calculateUsedStorageFull($brand) + $file->getSize() >= $brand->getProduct()->storage) {
             throw new \LogicException('This file bigger than you have the free space');
         }
 
         $media = new Media([
-            'file_name'    => Media::FILE_PREFIX . $file->hashName(),
-            'origin_name'  => $file->getClientOriginalName(),
+            'file_name' => Media::FILE_PREFIX . $file->hashName(),
+            'origin_name' => $file->getClientOriginalName(),
             'content_type' => $file->getMimeType(),
-            'file_size'    => $file->getSize(),
-            'brand_id'     => $brand->id,
-            'dir'          => $brand->getImagePath()
+            'file_size' => $file->getSize(),
+            'brand_id' => $brand->id,
+            'dir' => $brand->getImagePath()
         ]);
 
         if (\in_array($file->getClientOriginalExtension(), ['ai', 'eps'])) {
@@ -173,8 +188,8 @@ class UploadService
             $image = new \Imagick();
             $image->readImage($file->getRealPath());
             $image->thumbnailImage(640, 480);
-            $image->writeImage(storage_path('app/brands_thumbnail/'.$media->brand->id.'/'.$media->file_name.'.png'));
-            $media->thumbnail = $media->file_name.'.png';
+            $image->writeImage(storage_path('app/brands_thumbnail/' . $media->brand->id . '/' . $media->file_name . '.png'));
+            $media->thumbnail = $media->file_name . '.png';
             $media->width = $image->getImageWidth();
             $media->height = $image->getImageHeight();
         } elseif (\in_array($file->getClientOriginalExtension(), ['mp4'])) {
@@ -196,8 +211,10 @@ class UploadService
 
         try {
             $media->title = $media->getIPTC() ? $media->getIPTC()->getTitle() : '';
-        } catch (\Exception $exception) {}
-        $media->keywords = $media->getEXIF() && $media->getEXIF()->getKeywords() ? implode(', ', $media->getEXIF()->getKeywords()) : '';
+        } catch (\Exception $exception) {
+        }
+        $media->keywords = $media->getEXIF() && $media->getEXIF()->getKeywords() ? implode(', ',
+            $media->getEXIF()->getKeywords()) : '';
         $media->source = $media->getEXIF() && $media->getEXIF()->getSource() ? $media->getEXIF()->getSource() : '';
         $media->save();
 
@@ -206,19 +223,27 @@ class UploadService
 
     /**
      * @param \Intervention\Image\Image $image
+     *
      * @return \Intervention\Image\Image
      */
-    public static function makeThumbnail (\Intervention\Image\Image $image): \Intervention\Image\Image
+    public static function makeThumbnail(\Intervention\Image\Image $image): \Intervention\Image\Image
     {
-        return $image->fit(640, 480);
+        $width = $image->width();
+        $height = $image->height();
+        $image->width() < $image->height() ? $width=null : $height=null;
+        return $image->resize($width, $height, function ($constraint) {
+            $constraint->aspectRatio();
+            $constraint->upsize();
+        });
     }
 
     /**
      * @param Media $media
      * @param $file
+     *
      * @return Media
      */
-    public function setVideoData (Media $media, $file, $brand)
+    public function setVideoData(Media $media, $file, $brand)
     {
         $ffmpeg = FFMpeg::create([
             'ffmpeg.binaries' => '/usr/bin/ffmpeg',
@@ -229,11 +254,11 @@ class UploadService
 
         $video = $ffmpeg->open($file->getRealPath());
         $frameImage = $video->frame(TimeCode::fromSeconds(1));
-        $frameImage->save(storage_path('app/brands_thumbnail/'.$brand->id.'/'.$file->getBasename().'.jpg'));
-        $media->thumbnail = $file->getBasename().'.jpg';
+        $frameImage->save(storage_path('app/brands_thumbnail/' . $brand->id . '/' . $file->getBasename() . '.jpg'));
+        $media->thumbnail = $file->getBasename() . '.jpg';
         $media->width = 0;
         $media->height = 0;
-        $media->orientation  = $media->width >= $media->height ? Media::LANDSCAPE : Media::PORTRAIT;
+        $media->orientation = $media->width >= $media->height ? Media::LANDSCAPE : Media::PORTRAIT;
         return $media;
     }
 }

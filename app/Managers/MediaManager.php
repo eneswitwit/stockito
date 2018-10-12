@@ -1,7 +1,9 @@
 <?php
 
+// namespace
 namespace App\Managers;
 
+// use
 use App\Models\FTPFile;
 use App\Models\Media;
 use Illuminate\Http\File;
@@ -9,8 +11,14 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Constraint;
 use Intervention\Image\Image;
+use Log;
 use Intervention\Image\ImageManager;
 
+/**
+ * Class MediaManager
+ *
+ * @package App\Managers
+ */
 class MediaManager implements FTPFilesManagerInterface
 {
     /**
@@ -30,6 +38,7 @@ class MediaManager implements FTPFilesManagerInterface
 
     /**
      * MediaManager constructor.
+     *
      * @param ImageManager $imageManager
      */
     public function __construct(ImageManager $imageManager)
@@ -60,39 +69,50 @@ class MediaManager implements FTPFilesManagerInterface
 
     /**
      * @param Media $media
+     *
      * @return Media
      */
     public function setSizes(Media $media): Media
     {
         $media->width = $this->image->width();
         $media->height = $this->image->height();
-        $media->orientation  = $media->width < $media->height ? Media::PORTRAIT : Media::LANDSCAPE;
+        $media->orientation = $media->width < $media->height ? Media::PORTRAIT : Media::LANDSCAPE;
         return $media;
     }
 
     /**
      * @return Image
      */
-    public function makeThumbnail (): Image
+    public function makeThumbnail(): Image
     {
-        $this->thumbnail = $this->image->fit(640, 480, function (Constraint $constraint) {
-            $constraint->aspectRatio();
-        });
+        if ($this->image->width() > $this->image->height()) {
+            $this->thumbnail = $this->image->resize(640, null, function (Constraint $constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
+        } else {
+            $this->thumbnail = $this->image->resize(null, 640, function (Constraint $constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
+        }
         return $this->thumbnail;
     }
 
     /**
      * @param Media $media
      * @param Image $image
+     *
      * @return bool
      */
-    protected function storeThumbnail (Media $media, Image $image): bool
+    protected function storeThumbnail(Media $media, Image $image): bool
     {
-        return Storage::disk('brands_thumbnail')->put($media->getFilePath(), (string) $image->encode());
+        return Storage::disk('brands_thumbnail')->put($media->getFilePath(), (string)$image->encode());
     }
 
     /**
      * @param Media $media
+     *
      * @return bool
      */
     public function makeAndStoreThumbnail(Media $media): bool
@@ -103,26 +123,30 @@ class MediaManager implements FTPFilesManagerInterface
     /**
      * @param Media $media
      * @param UploadedFile $file
+     *
      * @return bool
      *
      */
     public function storeMedia(Media $media, UploadedFile $file): bool
     {
-        return \Storage::disk('brands')->putFileAs($media->brand->getImagePath(), $file, Media::FILE_PREFIX . $file->hashName());
+        return \Storage::disk('brands')->putFileAs($media->brand->getImagePath(), $file,
+            Media::FILE_PREFIX . $file->hashName());
     }
 
     /**
      * @param Media $media
      * @param UploadedFile $file
+     *
      * @return bool
      */
-    public function storeImageWithThumbnail (Media $media, UploadedFile $file): bool
+    public function storeImageWithThumbnail(Media $media, UploadedFile $file): bool
     {
-       return $this->storeMedia($media, $file) && $this->makeAndStoreThumbnail($media);
+        return $this->storeMedia($media, $file) && $this->makeAndStoreThumbnail($media);
     }
 
     /**
      * @param Media $media
+     *
      * @return string
      */
     public static function getThumbnailUrl(Media $media): string
@@ -137,6 +161,7 @@ class MediaManager implements FTPFilesManagerInterface
 
     /**
      * @param Media $media
+     *
      * @return string
      */
     public static function getMediaUrl(Media $media): string
@@ -152,24 +177,27 @@ class MediaManager implements FTPFilesManagerInterface
 
     /**
      * @param Media $media
+     *
      * @return bool
      */
-    public static function hasMediaFile (Media $media): bool
+    public static function hasMediaFile(Media $media): bool
     {
         return Storage::disk('brands')->exists($media->getFilePath());
     }
 
     /**
      * @param Media $media
+     *
      * @return bool
      */
-    public static function hasThumbnail (Media $media): bool
+    public static function hasThumbnail(Media $media): bool
     {
         return Storage::disk('brands_thumbnail')->exists($media->getFilePath());
     }
 
     /**
      * @param FTPFile $ftpFile
+     *
      * @return Media
      */
     public function getMediaForFTPFile(FTPFile $ftpFile): Media
@@ -206,14 +234,17 @@ class MediaManager implements FTPFilesManagerInterface
 
     /**
      * @param Media $media
+     *
      * @return Media
      */
     public function readMetaData(Media $media): Media
     {
         try {
             $media->title = $media->getIPTC() ? $media->getIPTC()->getTitle() : '';
-        } catch (\Exception $exception) {}
-        $media->keywords = $media->getEXIF() && $media->getEXIF()->getKeywords() ? implode(', ', $media->getEXIF()->getKeywords()) : '';
+        } catch (\Exception $exception) {
+        }
+        $media->keywords = $media->getEXIF() && $media->getEXIF()->getKeywords() ? implode(', ',
+            $media->getEXIF()->getKeywords()) : '';
         $media->source = $media->getEXIF() && $media->getEXIF()->getSource() ? $media->getEXIF()->getSource() : '';
         return $media;
     }

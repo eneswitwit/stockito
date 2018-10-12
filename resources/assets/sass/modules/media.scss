@@ -40,6 +40,8 @@
     position: relative;
 
     img {
+      height: 300px;
+      width: auto;
       cursor: pointer;
     }
   }
@@ -51,7 +53,7 @@
   }
   .wrapper-img {
     cursor: pointer;
-    height: 204px;
+    height: 300px;
     position: relative;
     background: #000;
   }
@@ -60,14 +62,6 @@
   }
   .card-img-top {
     position: relative;
-    max-width: unset;
-    width: unset;
-    top: 50%;
-    -webkit-transform: translateY(-50%);
-    -moz-transform: translateY(-50%);
-    -ms-transform: translateY(-50%);
-    -o-transform: translateY(-50%);
-    transform: translateY(-50%);
   }
   .play-button img {
     width: 90px;

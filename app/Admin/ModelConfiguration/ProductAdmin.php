@@ -65,8 +65,8 @@ use Stripe\Error\InvalidRequest;
             new Custom('Interval', function (Plan $plan) {
                 return $plan->getIntervalTitle();
             }),
-            new Custom('price', function (Plan $plan) {
-                return $plan->price.$plan->getCurrencySymbol();
+            new Custom('Price', function (Plan $plan) {
+                return $plan->price. $plan->getCurrencySymbol();
             }),
         ]);
 

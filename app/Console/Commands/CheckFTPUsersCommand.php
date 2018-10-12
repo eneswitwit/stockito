@@ -1,12 +1,18 @@
 <?php
 
+// namespace
 namespace App\Console\Commands;
 
+// use
 use App\Models\Brand;
-use App\Models\Media;
 use App\Services\FTPService;
 use Illuminate\Console\Command;
 
+/**
+ * Class CheckFTPUsersCommand
+ *
+ * @package App\Console\Commands
+ */
 class CheckFTPUsersCommand extends Command
 {
     /**
@@ -55,7 +61,7 @@ class CheckFTPUsersCommand extends Command
             $this->info('Checking brand '.$brand->id);
             if (!$this->FTPService::checkExistFTPUserForBrand($brand)) {
                 $this->info('Creating FTP user for brand '.$brand->id);
-                $ftpUser = $this->FTPService::makeFTPUserForBrand($brand);
+                $ftpUser = $this->FTPService::makeFTPUserForBrand($brand, $brand->user->password);
                 $ftpUser->save();
                 $brand->ftpUser()->associate($ftpUser);
                 $brand->save();

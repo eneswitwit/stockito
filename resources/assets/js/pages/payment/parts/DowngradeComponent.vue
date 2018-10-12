@@ -21,7 +21,8 @@
 
         data: () => ({
             user: null,
-            requesting: false
+            requesting: false,
+            errors: {}
         }),
 
         props: {
@@ -51,6 +52,23 @@
 
         methods: {
 
+            async downgradeSubscription() {
+
+                    axios.post('/api/subscription/downgrade', {
+                        plan: this.plan,
+                    }).then(({data}) => {
+                        this.requesting = false;
+                        if (data.success) {
+                            this.$store.dispatch('auth/fetchUser').then(() => {
+                                this.$router.push({name: 'dashboard'});
+                            });
+                        } else {
+                            this.errors = data.errors;
+                        }
+                    });
+
+            },
+
             getUser() {
                 this.user = this.$store.getters['auth/user'];
             },
@@ -60,23 +78,6 @@
 
             leftDays() {
                 return new Moment(new Moment(this.user.subscription.created_at.date).add(365, 'days')).diff(new Moment(), 'days');
-            },
-
-            async downgradeSubscription() {
-
-                this.requesting = true;
-                axios.post('/api/subscription/downgrade', {
-                    plan: this.plan,
-                }).then(({data}) => {
-                    this.requesting = false;
-                    if (data.success) {
-                        this.$store.dispatch('auth/fetchUser').then(() => {
-                            this.$router.push({name: 'dashboard'});
-                        });
-                    } else {
-                        this.errors = data.errors;
-                    }
-                });
             }
         }
     }
