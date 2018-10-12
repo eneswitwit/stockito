@@ -176,7 +176,6 @@ return [
         SleepingOwl\Admin\Providers\SleepingOwlServiceProvider::class,
         Longman\LaravelLodash\LodashServiceProvider::class,
         \LukeVear\LaravelTransformer\TransformerServiceProvider::class,
-        Barryvdh\DomPDF\ServiceProvider::class,
         Webpatser\Countries\CountriesServiceProvider::class,
         Yajra\DataTables\DataTablesServiceProvider::class,
         Laravel\Cashier\CashierServiceProvider::class,
@@ -194,7 +193,7 @@ return [
 		Yajra\DataTables\DataTablesServiceProvider::class,
 		Laravel\Cashier\CashierServiceProvider::class,
 		App\Providers\ViewComposerServiceProvider::class,
-
+        Barryvdh\Snappy\ServiceProvider::class
     ],
 
     /*
@@ -245,8 +244,9 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Countries' => Webpatser\Countries\CountriesFacade::class,
 		'Datatables' => Yajra\Datatables\Facades\Datatables::class,
-        'PDF' => Barryvdh\DomPDF\Facade::class,
-        'Image' => Intervention\Image\Facades\Image::class
+        'Image' => Intervention\Image\Facades\Image::class,
+        'PDF' => Barryvdh\Snappy\Facades\SnappyPdf::class,
+        'SnappyImage' => Barryvdh\Snappy\Facades\SnappyImage::class,
     ],
 
 ];
