@@ -18,7 +18,6 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Response;
 use LukeVear\LaravelTransformer\TransformerEngine;
-use Log;
 
 /**
  * Class LicensesController
@@ -82,27 +81,21 @@ class LicensesController extends Controller
     {
         $licensesId = array();
         $selectedMedia = $request->input('selectedMedia');
-        if(!is_array($selectedMedia)) {
+        if (!is_array($selectedMedia)) {
             $selectedMedia = explode(',', $selectedMedia);
         }
-        Log::info($selectedMedia);
 
-        foreach($selectedMedia as $mediaId) {
-            Log::info('we did it inside');
+        foreach ($selectedMedia as $mediaId) {
             $requestSingle = $request;
             $requestSingle->merge(['mediaId' => $mediaId]);
             $media = Media::find($mediaId);
-            Log::info($media);
             $licensesMedia = $media->licenses;
-            Log::info($licensesMedia);
-            if($licensesMedia->isEmpty()) {
-                Log::info('is empty');
+            if ($licensesMedia->isEmpty()) {
                 $license = $licenseModelManager->createFromRequest($requestSingle);
                 $licensesId[] = $license->id;
                 $media->license_id = $license->id;
                 $media->save();
             } else {
-                Log::info('not empty');
                 $licensesMedia[0] = $licenseModelManager->fillFromRequest($licensesMedia[0], $requestSingle);
                 $licensesId[] = $licensesMedia[0]->id;
             }

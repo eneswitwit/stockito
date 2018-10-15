@@ -42,16 +42,6 @@
                         {{ media.notes }}
                     </card>
 
-                    <card title="License Bill" v-if="media.license">
-                        <div v-if="media.license.billFile" class="row">
-                            <div class="col-lg-12 text-center">
-                                <a :href="media.license.url" class="btn btn-link btn block">
-                                    {{ media.license.billFileOriginName }}
-                                </a>
-                            </div>
-
-                        </div>
-                    </card>
                 </div>
 
 
@@ -70,21 +60,59 @@
                         <table class="table">
                             <thead>
                             <tr>
-                                <th>Usage</th>
-                                <th>Printrun</th>
-                                <th>Expiration</th>
-                                <th>Invoice</th>
+                                <th v-show="media.licenses[0].license_type == 2">
+                                    Usage
+                                </th>
+                                <th v-show="[1,2].indexOf(parseInt(media.licenses[0].license_type)) != -1">
+                                    Printrun
+                                </th>
+                                <th v-show="media.licenses[0].license_type == 4">
+                                    Any Limitations
+                                </th>
+                                <th v-show="media.licenses[0].license_type == 3">
+                                    Territory
+                                </th>
+                                <th>
+                                    Expiration
+                                </th>
+                                <th>
+                                    Invoice Number
+                                </th>
+                                <th>
+                                    Invoice
+                                </th>
                                 <th></th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr v-for="license in media.licenses">
-                                <td>{{ license.usage ? license.usage : '-' }}</td>
-                                <td>{{ license.printrun || license.printrun === "null" ? license.printrun : '-' }}</td>
-                                <td v-color-license:color="license">{{ license.expiredAt ? license.expiredAt.dMY : '-'
-                                    }}
+
+
+                            <tr v-if="media.licenses.length > 0" v-for="license in media.licenses[0].usageLicenses">
+
+                                <td v-show="media.licenses[0].license_type == 2">
+                                    {{ license.usage ? license.usage : '-' }}
                                 </td>
-                                <td>{{ license.invoiceNumber  ? license.invoiceNumber : '' }}
+                                <td v-show="[1,2].indexOf(parseInt(media.licenses[0].license_type)) != -1">
+                                    {{ license.printrun || license.printrun === "null" ? license.printrun : '-' }}
+                                </td>
+                                <td v-show="media.licenses[0].license_type == 4">
+                                    {{ license.any_limitations }}
+                                </td>
+                                <td v-show="media.licenses[0].license_type == 3">
+                                    {{ license.territory }}
+                                </td>
+                                <td v-color-license:color="license">
+                                    {{ license.expiredAt ? license.expiredAt.dMY : '-' }}
+                                </td>
+                                <td>
+                                    {{ license.invoiceNumber ? license.invoiceNumber : '' }}
+                                </td>
+                                <td>
+                                    <div v-if="license.billFile" class="row">
+                                        <a :href="license.url" class="btn btn-link btn block">
+                                            {{ license.billFileOriginName }}
+                                        </a>
+                                    </div>
                                 </td>
                                 <td v-if="canAccess(media)" class="text-right">
                                     <button type="button"
@@ -94,18 +122,20 @@
                                     </button>
                                 </td>
                             </tr>
+
+
                             </tbody>
                         </table>
+                        <button @click="showModal()" class="btn btn-primary btn-block"> Add new license </button>
                     </div>
                 </div>
             </div>
 
-            <set-license-modal-component
+            <set-usage-license-modal
                     :show.sync="showLicenseModal"
-                    :media="media"
-                    :license="currentLicense"
-                    :selectedMedia="selectedMedia"
-            ></set-license-modal-component>
+                    :parentLicense="media.licenses[0]"
+                    :license="license"
+            ></set-usage-license-modal>
 
             <share-media-modal-component
                     v-if="media"
@@ -122,8 +152,8 @@
     import Modal from '../../components/Modal/ModalLarge.vue';
     import ModalHeader from '../../components/Modal/ModalHeader.vue';
     import ModalBody from '../../components/Modal/ModalBody.vue';
+    import SetUsageLicenseModal from '../../components/Modals/SetUsageLicenseModal.vue';
     import {mapGetters} from 'vuex';
-    import axios from 'axios';
     import ShowMediaDetails from '../../pages/common/parts/ShowMediaDetails.vue';
     import Card from '../../components/Card.vue';
     import ShareMediaModalComponent from '../../components/Modals/ShareMediaModalComponent.vue';
@@ -134,9 +164,9 @@
 
     Vue.directive('color-license', ColorLicensesDirective);
 
-
     export default {
         name: 'ShowMediaDetailsModal',
+
         components: {
             Modal,
             ModalHeader,
@@ -146,34 +176,52 @@
             ShowMediaDetails,
             ColorLicensesDirective,
             VideoImageComponent,
-            SetLicenseModalComponent
+            SetLicenseModalComponent,
+            SetUsageLicenseModal
         },
+
         mixins: [CheckCreativePermission],
+
         computed: mapGetters({
             user: 'auth/user',
             selectedBrand: 'creative/selectedBrand',
             media: 'media/selectedMedia',
         }),
+
         data: () => ({
             shareMediaObjects: [],
             showShareModal: false,
             showLicenseModal: false,
-            currentLicense: false,
+            licenseTypes: false,
+            license: false,
+            parentLicense: false,
             selectedMedia: []
         }),
+
+        watch: {
+            show() {
+                this.media;
+            }
+        },
+
         props: {
             mediaId: {},
             show: {
                 'default': false
             },
         },
+
         methods: {
             onClose() {
                 this.$emit('close');
             },
             showModal(license) {
-                this.selectedMedia = [this.mediaId];
-                this.currentLicense = license;
+                if (typeof license === "undefined") {
+                    this.license = null;
+                } else {
+                    this.license = license;
+                }
+                this.parentLicense = this.media.licenses[0];
                 this.showLicenseModal = true;
             }
         },
@@ -182,7 +230,3 @@
         }
     }
 </script>
-
-<style scoped>
-
-</style>

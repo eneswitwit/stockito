@@ -38,8 +38,8 @@
                             <p> Videos (SFTP Upload) </p>
                             <p> Host stockito.com </p>
                             <p> Port 2222 </p>
-                            <p> User {{ brand.ftp.user }} </p>
-                            <p> Password Your account password </p>
+                            <p> User: Your accounts email </p>
+                            <p> Password: Your accounts password </p>
                             <ul>
                                 <li> Only MP4 files allowed </li>
                             </ul>

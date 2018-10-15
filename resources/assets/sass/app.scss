@@ -2,7 +2,11 @@
 @import 'variables';
 @import '~bootstrap/scss/bootstrap';
 @import '~bootstrap-vue/dist/bootstrap-vue.css';
+@import '~@fortawesome/fontawesome/styles.css';
 @import '~sweetalert2/src/sweetalert2';
+
+/** Basic Layout **/
+@import 'basic-layout';
 
 /** Stockito Custom SCSS **/
 @import 'elements/card';
@@ -29,3 +33,5 @@
 /** Fonts **/
 @import "~glyphicons-halflings/scss/glyphicons-halflings";
 @import 'elements/fonts';
+@import url('https://fonts.googleapis.com/css?family=Montserrat');
+@import url('https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css');

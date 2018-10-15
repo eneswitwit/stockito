@@ -1,13 +1,20 @@
 <?php
 
+// namespace
 namespace App\Providers;
 
-use App\Models\License;
+// use
+use App\Models\UsageLicense;
 use App\Models\Media;
-use App\Policies\License\LicensePolicy;
+use App\Policies\License\UsageLicensePolicy;
 use App\Policies\Media\MediaPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
+/**
+ * Class AuthServiceProvider
+ *
+ * @package App\Providers
+ */
 class AuthServiceProvider extends ServiceProvider
 {
     /**
@@ -18,7 +25,7 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         'App\Model' => 'App\Policies\ModelPolicy',
         Media::class => MediaPolicy::class,
-        License::class => LicensePolicy::class,
+        UsageLicense::class => UsageLicensePolicy::class,
     ];
 
     /**

@@ -1,12 +1,19 @@
 <?php
 
+// namespace
 namespace App\Policies\License;
 
-use App\Models\License;
+// use
+use App\Models\UsageLicense;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class LicensePolicy
+/**
+ * Class UsageLicensePolicy
+ *
+ * @package App\Policies\License
+ */
+class UsageLicensePolicy
 {
     use HandlesAuthorization;
 
@@ -20,10 +27,10 @@ class LicensePolicy
 
     /**
      * @param User $user
-     * @param License $license
+     * @param UsageLicense $license
      * @return bool
      */
-    public function showLicense (User $user, License $license): bool
+    public function showLicense (User $user, UsageLicense $license): bool
     {
         return true;
     }

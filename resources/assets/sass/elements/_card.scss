@@ -2,15 +2,26 @@
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
   -webkit-transition: all .3s ease;
   -o-transition: all .3s ease;
-  transition: all .3s ease
-
+  transition: all .3s ease;
+  border-radius: 0.5rem;
 }
 
 .card-header {
-  background-color: #ff00008f;
+  background-color: rgb(56,55,54);
   color: #ffffff;
-  font-family: product sans, Helvetica, Arial, serif;
+  text-transform: uppercase;
+  font-family: 'Montserrat', 'sans-serif';
   text-align: center;
+  font-weight: 900;
+  padding: 15px;
+  font-size: 16px;
+}
+
+
+
+.card-header:first-child {
+  border-radius: 0.5rem 0.5rem 0.0rem 0.0rem !important;
+  border: 0;
 }
 
 .card-footer {

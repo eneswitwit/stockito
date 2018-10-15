@@ -126,4 +126,8 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::put('{license}', 'Api\LicensesController@update');
         Route::post('', 'Api\LicensesController@create');
     });
+
+    Route::group(['prefix' => 'usage-license'], function () {
+        Route::post('', 'UsageLicenseController@create');
+    });
 });

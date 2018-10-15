@@ -66,7 +66,7 @@
                         </div>
 
                         <div class="form-check">
-                            <input v-model="form.terms_conditions" type="checkbox" class="form-check-input col-md-2"
+                            <input required="true" v-model="form.terms_conditions" type="checkbox" class="form-check-input col-md-2"
                                    name="terms_conditions" id="terms_conditions">
                             <label class="form-check-label" for="terms_conditions">
                                 I have read and accept the Stockito <u><router-link :to="{ name: 'gdpr.terms-conditions' }">
@@ -75,7 +75,7 @@
                             </label>
                         </div>
                         <div class="form-check">
-                            <input type="checkbox" v-model="form.privacy_policy" class="form-check-input col-md-2"
+                            <input required="true" type="checkbox" v-model="form.privacy_policy" class="form-check-input col-md-2"
                                    id="privacy_policy" name="privacy_policy">
                             <label class="form-check-label" for="privacy_policy">
                                 I agree to Stockito <u><router-link :to="{ name: 'gdpr.privacy-policy' }">

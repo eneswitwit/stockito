@@ -45,8 +45,7 @@ class CreateLicenseRequest extends FormRequest
             'type' => 'required|in:'.implode(',', License::getLicenses()),
             'startDate' => 'required_if:type,'.implode(',', [License::RM, License::RE, License::BO]),
             'expireDate' => 'required_if:type,'.implode(',', [License::RM, License::RE, License::BO]),
-            'billFile' => [new ExtensionsRule(['pdf'])],
-            'selectedMedia' => 'required'
+            'billFile' => [new ExtensionsRule(['pdf'])]
         ];
     }
 }

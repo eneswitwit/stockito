@@ -7,6 +7,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -20,6 +21,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property-read \App\Models\Media $media
+ * @property-read \App\Models\UsageLicense $usageLicenses
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\License soonExpiring()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\License whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\License whereExpiredAt($value)
@@ -108,6 +110,14 @@ class License extends AbstractUserIdentitiesModel
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function usageLicenses() : HasMany
+    {
+        return $this->hasMany(UsageLicense::class);
+    }
+
+    /**
      * @return array
      */
     public static function getLicenses(): array
@@ -193,6 +203,8 @@ class License extends AbstractUserIdentitiesModel
      */
     public function fillFromRequest(Request $request, $addFile = false): self
     {
+        $usageLicense = new UsageLicense;
+
         $this->fill([
             'license_type' => (int)$request->input('type'),
             'invoice_number' => $request->input('invoiceNumber'),
@@ -200,11 +212,15 @@ class License extends AbstractUserIdentitiesModel
             'media_id' => null
         ]);
 
+        $usageLicense->invoice_number = $request->input('invoiceNumber');
+        $usageLicense->invoice_number_by = $request->input('invoiceNumberBy');
+
         switch ((int)$request->input('type')) {
             case self::RF:
                 $this->fill([
                     'printrun' => $request->input('printrun')
                 ]);
+                $usageLicense->printrun = $request->input('printrun');
                 break;
             case self::RM:
                 $this->fill([
@@ -214,6 +230,11 @@ class License extends AbstractUserIdentitiesModel
                     'expired_at' => Carbon::parse($request->input('expireDate')),
                     'any_limitations' => $request->input('anyLimitations'),
                 ]);
+                $usageLicense->usage = $request->input('usage');
+                $usageLicense->printrun = $request->input('printrun');
+                $usageLicense->start_at = Carbon::parse($request->input('startDate'));
+                $usageLicense->expired_at = Carbon::parse($request->input('expireDate'));
+                $usageLicense->any_limitations = $request->input('anyLimitations');
                 break;
             case self::RE:
                 $this->fill([
@@ -221,6 +242,9 @@ class License extends AbstractUserIdentitiesModel
                     'expired_at' => Carbon::parse($request->input('expireDate')),
                     'territory' => $request->input('territory'),
                 ]);
+                $usageLicense->start_at = Carbon::parse($request->input('startDate'));
+                $usageLicense->expired_at = Carbon::parse($request->input('expireDate'));
+                $usageLicense->territory = $request->input('territory');
                 break;
             case self::BO:
                 $this->fill([
@@ -228,20 +252,29 @@ class License extends AbstractUserIdentitiesModel
                     'expired_at' => Carbon::parse($request->input('expireDate')),
                     'any_limitations' => $request->input('anyLimitations'),
                 ]);
+                $usageLicense->start_at = Carbon::parse($request->input('startDate'));
+                $usageLicense->expired_at = Carbon::parse($request->input('expireDate'));
+                $usageLicense->any_limitations = $request->input('anyLimitations');
                 break;
         }
 
         if ((bool)$request->input('removeBill', false)) {
             $this->bill_file = null;
             $this->bill_file_origin_name = null;
+            $usageLicense->bill_file = null;
+            $usageLicense->bill_file_origin_name = null;
         }
 
         if ($addFile && $request->hasFile('billFile')) {
             $file = $request->file('billFile');
             $this->bill_file = $file->hashName();
             $this->bill_file_origin_name = $file->getClientOriginalName();
+            $usageLicense->bill_file = $file->hashName();
+            $usageLicense->bill_file_origin_name = $file->getClientOriginalName();
         }
 
+        $usageLicense->license_id = $this->id;
+        $usageLicense->save();
         return $this;
     }
 

@@ -1,13 +1,14 @@
 <?php
 
+// namespace
 namespace App\Http\Controllers\Admin;
 
+// use
 use AdminSection;
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use App\Services\InvoiceService;
 use Illuminate\Http\Response;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 use Yajra\Datatables\Datatables;
 use Illuminate\Http\JsonResponse;
 
@@ -26,6 +27,7 @@ class FinanceController extends Controller
 
     /**
      * FinanceController constructor.
+     *
      * @param InvoiceService $invoiceService
      */
     public function __construct(InvoiceService $invoiceService)
@@ -52,6 +54,7 @@ class FinanceController extends Controller
 
     /**
      * @param $id
+     *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function show($id)
@@ -64,10 +67,11 @@ class FinanceController extends Controller
 
     /**
      * @param $id
+     *
      * @return Response
      * @throws \Throwable
      */
-    public function download ($id)
+    public function download($id)
     {
         $invoice = Invoice::findOrFail($id);
         $html = $this->invoiceService->getView($invoice);
@@ -76,8 +80,8 @@ class FinanceController extends Controller
             $snappy->getOutputFromHtml($html),
             200,
             array(
-                'Content-Type'          => 'application/pdf',
-                'Content-Disposition'   => 'attachment; filename="'.$invoice->getFileName().'"'
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="' . $invoice->getFileName() . '"'
             )
         );
     }

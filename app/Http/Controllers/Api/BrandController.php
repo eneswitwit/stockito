@@ -101,19 +101,24 @@ class BrandController extends Controller
          */
         $brand = $user->brand ?? Brand::find($brandId);
         $creativeUser = User::where('email', $request->email)->first();
-
         if ($creativeUser) {
-            $creative = $creativeUser->creative;
-            $brand->creatives()->attach($creative, [
-                'role' => $request->role,
-                'position' => $request->position
-            ]);
-            Mail::to($request->email)->send(new CreativeInviteExist($brand->brand_name, $request->role));
+            if (!Brand::where('id', $creativeUser->id)->exists()) {
+                // check if creative is already belonging to the brand
+                $creative = $creativeUser->creative;
+                if (!BrandCreative::where('brand_id', $brand->id)->where('creative_id', $creative->id)->exists()) {
+                    $brand->creatives()->attach($creative, [
+                        'role' => $request->role,
+                        'position' => $request->position
+                    ]);
+                    Mail::to($request->email)->send(new CreativeInviteExist($brand->brand_name, $request->role));
+                }
+            }
         } else {
             Mail::to($request->email)->send(new CreativeInviteNew($brand, $request->role, $request->position));
         }
 
         return new JsonResponse(['success' => true]);
+
     }
 
     /**

@@ -5,7 +5,10 @@
   font-weight: 600;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
   margin-left: 0px;
+  color: #fff;
   margin-right: 0px;
+  background: rgb(56,55,54) !important;
+  height: 68px;
 }
 
 .navbar .btn {
@@ -15,7 +18,7 @@
 
 .navbar.bg-light {
   padding: .4rem;
-  background: #fff !important;
+  background: rgb(56,55,54) !important;
   -webkit-box-shadow: 0 9px 68px 0 rgba(62, 57, 107, .1);
   box-shadow: 0 9px 68px 0 rgba(62, 57, 107, .1)
 }
@@ -36,6 +39,7 @@
 }
 
 .nav-link {
+  color: #fff !important;
   padding: .3em 1em
 }
 
@@ -57,7 +61,7 @@
 
 @media (max-width: 991px) {
   body:not(.sticky) .navbar:not(.navbar-light).menu-is-open {
-    background: rgba(0, 0, 0, .7)
+    background: #fff;
   }
 
   .navbar-nav {
@@ -83,7 +87,7 @@
 }
 
 .navbar-inverse .navbar-nav .nav-link {
-  color: rgba(255, 255, 255, .8);
+  color: #fff;
   text-transform: uppercase;
   font-size: 14px
 }
@@ -106,7 +110,7 @@
 }
 
 .navbar-inverse .navbar-nav .nav-link.active {
-  color: $main-color;
+  color: #fff;
 }
 
 @media (min-width: 992px) {

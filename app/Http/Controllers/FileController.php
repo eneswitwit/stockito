@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 
 // use
 use App\Models\Invoice;
-use App\Models\License;
+use App\Models\UsageLicense;
 use App\Models\Media;
 use App\Models\Share;
 use App\Models\User;
@@ -13,7 +13,6 @@ use App\Services\InvoiceService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Facades\Image;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -89,7 +88,7 @@ class FileController extends Controller
          * @var User $user
          */
         $user = $request->user();
-        $license = (new License())->where('bill_file', 'LIKE', $name)->firstOrFail();
+        $license = (new UsageLicense())->where('bill_file', 'LIKE', $name)->firstOrFail();
         if ($user->can('showLicense', $license)) {
             return $license->downloadFile();
         }
@@ -114,14 +113,24 @@ class FileController extends Controller
      */
     public function downloadInvoicePdf(Invoice $invoice): Response
     {
-        $pdf = $this->invoiceService->getPdf($invoice);
-        return $pdf->download($invoice->getFileName());
+        /*$pdf = $this->invoiceService->getPdf($invoice);
+        return $pdf->download($invoice->getFileName());*/
+        $html = $this->invoiceService->getView($invoice);
+        $snappy = \App::make('snappy.pdf');
+        return new Response(
+            $snappy->getOutputFromHtml($html),
+            200,
+            array(
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="' . $invoice->getFileName() . '"'
+            )
+        );
     }
 
     /**
      * @param $hash
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
      */
     public function shareImage($hash)
     {
@@ -132,6 +141,31 @@ class FileController extends Controller
         $share->opened = true;
         $share->save();
 
-        return view('share-images', ['images' => $share->medias]);
+        $media = (new Media)->whereIn('id', $share->medias)->get();
+        $fileName = $hash;
+        $zip = new \ZipArchive();
+        $path = 'zips/' . $fileName . '.zip';
+        $filename = storage_path('app/brands/' . $path);
+
+        if(!file_exists($filename)) {
+
+            if ($zip->open($filename, \ZipArchive::CREATE) !== true) {
+                exit("cannot open <$filename>\n");
+            }
+
+            foreach ($media as $mediaItem) {
+                /**
+                 * @var Media $mediaItem
+                 */
+                $zip->addFile(storage_path('app/brands/' . $mediaItem->dir . '/' . $mediaItem->file_name),
+                    $mediaItem->origin_name);
+
+            }
+
+            $zip->close();
+        }
+
+        return Storage::disk('brands')->download('zips/' . $hash . '.zip', 'images.zip');
+
     }
 }

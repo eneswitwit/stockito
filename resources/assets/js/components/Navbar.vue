@@ -1,9 +1,9 @@
 <template>
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-white">
+    <nav class="navbar navbar-expand-lg navbar-light">
 
         <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
-            <ul class="navbar-nav mr-auto">
+            <ul class="navbar-nav mr-auto stockito-logo">
                 <li>
                     <a @click="showDashboard">
                         <img class="navbar-logo" :src="require('../../images/logo.png')"/>
@@ -18,7 +18,7 @@
                     <input class="form-control" id="search" v-model="search" type="search" placeholder="Search"
                            aria-label="Search">
                     <div class="input-group-append">
-                        <button class="btn btn-outline-primary" @click="submitSearch" type="button">
+                        <button class="btn btn-outline-primary search-button" @click="submitSearch" type="button">
                             <fa icon="search"/>
                         </button>
                     </div>

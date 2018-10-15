@@ -52,3 +52,26 @@
   margin: 0 auto;
   color: red;
 }
+
+.signup {
+  list-style: none;
+  padding: 0;
+}
+
+.signup ul {
+  list-style: none;
+  padding: 0;
+}
+.signup li {
+  padding-left: 1.3em;
+}
+.signup li:before {
+  content: "\f00c"; /* FontAwesome Unicode */
+  font-family: FontAwesome;
+  color: rgb(155,201,44);
+  display: inline-block;
+  margin-left: -1.3em; /* same as padding-left set on li */
+  margin-right: 3px;
+  width: 30px;
+  padding: 4px;
+}

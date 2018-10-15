@@ -36,7 +36,6 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use LukeVear\LaravelTransformer\TransformerEngine;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use Log;
 
 /**
  * Class MediaController

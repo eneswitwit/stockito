@@ -10,7 +10,7 @@
             <b-col>
                 <card :title="'Terms and Conditions'" :class="'mt-2 mb-4'">
                     <div class="form-check">
-                        <input type="checkbox" v-model="checked" class="form-check-input col-md-2"
+                        <input required="true" type="checkbox" v-model="checked" class="form-check-input col-md-2"
                                name="terms_conditions" id="terms_conditions">
                         <label class="form-check-label" for="terms_conditions">
                             I have read and accept the Stockito <u>

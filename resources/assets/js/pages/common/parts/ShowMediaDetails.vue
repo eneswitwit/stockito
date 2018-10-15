@@ -50,11 +50,10 @@
             <tr>
                 <td><label class="font-weight-bold"> License </label></td>
                 <td>
-                    <button v-color-license:background.border="media.licenses[0]" type="button"
-                            class="btn btn-success brn-xs" @click="showLicenseModal = true">{{ media.licenses[0]
-                        ? media.licenses[0].type + ' - license'
-                        : 'Set license' }}
-                    </button>
+                    <span :style="{background: media.license.color}"
+                            class="license-badge" @click="showLicenseModal = true">
+                        {{ media.licenses[0] ? media.licenses[0].type + ' - license' : 'Set license' }}
+                    </span>
                 </td>
             </tr>
 
