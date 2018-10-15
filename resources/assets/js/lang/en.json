@@ -1,8 +1,8 @@
 {
   "ok": "Ok",
   "cancel": "Cancel",
-  "error_alert_title": "Oops...",
-  "error_alert_text": "Something went wrong! Please try again.",
+  "error_alert_title": "Error",
+  "error_alert_text": "Something went wrong. Please try again later or feel free to contact us anytime.",
   "token_expired_alert_title": "Session Expired!",
   "token_expired_alert_text": "Please log in again to continue.",
   "login": "Login",

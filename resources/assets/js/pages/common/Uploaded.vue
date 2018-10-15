@@ -67,10 +67,8 @@
                 <div class="row" v-else>
                     <div class="col-lg-12">
                         <div v-if="isGotUploads">
-                            <div class="alert alert-info text-center" role="alert">You did not upload any files. You can
-                                overview your
-                                <router-link :to="{name: 'medias'}" class="btn btn-link btn sm">media
-                                </router-link>
+                            <div class="alert alert-info text-center" role="alert" style="padding: 20px;margin-top: 1px;">
+                                You did not upload any files. You can overview your <router-link :to="{name: 'medias'}"> Media </router-link>
                                 files or upload new files.
                             </div>
                         </div>
@@ -96,8 +94,7 @@
                                     :selectedMedia="selectedMedia"
                                     v-bind:getMedias="getMedias"
                                     v-bind:refreshList="refreshList"
-                                    v-bind:clearAll="clearAll"
-                >
+                                    v-bind:clearAll="clearAll">
                 </edit-media-details>
 
             </div>

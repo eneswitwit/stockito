@@ -35,7 +35,7 @@
                     type: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#3085d6",
-                    confirmButtonText: "Yes, Delete it!",
+                    confirmButtonText: "Yes, delete them.",
                     closeOnConfirm: true
                 }).then(() => {
                     axios.delete('/api/creative/brand/' + this.row.id).then(({data}) => {
