@@ -12,6 +12,11 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Stripe\Stripe;
 
+/**
+ * Class AppServiceProvider
+ *
+ * @package App\Providers
+ */
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -21,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Stripe::setApiKey(env('STRIPE_SECRET'));
+        Stripe::setApiKey(config('services.stripe.secret'));
 
         if ($this->app->runningUnitTests()) {
             Schema::defaultStringLength(191);
@@ -45,9 +50,11 @@ class AppServiceProvider extends ServiceProvider
 
         Stripe::setApiKey(config('services.stripe.key'));
 
-		$this->app->bind(App\Repositories\Contacts\VoucherRepositoryInterface::class, 	App\Repositories\VoucherRepository::class);
+        $this->app->bind(App\Repositories\Contacts\VoucherRepositoryInterface::class,
+            App\Repositories\VoucherRepository::class);
 
-		$this->app->bind(App\Repositories\Contacts\ProductRepositoryInterface::class, 	App\Repositories\ProductRepository::class);
+        $this->app->bind(App\Repositories\Contacts\ProductRepositoryInterface::class,
+            App\Repositories\ProductRepository::class);
 
         $this->app->bind(ImageFileProcessor::class, ImageFileProcessor::class);
         $this->app->bind(Mp4FileProcessor::class, Mp4FileProcessor::class);

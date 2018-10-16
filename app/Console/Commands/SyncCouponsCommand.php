@@ -40,7 +40,7 @@ class SyncCouponsCommand extends Command
      */
     public function handle()
     {
-        Stripe::setApiKey(config('services.stripe.secret'));
+        creativesApiKey(config('services.stripe.secret'));
 
         if ($this->hasOption('force')) {
             Voucher::truncate();

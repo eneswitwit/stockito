@@ -2,7 +2,7 @@
 
     <modal :show.sync="show" @close="$emit('update:show', false)">
 
-        <modal-header class="license-modal" @close="$emit('update:show', false)">
+        <modal-header class="card-header" @close="$emit('update:show', false)">
             Set License
         </modal-header>
 

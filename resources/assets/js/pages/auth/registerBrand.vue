@@ -194,7 +194,7 @@
                         </div>
                     </card>
 
-                    <v-button :loading="form.busy" :class="'btn-block'"> Confirm</v-button>
+                    <v-button :loading="form.busy" :class="'btn-block mb-8'"> Confirm</v-button>
 
                 </form>
 

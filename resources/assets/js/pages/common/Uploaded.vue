@@ -256,6 +256,7 @@
                         if (data.success) {
                             this.$store.dispatch('media/removeMedias', {medias: this.selectedMedia});
                             this.clearAll();
+                            this.refreshList();
                         }
                     });
                 })

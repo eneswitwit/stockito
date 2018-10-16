@@ -96,19 +96,19 @@
             </div>
             <!-- Guest -->
             <template v-else>
-                <div class=""
-                <li class="nav-item">
-                    <router-link :to="{ name: 'login' }" class="nav-link" active-class="active">
-                        {{ $t('login') }}
-                    </router-link>
-                </li>
-                <li class="nav-item">
-                    <router-link :to="{ name: 'register' }" class="nav-link" active-class="active">
-                        {{ $t('register') }}
-                    </router-link>
-                </li>
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <router-link :to="{ name: 'login' }" class="nav-link" active-class="active">
+                            {{ $t('login') }}
+                        </router-link>
+                    </li>
+                    <li class="nav-item">
+                        <router-link :to="{ name: 'register' }" class="nav-link" active-class="active">
+                            {{ $t('register') }}
+                        </router-link>
+                    </li>
+                </ul>
             </template>
-            </ul>
             <upload-file-modal-component @close="closeModal"
                                          v-bind:modalShow="showUploadModal"></upload-file-modal-component>
         </div>
