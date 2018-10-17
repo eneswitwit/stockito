@@ -37,6 +37,10 @@ body{
     padding-top: 21px;
     height: 140px;
 }
+.title-blocks-td .first-table {
+   min-height: 120px;
+    background: #fff;
+}
 .first-table,
 .first-table tr {
     width: 100%;
