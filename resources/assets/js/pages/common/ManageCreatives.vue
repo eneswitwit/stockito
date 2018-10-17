@@ -2,7 +2,7 @@
     <div class="container mt-4 mb-4">
         <div class="card mb-2">
 
-            <div class="card-header">{{ $t('manage_creatives') }}</div>
+            <div class="card-header dashboard-card">{{ $t('manage_creatives') }}</div>
 
             <div class="card-body card-body-table">
                 <div class="col-xs-12 table-responsive">

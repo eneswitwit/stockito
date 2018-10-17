@@ -1,7 +1,11 @@
 <template>
     <div>
         <modal id="uploadModal" v-bind:show="modalShow">
-            <modal-header @close="closeModal">Upload</modal-header>
+
+            <modal-header @close="closeModal">
+                Upload
+            </modal-header>
+
             <modal-body>
                 <div v-if="errors && errors.file" class="row">
                     <div class="col-lg-12">
@@ -21,30 +25,69 @@
                                        :options="dropzoneOptions"></vue2-dropzone>
                     </div>
                     <div class="col-lg-6">
-                        <card>
-                            <p>Photos (JPEG and JPG files)</p>
-                            <ul>
-                                <li> minimal image resolution is 4MP</li>
-                                <li> maximal image resolution is 100 MP</li>
-                                <li> maximal file size is 45 MB</li>
-                            </ul>
-                        </card>
-                        <br/>
-                        <card>
-                            <p>Vector files (AI and EPS ­files)</p>
-                        </card>
-                        <br/>
-                        <card v-if="brand">
-                            <p> Videos (SFTP Upload) </p>
-                            <p> Host stockito.com </p>
-                            <p> Port 2222 </p>
-                            <p> User: Your accounts email </p>
-                            <p> Password: Your accounts password </p>
-                            <ul>
-                                <li> Only MP4 files allowed </li>
-                            </ul>
-                        </card>
 
+                        <div class="card">
+                            <div class="card-body">
+                                <p class="description-upload">Photos (JPEG and JPG files)</p>
+                                <ul class="ul-description-upload">
+                                    <li> minimal image resolution is 4MP</li>
+                                    <li> maximal image resolution is 100 MP</li>
+                                    <li> maximal file size is 45 MB</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <br/>
+
+                        <div class="card">
+                            <div class="card-body">
+                                <p class="description-upload">
+                                    Vector files (AI and EPS ­files)
+                                </p>
+                            </div>
+                        </div>
+
+                        <br/>
+                        <div class="card" v-if="brand">
+                            <div class="card-body">
+                                <p class="description-upload"> Videos (SFTP Upload) </p>
+                                <table class="upload-ftp">
+                                    <tr>
+                                        <td class="label">
+                                            Host
+                                        </td>
+                                        <td>
+                                            stockito.com
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="label">
+                                            Port
+                                        </td>
+                                        <td>
+                                            2222
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="label">
+                                            User
+                                        </td>
+                                        <td>
+                                            Your Accounts Email
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="label">
+                                            Password
+                                        </td>
+                                        <td>
+                                            Your Accounts Password
+                                        </td>
+                                    </tr>
+                                </table>
+                                 <span class="ftp-info"> Only MP4 files are allowed </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </modal-body>

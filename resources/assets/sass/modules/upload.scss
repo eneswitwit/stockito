@@ -1,3 +1,42 @@
 #dropzone {
   min-height: 100%;
+  background: rgb(244, 244, 244);
+  text-transform: uppercase;
+  font-family: 'Montserrat', 'sans-serif';
+  font-weight: 400;
+}
+
+.dropzone.dz-clickable .dz-message, .dropzone.dz-clickable .dz-message * {
+  margin-top: 65% !important;
+}
+
+.description-upload {
+  color: #000000;
+  font-weight: 600;
+  margin-bottom: 10px !important;
+}
+
+.ul-description-upload {
+  color: #000000;
+  list-style: none;
+  font-weight: 400;
+  padding-left: 10px;
+}
+
+.ul-description-upload li {
+  padding-bottom: 10px;
+}
+
+.upload-ftp {
+  color: #000000;
+  font-weight: 400;
+}
+
+.upload-ftp .label {
+  font-weight: 500;
+}
+
+.ftp-info {
+  color: #000;
+  font-weight: 500;
 }

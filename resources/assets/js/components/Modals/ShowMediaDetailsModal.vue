@@ -4,8 +4,7 @@
         <modal-body v-if="media">
             <div class="row mb-4">
 
-
-                <div class="col-lg-3 flex-column">
+                <div class="col-lg-4 flex-column">
                     <show-media-details v-bind:media="media" v-bind:submit="false"></show-media-details>
                     <div class="row mb-2 mt-2">
                         <div class="col-lg-12">
@@ -21,31 +20,42 @@
                                 }}</a>
                         </div>
                     </div>
-                    <card class="mb-2" title="Meta data">
-                        <table class="widget-table">
-                            <tr>
-                                <td><b>File info</b></td>
-                                <td>{{ media.imageInfo.width }}px x {{ media.imageInfo.height }}px</td>
-                            </tr>
-                            <tr>
-                                <td><b>File size</b></td>
-                                <td>{{ media.imageInfo.fileSize }}</td>
-                            </tr>
-                            <tr>
-                                <td><b>Uploaded</b></td>
-                                <td>{{ media.uploadedAt }}</td>
-                            </tr>
-                        </table>
-                    </card>
 
-                    <card class="mb-2" title="Note" v-if="media.notes && media.notes.length">
-                        {{ media.notes }}
-                    </card>
+                    <div class="card mb-2">
+                        <div class="card-header dashboard-card">
+                            Meta Data
+                        </div>
+                        <div class="card-body">
+                            <table class="widget-table upload-ftp">
+                                <tr>
+                                    <td class="label">File info </td>
+                                    <td>{{ media.imageInfo.width }}px x {{ media.imageInfo.height }}px</td>
+                                </tr>
+                                <tr>
+                                    <td class="label"> File size </td>
+                                    <td>{{ media.imageInfo.fileSize }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="label"> Uploaded</td>
+                                    <td>{{ media.uploadedAt }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card mb-2" v-if="media.notes && media.notes.length">
+                        <div class="card-header dashboard-card">
+                            Note
+                        </div>
+                        <div class="card-body">
+                            {{ media.notes }}
+                        </div>
+                    </div>
 
                 </div>
 
 
-                <div class="col-lg-9 flex-column">
+                <div class="col-lg-8 flex-column">
                     <video-image-component
                             v-bind:media="media"
                             v-bind:stopPlayer="show">
@@ -126,8 +136,8 @@
 
                             </tbody>
                         </table>
-                        <button @click="showModal()" class="btn btn-primary btn-block"> Add new license </button>
                     </div>
+                    <button @click="showModal()" class="btn btn-primary mt-2"> Add new license</button>
                 </div>
             </div>
 

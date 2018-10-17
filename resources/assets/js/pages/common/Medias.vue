@@ -7,7 +7,7 @@
 
                 <div class="advanced-search-text">
                     <p>Advanced</p>
-                    <p>Search</p>
+                    <p style="font-size: 19px; font-weight: 500;">Search</p>
                 </div>
 
             </div>

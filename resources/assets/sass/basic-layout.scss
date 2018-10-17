@@ -1,5 +1,6 @@
 .basic-layout {
   color: #636b6f;
+  background: rgb(244, 244, 244) !important;
   height: 100vh;
   font-weight: 100;
   position: relative;
@@ -17,5 +18,10 @@
 }
 
 .main-layout {
+  background: rgb(244, 244, 244) !important;
   font-family: 'Montserrat', 'sans-serif';
+}
+
+html {
+  background: rgb(244, 244, 244) !important;
 }

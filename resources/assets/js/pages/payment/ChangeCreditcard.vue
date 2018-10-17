@@ -1,17 +1,22 @@
 <template>
     <div class="container mt-4">
         <form action="" method="post" id="payment-form" @submit.prevent="changeCreditcard">
-            <card :title="'Change primary payment source'">
-                <div class="form-group">
-                    <div id="card-wrapper-number"></div>
-                    <div id="card-wrapper-cvc"></div>
-                    <div id="card-wrapper-expiry"></div>
-                    <div class="errors">{{ error }}</div>
-                    <button class="btn btn-primary btn-block" :disabled="requesting" type="submit">
-                        Submit
-                    </button>
+            <div class="card mb-3">
+                <div class="card-header dashboard-card">
+                    Change primary payment source
                 </div>
-            </card>
+                <div class="card-body">
+                    <div class="form-group">
+                        <div id="card-wrapper-number" style="padding: 10px;"></div>
+                        <div id="card-wrapper-cvc" style="padding: 10px;"></div>
+                        <div id="card-wrapper-expiry" style="padding: 10px;"></div>
+                        <div class="errors"> {{ error }}</div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-block" :disabled="requesting" type="submit">
+                Submit
+            </button>
         </form>
     </div>
 </template>

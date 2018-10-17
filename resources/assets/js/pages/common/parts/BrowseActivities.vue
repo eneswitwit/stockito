@@ -1,12 +1,12 @@
 <template>
     <div class="card">
-        <div class="card-header">
+        <div class="card-header dashboard-card">
             {{ $t('browse_activity') }}
         </div>
         <ul class="list-group">
             <li v-for="activity in firstActivities" class="list-group-item d-flex">
-                <span class="badge badge-primary badge-pill">{{ showTime(activity.createdAt.date) }}</span>
-
+                <span class="badge">{{ showTime(activity.createdAt.date) }} </span>
+                <span class="badge" style="color: rgb(226, 234, 245) !important;"> | </span>
                 <span class="activity-text">
                     <span class="font-weight-bold">
                         {{ activity.user }}
@@ -16,7 +16,7 @@
             </li>
         </ul>
         <div class="card-footer">
-            <a href="#" @click="modalShow = true">{{ $t('see_all') }}</a>
+            <a href="#" @click="modalShow = true"> {{ $t('see_all') }} </a>
         </div>
 
         <modal v-bind:show="modalShow">

@@ -9,13 +9,13 @@
                     </div>
                     <form @submit.prevent="sendRequest" @keydown="form.onKeydown($event)">
                         <div class="form-group">
-                            <label class="control-label font-weight-bold" for="user-email">Email</label>
+                            <label class="control-label" for="user-email">Email</label>
                             <input v-model="form.email" :class="{ 'is-invalid': form.errors.has('email') }"
                                    id="user-email" type="email" class="form-control" name="email">
                             <has-error :form="form" field="email"></has-error>
                         </div>
                         <div class="form-group">
-                            <label class="control-label font-weight-bold" for="user-role">Role</label>
+                            <label class="control-label" for="user-role">Role</label>
                             <input v-model="form.role" :class="{ 'is-invalid': form.errors.has('role') }" id="user-role"
                                    type="text" class="form-control" name="role">
                             <has-error :form="form" field="role"></has-error>

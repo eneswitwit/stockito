@@ -6,7 +6,11 @@
         </div>
 
         <div class="card mb-4">
-            <div class="card-header">{{ $t('licenses') }}</div>
+
+            <div class="card-header dashboard-card">
+                {{ $t('licenses') }}
+            </div>
+
             <div class="card-body card-body-table">
                 <div class="col-xs-12 table-responsive licenses-table">
 
@@ -47,8 +51,8 @@
                 class="custom-pagination mb-6"
                 v-model="dataTable.page"
                 type="abbreviated"
-                :per-page="dataTable.perPage"
-        ></datatable-pager>
+                :per-page="dataTable.perPage">
+        </datatable-pager>
 
     </div>
 </template>
@@ -103,7 +107,6 @@
 
             window.eventBus.$on('deselect-all', (selected) => {
                 this.dataTable.selectedRows = [];
-                //Vue.set(this, 'selectedRows', []);
             });
         },
 
@@ -112,6 +115,7 @@
         }),
 
         data: () => ({
+
             showLicenseModal: false,
             media: undefined,
             license: undefined,
@@ -135,15 +139,15 @@
                         label: 'Expiration date', representedAs: function (license) {
                             var expirationDate = license.expiredAt.dMY;
                             var daysDifference = license.expiredAt.difference;
-                            if(expirationDate === undefined) {
+                            if (expirationDate === undefined) {
                                 return '<span style="color: green"> unlimited </span>';
                             } else {
-                                if(daysDifference < 0) {
-                                    return '<span style="color: red"> expired at ' + expirationDate  +  '</span>';
+                                if (daysDifference < 0) {
+                                    return '<span style="color: red"> expired at ' + expirationDate + '</span>';
                                 } else if (daysDifference < 60) {
-                                    return '<span style="color: orange"> ' + expirationDate  +  ' </span>';
+                                    return '<span style="color: orange"> ' + expirationDate + ' </span>';
                                 } else {
-                                    return '<span style="color: green"> ' + expirationDate  +  ' </span>';
+                                    return '<span style="color: green"> ' + expirationDate + ' </span>';
                                 }
                             }
                         }, interpolate: true, filterable: false
@@ -170,6 +174,7 @@
         methods: {
 
             exportAsPDF() {
+
                 let url = this.selectedBrand ? `api/licenses/export/${this.selectedBrand.id}` : 'api/licenses/export';
                 axios({
                     url: url,
@@ -214,15 +219,15 @@
             },
 
             transformExpiredDate(expirationDate, daysDifference) {
-                if(expirationDate === undefined) {
+                if (expirationDate === undefined) {
                     return '<span style="color: green"> unlimited </span>';
                 } else {
-                    if(daysDifference < 0) {
-                        return '<span style="color: red"> expired at ' + expirationDate  +  '</span>';
+                    if (daysDifference < 0) {
+                        return '<span style="color: red"> expired at ' + expirationDate + '</span>';
                     } else if (daysDifference < 60) {
-                        return '<span style="color: yellow"> ' + expirationDate  +  ' </span>';
+                        return '<span style="color: yellow"> ' + expirationDate + ' </span>';
                     } else {
-                        return '<span style="color: green"> ' + expirationDate  +  ' </span>';
+                        return '<span style="color: green"> ' + expirationDate + ' </span>';
                     }
                 }
             }

@@ -3,38 +3,44 @@
 
         <subscription-details-component></subscription-details-component>
 
-        <card :title="'Invoices'" :class="'mt-4 mb-4'">
+        <div class="card mt-4 mb-4">
+            <div class="card-header dashboard-card">
+                Invoices
+            </div>
 
-            <table class="table">
+            <div class="card-body">
 
-                <thead>
-                <tr>
-                    <th>Number</th>
-                    <th>Date</th>
-                    <th>Paid</th>
-                    <th>Invoice</th>
-                    <th>
-                    </th>
-                </tr>
-                </thead>
+                <table class="table">
 
-                <tbody>
-                <tr v-for="invoice in invoices">
-                    <td>{{ invoice.number }}</td>
-                    <td>{{ invoice.date }}</td>
-                    <td>
-                        <span v-show="invoice.paid" class="badge badge-success">Paid</span>
-                        <span v-show="!invoice.paid" class="badge badge-danger">Not Paid</span>
-                    </td>
-                    <td>{{ invoice.invoiceFileName }}</td>
-                    <td>
-                        <a :href="invoice.downloadPdfUrl" class="btn btn-primary btn-sm">Download</a>
-                    </td>
-                </tr>
-                </tbody>
+                    <thead>
+                    <tr>
+                        <th>Number</th>
+                        <th>Date</th>
+                        <th>Paid</th>
+                        <th>Invoice</th>
+                        <th>
+                        </th>
+                    </tr>
+                    </thead>
 
-            </table>
-        </card>
+                    <tbody>
+                    <tr v-for="invoice in invoices">
+                        <td>{{ invoice.number }}</td>
+                        <td>{{ invoice.date }}</td>
+                        <td>
+                            <span v-show="invoice.paid" class="badge badge-success">Paid</span>
+                            <span v-show="!invoice.paid" class="badge badge-danger">Not Paid</span>
+                        </td>
+                        <td>{{ invoice.invoiceFileName }}</td>
+                        <td>
+                            <a :href="invoice.downloadPdfUrl" class="btn btn-primary btn-sm">Download</a>
+                        </td>
+                    </tr>
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
     </div>
 
 </template>

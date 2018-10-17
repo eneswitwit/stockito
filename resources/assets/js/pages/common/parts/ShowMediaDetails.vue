@@ -1,91 +1,154 @@
 <template>
-    <card :title="'Basic information'" v-if="media">
-        <table class="widget-table">
+    <div class="card" v-if="media">
+        <div class="card-header dashboard-card">
+            Basic information
+        </div>
+        <div class="card-body">
+            <table class="upload-ftp">
 
-            <tr>
-                <td><label class="font-weight-bold">Title</label></td>
-                <td v-if="media.title"> {{ media.title }}</td>
-            </tr>
+                <tr>
+                    <td class="label">Title</td>
+                    <td v-if="media.title"> {{ media.title }}</td>
+                </tr>
 
-            <tr>
-                <td><label class="font-weight-bold">File name</label></td>
-                <td v-if="media.origin_name"> {{ media.origin_name }}</td>
-            </tr>
+                <tr>
+                    <td class="label">File name </td>
+                    <td v-if="media.origin_name"> {{ media.origin_name }}</td>
+                </tr>
 
-            <tr>
-                <td><label class="font-weight-bold">Category</label></td>
-                <td v-if="media.category"> {{ media.category.name }}</td>
-            </tr>
+                <tr>
+                    <td class="label">Category </td>
+                    <td v-if="media.category"> {{ media.category.name }}</td>
+                </tr>
 
-            <tr>
-                <td><label class="font-weight-bold">File type</label></td>
-                <td v-if="media.fileType "> {{ media.fileType }}</td>
-            </tr>
+                <tr>
+                    <td class="label"> File type </td>
+                    <td v-if="media.fileType "> {{ media.fileType }}</td>
+                </tr>
 
-            <tr>
-                <td><label class="font-weight-bold">Keywords</label></td>
-                <td v-if="media.keywords"> {{ media.keywords }}</td>
-            </tr>
+                <tr>
+                    <td class="label">Keywords </td>
+                    <td v-if="media.keywords"> {{ media.keywords }}</td>
+                </tr>
 
-            <tr>
-                <td><label class="font-weight-bold"> Peoples Attribute </label></td>
-                <td v-if="media.peoples_attribute "> {{ media.peoples_attribute }}</td>
-            </tr>
+                <tr>
+                    <td class="label"> Peoples Attribute </td>
+                    <td v-if="media.peoples_attribute "> {{ media.peoples_attribute }}</td>
+                </tr>
 
-            <tr>
-                <td><label class="font-weight-bold"> Artist/Copyright </label></td>
-                <td v-if="media.source"> {{ media.source }}</td>
-            </tr>
+                <tr>
+                    <td class="label">Artist/Copyright</td>
+                    <td v-if="media.source"> {{ media.source }}</td>
+                </tr>
 
-            <tr>
-                <td><label class="font-weight-bold"> Uploaded by </label></td>
-                <td v-if="media.created_by"> {{ media.created_by.email }}</td>
-            </tr>
+                <tr>
+                    <td class="label">Uploaded by </td>
+                    <td v-if="media.created_by"> {{ media.created_by.email }}</td>
+                </tr>
 
-            <tr>
-                <td><label class="font-weight-bold"> Supplier </label></td>
-                <td v-if="media.supplier"> {{ media.supplier.name}}</td>
-            </tr>
+                <tr>
+                    <td class="label"> Supplier </td>
+                    <td v-if="media.supplier"> {{ media.supplier.name}}</td>
+                </tr>
 
-            <tr>
-                <td><label class="font-weight-bold"> License </label></td>
-                <td>
-                    <span :style="{background: media.license.color}"
-                            class="license-badge" @click="showLicenseModal = true">
-                        {{ media.licenses[0] ? media.licenses[0].type + ' - license' : 'Set license' }}
+                <tr>
+                    <td class="label"> License </td>
+                    <td>
+                    <span :style="{color: media.license.color}"
+                          class="license-badge" @click="showLicenseModal = true">
+                        {{ media.licenses[0] ? media.licenses[0].type + ' license' : 'Set license' }}
                     </span>
-                </td>
-            </tr>
+                    </td>
+                </tr>
 
-        </table>
-
-    </card>
+            </table>
+        </div>
+    </div>
 </template>
 
 <script type="text/babel">
     import ColorLicensesDirective from '../../../directives/ColorLicensesDirective';
+    import Modal from '../../../components/Modal/ModalLarge.vue';
+    import ModalHeader from '../../../components/Modal/ModalHeader.vue';
+    import ModalBody from '../../../components/Modal/ModalBody.vue';
+    import SetUsageLicenseModal from '../../../components/Modals/SetUsageLicenseModal.vue';
+    import ShowMediaDetails from '../../common/parts/ShowMediaDetails.vue';
+    import {mapGetters} from 'vuex';
+    import Card from '../../../components/Card.vue';
+    import ShareMediaModalComponent from '../../../components/Modals/ShareMediaModalComponent.vue';
+    import VideoImageComponent from '../../common/parts/VideoImageComponent.vue';
+    import SetLicenseModalComponent from './../../common/parts/SetLicenseModalComponent.vue';
+    import CheckCreativePermission from '../../common/parts/services/CheckCreativePermissionService';
 
     Vue.directive('color-license', ColorLicensesDirective);
 
     export default {
+
         middleware: ['auth', 'brand'],
+
         name: 'show-media-details',
+
+        mixins: [CheckCreativePermission],
+
+        computed: mapGetters({
+            user: 'auth/user',
+            selectedBrand: 'creative/selectedBrand'
+        }),
+
+        components: {
+            Modal,
+            ModalHeader,
+            ModalBody,
+            ShareMediaModalComponent,
+            Card,
+            ShowMediaDetails,
+            ColorLicensesDirective,
+            VideoImageComponent,
+            SetLicenseModalComponent,
+            SetUsageLicenseModal
+        },
+
         props: {
             media: {
                 'default': undefined
             },
             submit: {
                 'default': true
+            },
+            show: {
+                'default': false
             }
         },
-        data: () => ({}),
+
+        data: () => ({
+            showLicenseModal: false,
+            showShareModal: false,
+            licenseTypes: false,
+            license: false,
+            parentLicense: false,
+        }),
+
         methods: {
             async submitMedia(media) {
                 await this.$store.dispatch('media/submitUpload', media);
+            },
+            onClose() {
+                this.$emit('close');
+            },
+            showModal(license) {
+                if (typeof license === "undefined") {
+                    this.license = null;
+                } else {
+                    this.license = license;
+                }
+                this.parentLicense = this.media.licenses[0];
+                this.showLicenseModal = true;
             }
         },
+
         directives: {
             ColorLicensesDirective
         }
+
     }
 </script>

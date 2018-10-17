@@ -36,7 +36,8 @@
             <!-- Authenticated -->
             <div v-if="user" class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle text-dark"
-                   href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                   href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                   style="color: #fff !important;">
                     {{ user.email }}
                 </a>
                 <div class="dropdown-menu">

@@ -1,17 +1,15 @@
 <template>
-    <div>
-        <b-row>
-            <b-col>
-                <browse-activity></browse-activity>
-            </b-col>
-            <b-col>
-                <soon-expiring-licenses-component></soon-expiring-licenses-component>
-                <br/>
-                <used-storage-widget-component></used-storage-widget-component>
-                <br/>
-                <subscription-details-component></subscription-details-component>
-            </b-col>
-        </b-row>
+    <div class="row">
+        <div class="col-md-6">
+            <browse-activity></browse-activity>
+        </div>
+        <div class="col-md-6">
+            <soon-expiring-licenses-component></soon-expiring-licenses-component>
+            <br/>
+            <used-storage-widget-component></used-storage-widget-component>
+            <br/>
+            <subscription-details-component></subscription-details-component>
+        </div>
     </div>
 </template>
 

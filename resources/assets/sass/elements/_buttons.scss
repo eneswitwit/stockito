@@ -36,16 +36,40 @@
   letter-spacing: 0
 }
 
-.btn-primary, .btn-primary:focus {
+.btn-primary, btn-primary:focus {
   background-color: $main-color;
   border-color: $main-color;
-  color: #fff
+  color: #fff !important;
 }
 
 .btn-primary:hover, .btn-primary:active, .btn-primary:focus:hover, .btn-primary:focus:active {
-  color: #fff;
+  color: #000000 !important;
   background-color: $main-color;
   border-color: $main-color;
+}
+
+.btn-warning {
+  background-color: rgb(56, 55, 54);
+  border-color: rgb(56, 55, 54);
+  color: #fff !important;
+}
+
+.btn-warning:hover, .btn-warning:active, .btn-warning:focus:hover, .btn-warning:focus:active {
+  color: #000000 !important;
+  background-color: rgb(56, 55, 54);
+  border-color: rgb(56, 55, 54);
+}
+
+.btn-info {
+  background-color: rgb(235, 235, 235);
+  border-color: rgb(235, 235, 235);
+  color: #000000 !important;
+}
+
+.btn-info:hover, .btn-info:active, .btn-info:focus:hover, .btn-info:focus:active {
+  color: #fff !important;
+  background-color: rgb(235, 235, 235);
+  border-color: rgb(235, 235, 235);
 }
 
 .btn-outline, .btn-outline:focus {
@@ -162,4 +186,12 @@
 
 .custom-file-label {
   background: rgb(237,237,237) !important
+}
+
+.glyphicon {
+  color: rgb(28, 133, 224);
+}
+
+select.form-control:not([size]):not([multiple]) {
+  color: rgb(28, 133, 224);
 }

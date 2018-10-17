@@ -1,21 +1,25 @@
 .advanced-search {
   margin-top: 22%;
   position: fixed;
-  background: #494949;
+  background: rgb(255, 255, 255);
   height: 160px;
   width: 90px;
   font-size: 14px;
   justify-content: center;
   align-items: center;
-  border-bottom-right-radius: 90px;
-  border-top-right-radius: 90px;
+  border-bottom-right-radius: 20px;
+  border-top-right-radius: 20px;
   z-index: 3;
 }
 
 .advanced-search-text {
   margin-top: 60%;
-  color: white;
+  color: rgb(85, 85, 85);
   margin-left: 7px;
+}
+
+p {
+  margin: 0 !important;
 }
 
 .nopadding {
@@ -26,14 +30,17 @@
 .media-card {
   cursor: pointer;
   padding: 0px;
+  margin: 3px;
 
   .license-label {
     display: block;
     position: absolute;
     right: 15px;
     bottom: 15px;
-    background-color: rgba(0, 0, 0, .75);
+    font-weight: 500;
+    background-color: rgba(0, 0, 0, 0.58);
     padding: 5px 10px;
+    border-radius: 4px;
   }
 
   .img-wrapper {

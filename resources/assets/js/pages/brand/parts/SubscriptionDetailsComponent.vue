@@ -1,12 +1,14 @@
 <template>
-
-    <div>
-        <card :title="'Subscription'">
+    <div class="card">
+        <div class="card-header dashboard-card">
+            Subscription
+        </div>
+        <div class="card-body">
 
             <table class="widget-table mb-4" v-if="user.subscribed">
                 <tr>
                     <td>
-                        <span class="font-weight-bold"> Current plan </span>
+                        <span class=""> Current plan </span>
                     </td>
                     <td>
                         {{ user.subscription.product.name }}
@@ -15,7 +17,7 @@
 
                 <tr>
                     <td>
-                        <span class="font-weight-bold">Subscription expires </span>
+                        <span class=""">Subscription expires </span>
                     </td>
                     <td>
                         {{ expiriesDate(user.subscription.created_at.date) }}
@@ -24,7 +26,7 @@
 
                 <tr>
                     <td>
-                        <span class="font-weight-bold"> Plan will expire in </span>
+                        <span class=""> Plan will expire in </span>
                     </td>
                     <td>
                         {{ leftDate() }} days
@@ -36,31 +38,29 @@
             <div class="form-group">
 
                 <span class="mb-4">
-                    <div v-if="getIfDowngrade()" class="alert alert-warning" role="alert">
-                        <p>Plan will be downgraded automatically after expiration.</p>
+                    <div v-if="getIfDowngrade()" class="box-info mb-2">
+                        <p>Plan will be downgraded automatically after expiration</p>
                     </div>
-                    <div class="alert alert-info">
+                    <div class="box-info mb-4">
                         <p v-if="user.subscribed && !user.onGracePeriod"> Plan will automatically renew itself</p>
                         <p v-if="user.subscribed && user.onGracePeriod"> Plan will not renew itself automatically</p>
                     </div>
                 </span>
 
-                <button v-if="user.subscribed && !user.onGracePeriod" class="btn btn-warning"
+                <button v-if="user.subscribed && !user.onGracePeriod" class="btn btn-info mr-2"
                         @click="cancelSubscription">Cancel
                 </button>
-                <button v-if="user.subscribed && user.onGracePeriod" class="btn btn-success"
+                <button v-if="user.subscribed && user.onGracePeriod" class="btn btn-info mr-2"
                         @click="resumeSubscription">Resume
                 </button>
                 <!--<button v-if="!subscription.autoCharge" class="btn btn-primary" @click="showRenewModal = true">{{ $t('renewal') }}</button>-->
-                <router-link :to="{'name': 'select-plan'}" class="btn btn-primary">
+                <router-link :to="{'name': 'select-plan'}" class="btn btn-warning mr-2">
                     {{ user.subscribed ? 'Change plan' : 'Subscribe' }}
                 </router-link>
-                <router-link :to="{name: 'payment.details' }" class="btn btn-info">{{ $t('payment_details') }}
+                <router-link :to="{name: 'payment.details' }" class="btn btn-primary">{{ $t('payment_details') }}
                 </router-link>
             </div>
-
-        </card>
-
+        </div>
     </div>
 </template>
 

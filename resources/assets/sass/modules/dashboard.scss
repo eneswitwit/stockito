@@ -1,3 +1,9 @@
+.badge {
+  line-height: 2;
+  font-size: 90%;
+  font-weight: 600;
+}
+
 .badge-primary {
   background-color: #222222;
   border-radius: 1rem;
@@ -9,15 +15,31 @@
 }
 
 .activity-text {
-  margin-left: 2rem;
+  margin-left: 1rem;
+  word-break: break-all;
+  font-size: 15px;
 }
 
 .list-group-item {
-  border-left: none;
-  border-right: none;
+  border-left: none !important;
+  border-right: none !important;
   line-height: 1;
+  padding-top: 1.3rem;
+  padding-bottom: 1.3rem;
+  border: 1px solid rgb(226, 234, 245);
 }
 
 .bg-warning {
   background-color: grey;
+}
+
+.box-info {
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 13px;
+  background-color: #f0f0f0;
+  text-align: center;
+  padding: 22px;
+  color: rgb(107, 107, 107);
+  border-radius: 10px;
 }
