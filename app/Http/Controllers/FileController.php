@@ -13,6 +13,7 @@ use App\Services\InvoiceService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
+use PDF;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -115,12 +116,15 @@ class FileController extends Controller
     {
         /*$pdf = $this->invoiceService->getPdf($invoice);
         return $pdf->download($invoice->getFileName());*/
+
         $html = $this->invoiceService->getView($invoice);
+
         $snappy = \App::make('snappy.pdf');
         return new Response(
             $snappy->getOutputFromHtml($html),
             200,
             array(
+                'page-size' => 'A4',
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'attachment; filename="' . $invoice->getFileName() . '"'
             )

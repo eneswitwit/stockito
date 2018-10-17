@@ -3,7 +3,7 @@
 
         <div class="row">
             <div class="col-lg-8 m-auto">
-                <div class="row" style="font-family: 'Montserrat', sans-serif !important;">
+                <div class="row">
                     <div class="col-lg-6">
                         <div class="card mb-4">
                             <div class="card-header">

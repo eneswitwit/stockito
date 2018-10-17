@@ -1,7 +1,7 @@
 <?php
 
 // namespace
-namespace App\Transformers;
+namespace App\Transformers\Media;
 
 // use
 use App\Classes\DateClass;
@@ -11,17 +11,17 @@ use LukeVear\LaravelTransformer\TransformerEngine;
 /**
  * Class LicenseTransformer
  *
- * @package App\Transformers
+ * @package App\Transformers\Media
  */
 class UsageLicenseTransformer extends AbstractTransformer
 {
     /**
-     * @param \App\Models\UsageLicense $model
+     * @param \App\Models\License $model
      *
      * @return array
      * @throws \Exception
      */
-    public function run($model): array
+    public function run($model) : array
     {
         return [
             'id' => $model->id,
@@ -39,7 +39,6 @@ class UsageLicenseTransformer extends AbstractTransformer
             'billFile' => $model->bill_file,
             'billFileOriginName' => $model->bill_file_origin_name,
             'url' => route('license', $model->bill_file),
-            'media' => new TransformerEngine($model->license->media, new MediaTransformer()),
             'createdBy' => $model->license->createdBy->getType()->name,
             'brandName' => $model->license->media->brand ? $model->license->media->brand->name : '',
             'origin' => $model->license->media->supplier_id ? $model->license->media->supplier->name : '',

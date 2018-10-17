@@ -37,23 +37,26 @@ body{
     padding-top: 21px;
     height: 140px;
 }
+
 .title-blocks-td .first-table {
-   min-height: 120px;
+    min-height: 120px;
     background: #fff;
 }
+
 .first-table,
 .first-table tr {
     width: 100%;
 }
 .title-block-td {
     background: #fff;
-    border: 1px dashed #666;
+    border: 0px dashed #666;
     vertical-align: top;
     font-size: 13px;
     padding: 5px 5px 5px 5px;
 }
 .title-block-td.left-block {
     width: 190px;
+    text-align: center;
 }
 .title-block-td.right-block {
     float: right;
@@ -80,6 +83,13 @@ body{
     margin-left: 5px;
     margin-right: 5px;
 }
+
+.invoice-row {
+    display: inline-block;
+    width: 100px;
+    text-align: left;
+}
+
 .data {
     padding-top: 50px;
     height: 295px;
@@ -171,6 +181,15 @@ body{
 .invoice-data-row.data-details {
     padding-top: 112px;
     font-size: 12px;
+    height: 180px;
     text-align: center;
     padding-left: 45px;
+}
+
+.currency {
+    text-transform: uppercase !important;
+}
+.invoice-data-row > p {
+    margin: 0 !important;
+    padding: 0 !important;
 }

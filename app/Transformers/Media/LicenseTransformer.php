@@ -5,7 +5,6 @@ namespace App\Transformers\Media;
 
 // use
 use App\Classes\DateClass;
-use App\Transformers\UsageLicenseTransformer;
 use LukeVear\LaravelTransformer\AbstractTransformer;
 use LukeVear\LaravelTransformer\TransformerEngine;
 

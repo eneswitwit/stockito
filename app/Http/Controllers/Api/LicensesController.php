@@ -8,9 +8,11 @@ use App\Http\Requests\License\CreateLicenseRequest;
 use App\Http\Requests\License\UpdateLicenseRequest;
 use App\ModelManagers\LicenseModelManager;
 use App\Models\Brand;
+use App\Models\UsageLicense;
 use App\Models\License;
 use App\Models\Media;
 use App\Transformers\LicenseTransformer;
+use App\Transformers\UsageLicenseTransformer;
 use Barryvdh\DomPDF\PDF;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
@@ -18,6 +20,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Response;
 use LukeVear\LaravelTransformer\TransformerEngine;
+use Log;
 
 /**
  * Class LicensesController
@@ -42,12 +45,16 @@ class LicensesController extends Controller
         if (!$brand) {
             return new JsonResponse($licenses);
         }
-        $licenses = (new License)->whereIn(
-            'id',
+        $licenses = (new UsageLicense)->whereIn(
+            'license_id',
             $brand->media->pluck('license')->pluck('id')->toArray()
         )->orderBy(
             'expired_at',
             'ASC'
+        )->with('license'
+        )->with('license.media'
+        )->with('license.media.brand'
+        )->with('license.media.supplier'
         )->get();
 
         /*} elseif ($user->creative) {
@@ -56,7 +63,7 @@ class LicensesController extends Controller
             }
         }*/
 
-        return new JsonResponse(new TransformerEngine($licenses, new LicenseTransformer()));
+        return new JsonResponse(new TransformerEngine($licenses, new UsageLicenseTransformer()));
     }
 
     /**

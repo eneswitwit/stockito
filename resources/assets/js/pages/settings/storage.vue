@@ -35,7 +35,7 @@
                     </tr>
                     <tr>
                         <th>User</th>
-                        <td>{{ brand.ftp.user }}</td>
+                        <td> Your account email </td>
                     </tr>
                     <tr>
                         <th>Password</th>
