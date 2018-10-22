@@ -230,7 +230,7 @@ class MediaController extends Controller
         $medias = $brand->media()->notPublished()->where('created_by', $user->id)->orderBy('created_at', 'decs')->get();
 
         $medias->map(function (Media $media) {
-            if (!Storage::disk('brands')->exists($media->getFilePath())) {
+            if (!Storage::disk('s3')->exists($media->getFilePath())) {
                 $media->delete();
             }
         });
@@ -272,7 +272,7 @@ class MediaController extends Controller
      */
     public function download(Media $media): StreamedResponse
     {
-        return Storage::disk('brands')->download($media->dir . '/' . $media->file_name);
+        return Storage::disk('s3')->download($media->dir . '/' . $media->file_name);
     }
 
     /**
@@ -615,7 +615,7 @@ class MediaController extends Controller
         $zip = new \ZipArchive();
         $path = 'zips/' . $fileName . '.zip';
         $filename = storage_path('app/brands/' . $path);
-
+        $deleteFiles = [];
 
         if ($zip->open($filename, \ZipArchive::CREATE) !== true) {
             exit("cannot open <$filename>\n");
@@ -625,12 +625,18 @@ class MediaController extends Controller
             /**
              * @var Media $mediaItem
              */
-            $zip->addFile(storage_path('app/brands/' . $mediaItem->dir . '/' . $mediaItem->file_name),
-                $mediaItem->origin_name);
-
+            $localFile = storage_path('app/brands/' . $mediaItem->dir . '/' . $mediaItem->file_name);
+            $remoteFile = \Storage::disk('s3')->get($mediaItem->getFilePath());
+            file_put_contents($localFile, $remoteFile);
+            $zip->addFile($localFile, $mediaItem->origin_name);
+            $deleteFiles[] = $localFile;
         }
 
         $zip->close();
+
+        foreach ($deleteFiles as $deleteFile) {
+            unlink($deleteFile);
+        }
 
         return new JsonResponse(['url' => route('download', ['hash' => $fileName])]);
     }
