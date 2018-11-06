@@ -154,6 +154,10 @@ class UploadService
             $status = $status && unlink(storage_path('app/brands_thumbnail/' . $media->getFilePath()));
         }
 
+        if (\Storage::disk('s3')->get($media->getFilePath())) {
+            \Storage::disk('s3')->delete($media->getFilePath());
+        }
+
         return $status && $media->delete();
     }
 

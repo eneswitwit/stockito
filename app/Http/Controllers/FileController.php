@@ -150,6 +150,7 @@ class FileController extends Controller
         $zip = new \ZipArchive();
         $path = 'zips/' . $fileName . '.zip';
         $filename = storage_path('app/brands/' . $path);
+        $deleteFiles = [];
 
         if(!file_exists($filename)) {
 
@@ -161,12 +162,18 @@ class FileController extends Controller
                 /**
                  * @var Media $mediaItem
                  */
-                $zip->addFile(storage_path('app/brands/' . $mediaItem->dir . '/' . $mediaItem->file_name),
-                    $mediaItem->origin_name);
-
+                $localFile = storage_path('app/brands/' . $mediaItem->dir . '/' . $mediaItem->file_name);
+                $remoteFile = \Storage::disk('s3')->get($mediaItem->getFilePath());
+                file_put_contents($localFile, $remoteFile);
+                $zip->addFile($localFile, $mediaItem->origin_name);
+                $deleteFiles[] = $localFile;
             }
 
             $zip->close();
+
+            foreach ($deleteFiles as $deleteFile) {
+                unlink($deleteFile);
+            }
         }
 
         return Storage::disk('brands')->download('zips/' . $hash . '.zip', 'images.zip');

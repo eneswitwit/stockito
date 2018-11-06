@@ -273,7 +273,7 @@ class Media extends Model implements TargetActivityInterface
      */
     public function getFile(): string
     {
-        return Storage::disk('brands')->get($this->getFilePath());
+        return Storage::disk('s3')->get($this->getFilePath());
     }
 
     /**

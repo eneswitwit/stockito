@@ -129,7 +129,7 @@ class MediaManager implements FTPFilesManagerInterface
      */
     public function storeMedia(Media $media, UploadedFile $file): bool
     {
-        return \Storage::disk('brands')->putFileAs($media->brand->getImagePath(), $file,
+        return \Storage::disk('s3')->putFileAs($media->brand->getImagePath(), $file,
             Media::FILE_PREFIX . $file->hashName());
     }
 
