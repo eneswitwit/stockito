@@ -6,7 +6,7 @@ body, body *:not(html):not(style):not(br):not(tr):not(code) {
 }
 
 body {
-    background-color: #f5f8fa;
+    background-color: rgb(56, 55, 54);
     color: #74787E;
     height: 100%;
     hyphens: auto;
@@ -216,6 +216,11 @@ img {
     display: inline-block;
     text-decoration: none;
     -webkit-text-size-adjust: none;
+    background-color: #fea500;
+    border-top: 10px solid #fea500;
+    border-right: 18px solid #fea500;
+    border-bottom: 10px solid #fea500;
+    border-left: 18px solid #fea500;
 }
 
 .button-blue {

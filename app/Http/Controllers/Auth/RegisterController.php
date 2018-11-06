@@ -16,7 +16,6 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Auth\Events\Registered;
 use LukeVear\LaravelTransformer\TransformerEngine;
 use Carbon;
-use Log;
 
 /**
  * Class RegisterController

@@ -25,16 +25,16 @@
             <div class="collapse navbar-collapse" id="site-nav">
                 <ul class="navbar-nav text-sm-left ml-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="#features">Features</a>
+                        <a class="nav-link" href="#features" style="color: #fff !important;">Features</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#pricing">Pricing</a>
+                        <a class="nav-link" href="#pricing" style="color: #fff !important;">Pricing</a>
                     </li>
                     <li class="nav-item text-center">
-                        <a href="/login" class="btn align-middle btn-outline-primary my-2 my-lg-0">Login</a>
+                        <a href="/login" class="btn align-middle btn-outline-primary my-2 my-lg-0" style="color: #fff !important;">Login</a>
                     </li>
                     <li class="nav-item text-center">
-                        <a href="/register" class="btn align-middle btn-primary my-2 my-lg-0">Sign Up</a>
+                        <a href="/register" class="btn align-middle btn-primary my-2 my-lg-0" style="color: #fff !important;">Sign Up</a>
                     </li>
                 </ul>
             </div>

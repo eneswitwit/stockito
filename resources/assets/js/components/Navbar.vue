@@ -19,7 +19,7 @@
                            aria-label="Search">
                     <div class="input-group-append">
                         <button class="btn btn-outline-primary search-button" @click="submitSearch" type="button">
-                            <fa icon="search"/>
+                            <fa style="color: grey !important;" icon="search"/>
                         </button>
                     </div>
                 </div>
@@ -99,12 +99,14 @@
             <template v-else>
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <router-link :to="{ name: 'login' }" class="nav-link" active-class="active">
+                        <router-link :to="{ name: 'login' }" style="color: #fff !important;" class="nav-link"
+                                     active-class="active">
                             {{ $t('login') }}
                         </router-link>
                     </li>
                     <li class="nav-item">
-                        <router-link :to="{ name: 'register' }" class="nav-link" active-class="active">
+                        <router-link :to="{ name: 'register' }" style="color: #fff !important;" class="nav-link"
+                                     active-class="active">
                             {{ $t('register') }}
                         </router-link>
                     </li>

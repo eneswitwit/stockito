@@ -31,6 +31,6 @@ class CreativeInviteExist extends Mailable
 	 * @return $this
 	 */
 	public function build(): self {
-		return $this->markdown( 'mails.creative.inviteExist')->subject('You are invited to creative team!');;
+		return $this->markdown( 'mails.creative.inviteExist')->subject('You are invited to creative team!');
 	}
 }

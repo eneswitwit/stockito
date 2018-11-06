@@ -37,6 +37,7 @@ use Illuminate\Support\Facades\Storage;
 use LukeVear\LaravelTransformer\TransformerEngine;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
+
 /**
  * Class MediaController
  *
@@ -298,7 +299,7 @@ class MediaController extends Controller
 
         if ($request->input('category', false)) {
             $category = Media\Category::firstOrCreate(
-                ['name' => $request->input('category'), 'brand_id' => $media->brand->id]
+                ['name' => $request->input('category.label'), 'brand_id' => $media->brand->id]
             );
             $media->category_id = $category->id;
         }
@@ -314,7 +315,7 @@ class MediaController extends Controller
         if ($request->input('supplier', false)) {
 
             $supplier = Supplier::firstOrCreate(
-                ['name' => $request->input('supplier'), 'brand_id' => $media->brand->id]
+                ['name' => $request->input('supplier.label'), 'brand_id' => $media->brand->id]
             );
             $media->supplier_id = $supplier->id;
         }
@@ -367,7 +368,7 @@ class MediaController extends Controller
 
             if ($request->input('form.category', false)) {
                 $category = Media\Category::firstOrCreate(
-                    ['name' => $request->input('category'), 'brand_id' => $media->brand->id]
+                    ['name' => $request->input('category.label'), 'brand_id' => $media->brand->id]
                 );
                 $media->category_id = $category->id;
             }
@@ -383,7 +384,7 @@ class MediaController extends Controller
             if ($request->input('supplier', false)) {
 
                 $supplier = Supplier::firstOrCreate(
-                    ['name' => $request->input('supplier'), 'brand_id' => $media->brand->id]
+                    ['name' => $request->input('supplier.label'), 'brand_id' => $media->brand->id]
                 );
                 $media->supplier_id = $supplier->id;
             }

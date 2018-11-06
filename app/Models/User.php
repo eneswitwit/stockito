@@ -15,6 +15,8 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Notifications\ResetPassword as ResetPasswordNotification;
+use App\Notifications\UpgradeSubscription;
+use App\Notifications\DowngradeSubscription;
 
 /**
  * App\Models\User
@@ -147,6 +149,30 @@ class User extends Authenticatable implements JWTSubject
     public function sendConfirmationEmail($token)
     {
         $this->notify(new MailUserRegistration($token));
+    }
+
+    /**
+     * Send mail verification.
+     *
+     * @param  string $token
+     *
+     * @return void
+     */
+    public function sendUpgradeEmail($token)
+    {
+        $this->notify(new UpgradeSubscription($token));
+    }
+
+    /**
+     * Send mail verification.
+     *
+     * @param  string $token
+     *
+     * @return void
+     */
+    public function sendDowngradeEmail($token)
+    {
+        $this->notify(new DowngradeSubscription($token));
     }
 
     /**

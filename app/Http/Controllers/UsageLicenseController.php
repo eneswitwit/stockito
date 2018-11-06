@@ -28,24 +28,37 @@ class UsageLicenseController extends Controller
      */
     public function create(CreateLicenseRequest $request): JsonResponse
     {
-        $user = auth()->user();
-
         $license = License::find($request->get('licenseId'));
         $media = $license->media;
 
         $usageLicense = UsageLicense::firstOrNew(['id' => $request->get('id')]);
+
         $usageLicense->license_id = $license->id;
         $usageLicense->invoice_number = $request->input('invoiceNumber', null);
         $usageLicense->invoice_number_by = $request->input('invoiceNumberBy', null);
-        $usageLicense->printrun = $request->input('printrun', null);
-        $usageLicense->usage = $request->input('usage', null);
-        $usageLicense->printrun = $request->input('printrun', null);
-        $usageLicense->start_at = Carbon::parse($request->input('startDate'));
-        $usageLicense->expired_at = Carbon::parse($request->input('expireDate'));
-        $usageLicense->any_limitations = $request->input('anyLimitations', null);
-        $usageLicense->territory = $request->input('territory', null);
-        $usageLicense->created_by = $user->id;
-        $usageLicense->updated_by = $user->id;
+
+        switch ($license->license_type) {
+            case $license::RF:
+                $usageLicense->printrun = $request->input('printrun');
+                break;
+            case $license::RM:
+                $usageLicense->usage = $request->input('usage');
+                $usageLicense->printrun = $request->input('printrun');
+                $usageLicense->start_at = Carbon::parse($request->input('startDate'));
+                $usageLicense->expired_at = Carbon::parse($request->input('expireDate'));
+                $usageLicense->any_limitations = $request->input('anyLimitations');
+                break;
+            case $license::RE:
+                $usageLicense->start_at = Carbon::parse($request->input('startDate'));
+                $usageLicense->expired_at = Carbon::parse($request->input('expireDate'));
+                $usageLicense->territory = $request->input('territory');
+                break;
+            case $license::BO:
+                $usageLicense->start_at = Carbon::parse($request->input('startDate'));
+                $usageLicense->expired_at = Carbon::parse($request->input('expireDate'));
+                $usageLicense->any_limitations = $request->input('anyLimitations');
+                break;
+        }
 
         $addFileStatus = false;
         if ($request->hasFile('billFile')) {

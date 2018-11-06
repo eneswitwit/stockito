@@ -6,8 +6,8 @@
                     <td align="center">
                         <table border="0" cellpadding="0" cellspacing="0">
                             <tr>
-                                <td>
-                                    <a href="{{ $url }}" class="button button-{{ $color or 'blue' }}" target="_blank">{{ $slot }}</a>
+                                <td style="background-color: #fea500 !important;">
+                                    <a href="{{ $url }}" class="button" style="background-color: #fea500 !important;" target="_blank">{{ $slot }}</a>
                                 </td>
                             </tr>
                         </table>
