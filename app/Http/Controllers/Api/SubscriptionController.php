@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use LukeVear\LaravelTransformer\TransformerEngine;
 use Stripe\Error\InvalidRequest;
 use Log;
+use Illuminate\Notifications\Notifiable;
 
 /**
  * Class SubscriptionController
@@ -25,6 +26,8 @@ use Log;
  */
 class SubscriptionController extends Controller
 {
+
+    use Notifiable;
 
     /**
      * @param \App\Http\Requests\Subscriptions\SwapSubscriptionRequest $request
@@ -34,6 +37,7 @@ class SubscriptionController extends Controller
      */
     public function upgrade(SwapSubscriptionRequest $request): JsonResponse
     {
+        Log::info('test');
         /**
          * @var User $user
          */
@@ -43,9 +47,11 @@ class SubscriptionController extends Controller
          * @var Plan $plan
          */
         $plan = (new Plan)->where('id', $request->input('plan.id'))->first();
+        Log::info('test2');
 
         // Stripe plan
         $stripePlan = $plan->getStripePlan();
+        Log::info('test3');
 
         // Upgrade
         try {
@@ -64,6 +70,8 @@ class SubscriptionController extends Controller
         } catch (InvalidRequest $exception) {
             return new JsonResponse(['success' => false, 'errors' => ['voucher' => $exception->getMessage()]]);
         }
+
+        $user->sendUpgradeEmail(md5(time()));
         return new JsonResponse(['success' => true, 'data' => new TransformerEngine($user, new UserTransformer())]);
     }
 
@@ -92,7 +100,9 @@ class SubscriptionController extends Controller
         try {
 
             Subscription::where('user_id', $user->id)->first()->downgradeToPlan($stripePlan->id);
-            $user->subscription('main')->resume();
+            if($user->subscription('main')->onGracePeriod()) {
+                $user->subscription('main')->resume();
+            }
             // Create GDPR entry
             $gdpr = new GDPR;
             $gdpr->user_id = $user->id;
@@ -102,6 +112,8 @@ class SubscriptionController extends Controller
         } catch (InvalidRequest $exception) {
             return new JsonResponse(['success' => false, 'errors' => ['voucher' => $exception->getMessage()]]);
         }
+
+        $user->sendDowngradeEmail(md5(time()));
         return new JsonResponse(['success' => true, 'data' => new TransformerEngine($user, new UserTransformer())]);
     }
 

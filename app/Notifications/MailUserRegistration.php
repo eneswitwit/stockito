@@ -1,10 +1,17 @@
 <?php
 
+// namespace
 namespace App\Notifications;
 
+// use
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Auth\Notifications\ResetPassword as Notification;
 
+/**
+ * Class MailUserRegistration
+ *
+ * @package App\Notifications
+ */
 class MailUserRegistration extends Notification
 {
   /**
@@ -18,7 +25,7 @@ class MailUserRegistration extends Notification
     $activateLink = url('/email/confirm/' . $this->token);
 
     return (new MailMessage)
-      ->line('You receive this email because you are registering an account.')
+      ->line('You received this email because you signed up for Stockito. Please confirm your Email by clicking the following button.')
       ->action('Confirm Email', $activateLink);
   }
 }

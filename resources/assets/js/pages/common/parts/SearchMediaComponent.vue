@@ -1,14 +1,14 @@
 <template>
     <div>
         <div class="card">
-            <div class="card-header">
-                Advanced Search Options
-                <button class="btn btn-link remove-btn" @click="closeAdvancedSearch">
+            <div class="card-header" style="border-radius: 0 !important;">
+                <span> Advanced Search Options </span>
+                <span class="btn btn-link remove-btn float-md-right" @click="closeAdvancedSearch">
                     <fa icon="times" fixed-width/>
-                </button>
+                </span>
             </div>
 
-            <div class="card-body">
+            <div class="card-body" style="border-radius: 0 !important;">
 
                 <div class="form-group">
                     <label for="filter-license-type">License Type</label>

@@ -1,11 +1,17 @@
 <?php
 
+// namespace
 namespace App\Notifications;
 
-use Illuminate\Http\Request;
+// use
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Auth\Notifications\ResetPassword as Notification;
 
+/**
+ * Class ResetPassword
+ *
+ * @package App\Notifications
+ */
 class ResetPassword extends Notification
 {
   /**
