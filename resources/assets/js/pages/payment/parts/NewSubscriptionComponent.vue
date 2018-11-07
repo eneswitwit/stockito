@@ -1,7 +1,7 @@
 <template>
 
     <form action="" method="post" id="payment-form" @submit.prevent="paySubscription">
-        <card v-if="plan">
+        <card v-if="plan" >
             <div class="card-body">
                 <div class="row">
                     <div class="col-lg-6">
@@ -11,8 +11,9 @@
                             <mark>{{ plan.price / 100 }} {{ plan.currencySymbol }}</mark>
                         </div>
                         <div class="form-group text-center">
-                            <button class="btn btn-primary" :disabled="requesting" type="submit">{{ $t('pay') }}
+                            <button class="btn btn-primary" :class="{ 'd-none' : requesting}" type="submit">{{ $t('pay') }}
                             </button>
+                            <img v-if="requesting" :src="require('../../../../images/loading.gif')"/>
                         </div>
                     </div>
                     <div class="col-lg-6">
@@ -99,6 +100,7 @@
 
             async paySubscription() {
 
+                this.requesting = true;
                 if (this.selectedCard) {
                     axios.post('/api/subscription/pay-subscription', {
                         plan: this.plan,
@@ -130,7 +132,6 @@
                             voucher: this.voucher,
                             selectedCard: this.selectedCard
                         }).then(({data}) => {
-                            this.requesting = false;
                             if (data.success) {
                                 this.$store.dispatch('auth/fetchUser').then(() => {
                                     this.$router.push({name: 'dashboard'});
@@ -141,6 +142,7 @@
                         });
                     }
                 }
+                this.requesting = false;
             },
 
             mountStripe() {

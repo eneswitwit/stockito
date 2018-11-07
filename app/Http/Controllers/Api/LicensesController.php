@@ -20,7 +20,6 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Response;
 use LukeVear\LaravelTransformer\TransformerEngine;
-use Log;
 
 /**
  * Class LicensesController
@@ -40,8 +39,8 @@ class LicensesController extends Controller
     {
         $user = $request->user();
         $licenses = new Collection();
-        //if ($user->brand) {
         $brand = $user->brand ?? Brand::find($brandId);
+
         if (!$brand) {
             return new JsonResponse($licenses);
         }
@@ -51,17 +50,7 @@ class LicensesController extends Controller
         )->orderBy(
             'expired_at',
             'ASC'
-        )->with('license'
-        )->with('license.media'
-        )->with('license.media.brand'
-        )->with('license.media.supplier'
-        )->get();
-
-        /*} elseif ($user->creative) {
-            foreach ($user->creative->brands as $brand) {
-                $licenses = $licenses->merge((new License)->whereIn('id', $brand->media->pluck('license')->pluck('id')->toArray())->orderBy('expired_at', 'ASC')->get());
-            }
-        }*/
+        )->with('license')->with('license.media')->with('license.media.brand')->with('license.media.supplier')->get();
 
         return new JsonResponse(new TransformerEngine($licenses, new UsageLicenseTransformer()));
     }

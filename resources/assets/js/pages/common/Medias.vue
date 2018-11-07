@@ -16,11 +16,11 @@
         <div class="container-fluid">
             <div class="row show-page" v-if="showPage">
 
-                <div v-if="showSearch" class="col-lg-2 nopadding">
+                <div v-if="showSearch" class="col-lg-3 nopadding">
                     <search-media-component @closeAdvancedSearch="showSearch = $event"></search-media-component>
                 </div>
 
-                <div :class="showSearch ? 'col-lg-10 nopadding' : 'col-lg-12 nopadding'">
+                <div :class="showSearch ? 'col-lg-9 nopadding' : 'col-lg-12 nopadding'">
 
                     <card class="mb-4" v-if="selectedMedia.length">
                         <button @click="deleteMultipleMedia" class="btn btn-link">Delete ({{ selectedMedia.length }}

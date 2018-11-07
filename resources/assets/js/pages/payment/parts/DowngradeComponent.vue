@@ -1,10 +1,14 @@
 <template>
     <form action="" method="post" id="payment-form" @submit.prevent="downgradeSubscription">
 
-        <card class="downgrade-template" :title="'Downgrade your plan'">
-            Your plan will automatically downgraded to Plan {{ plan.title }} after the expiration of the current plan in
-            {{ leftDays() }} days
-            <button class="btn btn-primary float-right" type="submit">{{ 'Submit' }}
+        <card class="downgrade-template" :title="'Downgrade your plan'" style="text-align: center;">
+            <p style="padding: 20px;">
+                Your plan will automatically downgraded to Plan {{ plan.title }} after the expiration of the current
+                plan in
+                {{ leftDays() }} days
+            </p>
+            <button class="btn btn-primary" type="submit">
+                {{ 'Submit' }}
             </button>
         </card>
 
@@ -54,18 +58,19 @@
 
             async downgradeSubscription() {
 
-                    axios.post('/api/subscription/downgrade', {
-                        plan: this.plan,
-                    }).then(({data}) => {
-                        this.requesting = false;
-                        if (data.success) {
-                            this.$store.dispatch('auth/fetchUser').then(() => {
-                                this.$router.push({name: 'dashboard'});
-                            });
-                        } else {
-                            this.errors = data.errors;
-                        }
-                    });
+                axios.post('/api/subscription/downgrade', {
+                    plan: this.plan,
+                }).then(({data}) => {
+                    this.requesting = false;
+                    if (data.success) {
+                        this.$store.dispatch('auth/fetchUser').then(() => {
+                            this.$swal('Successfully updated subscription', '', 'success');
+                            this.$router.push({name: 'dashboard'});
+                        });
+                    } else {
+                        this.errors = data.errors;
+                    }
+                });
 
             },
 

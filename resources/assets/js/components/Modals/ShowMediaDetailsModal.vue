@@ -28,11 +28,11 @@
                         <div class="card-body">
                             <table class="widget-table upload-ftp">
                                 <tr>
-                                    <td class="label">File info </td>
+                                    <td class="label">File info</td>
                                     <td>{{ media.imageInfo.width }}px x {{ media.imageInfo.height }}px</td>
                                 </tr>
                                 <tr>
-                                    <td class="label"> File size </td>
+                                    <td class="label"> File size</td>
                                     <td>{{ media.imageInfo.fileSize }}</td>
                                 </tr>
                                 <tr>
@@ -70,6 +70,9 @@
                         <table class="table">
                             <thead>
                             <tr>
+                                <th>
+                                    License Type
+                                </th>
                                 <th v-show="media.licenses[0].license_type == 2">
                                     Usage
                                 </th>
@@ -98,24 +101,32 @@
 
 
                             <tr v-if="media.licenses.length > 0" v-for="license in media.licenses[0].usageLicenses">
-
+                                <td>
+                                    <span :style="{color: media.license.color}"
+                                        class="license-badge" @click="showLicenseModal = true">
+                                        {{ media.licenses[0] ? media.licenses[0].type : '-' }}
+                                    </span>
+                                </td>
                                 <td v-show="media.licenses[0].license_type == 2">
-                                    {{ license.usage ? license.usage : '-' }}
+                                    {{ license.usage && license.usage !== 'null' ? license.usage : '-' }}
                                 </td>
                                 <td v-show="[1,2].indexOf(parseInt(media.licenses[0].license_type)) != -1">
-                                    {{ license.printrun || license.printrun === "null" ? license.printrun : '-' }}
+                                    {{ license.printrun && license.printrun !== 'null' ? license.printrun : '-' }}
                                 </td>
                                 <td v-show="media.licenses[0].license_type == 4">
-                                    {{ license.any_limitations }}
+                                    {{ license.any_limitations && license.any_limitations !== 'null' ?
+                                    license.any_limitations : '-' }}
                                 </td>
                                 <td v-show="media.licenses[0].license_type == 3">
-                                    {{ license.territory }}
+                                    {{ license.territory && license.territory !== 'null' ? license.territory : '-' }}
                                 </td>
                                 <td v-color-license:color="license">
-                                    {{ license.expiredAt ? license.expiredAt.dMY : '-' }}
+                                    {{ license.expiredAt && license.expiredAt !== 'null' ? license.expiredAt.dMY : '-'
+                                    }}
                                 </td>
                                 <td>
-                                    {{ license.invoiceNumber ? license.invoiceNumber : '' }}
+                                    {{ license.invoiceNumber && license.invoiceNumber !== 'null' ? license.invoiceNumber
+                                    : '-' }}
                                 </td>
                                 <td>
                                     <div v-if="license.billFile" class="row">
