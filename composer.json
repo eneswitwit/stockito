@@ -21,6 +21,7 @@
     "laravel/socialite": "^3.0",
     "laravel/tinker": "~1.0",
     "laravelrus/sleepingowl": "4.*@dev",
+    "league/flysystem-aws-s3-v3": "^1.0",
     "longman/laravel-lodash": "^0.8.0",
     "lukevear/laravel-transformer": "^1.0",
     "miljar/php-exif": "^0.6.3",
