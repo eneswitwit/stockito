@@ -342,11 +342,24 @@ class Media extends Model implements TargetActivityInterface
      */
     public function getIPTC(): ?ImageMetadataParser
     {
-        if (!$this->iptc) {
+        /*if (!$this->iptc) {
             $this->iptc = new ImageMetadataParser(storage_path('app/brands/' . $this->getFilePath()));
             $this->iptc->parseIPTC();
-        }
+        }*/
+
         return $this->iptc;
+    }
+
+    /**
+     * @param ImageMetadataParser $iptc
+     *
+     * @return Media
+     */
+    public function setIPTC(ImageMetadataParser $iptc): self
+    {
+        $this->iptc = $iptc;
+
+        return $this;
     }
 
     /**
@@ -354,13 +367,27 @@ class Media extends Model implements TargetActivityInterface
      */
     public function getEXIF(): ?Exif
     {
-        if (!$this->exif) {
+        /*if (!$this->exif) {
             $exif = Reader::factory(Reader::TYPE_NATIVE)->read(storage_path('app/brands/' . $this->getFilePath()));
+
             if ($exif) {
                 $this->exif = $exif;
             }
-        }
+        }*/
+
         return $this->exif;
+    }
+
+    /**
+     * @param Exif $exif
+     *
+     * @return Media
+     */
+    public function setEXIF(Exif $exif): self
+    {
+        $this->exif = $exif;
+
+        return $this;
     }
 
     /**
@@ -389,7 +416,7 @@ class Media extends Model implements TargetActivityInterface
      *
      * @return Media
      */
-    public function setExif(array $exif): self
+/*    public function setExif(array $exif): self
     {
         if (isset($exif['camera'])) {
             $this->getEXIF()->setCamera($exif['camera']);
@@ -407,7 +434,7 @@ class Media extends Model implements TargetActivityInterface
             $this->getEXIF()->setCamera($exif['author']);
         }
         return $this;
-    }
+    }*/
 
     /**
      * @return string
