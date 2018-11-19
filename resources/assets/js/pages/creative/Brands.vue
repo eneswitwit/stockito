@@ -1,29 +1,30 @@
 <template>
 
-    <div class="container mt-2">
 
-        <div class="card">
-            <div class="card-header">Brands Involved</div>
+    <div class="container">
+        <div class="card mt-5">
 
-            <div class="card-body">
+            <div class="card-header dashboard-card">
+                Brands Involved
+            </div>
+
+            <div class="card-body" style="padding:0;">
                 <div class="col-xs-12 table-responsive">
                     <datatable v-if="brands" :columns="dataTable.columns" :data="brands">
                         <template slot-scope="{ row, columns }">
                             <tr>
                                 <template>
-                                    <datatable-cell v-for="(column, j) in columns" :key="j" :column="column" :row="row"></datatable-cell>
+                                    <datatable-cell v-for="(column, j) in columns" :key="j" :column="column"
+                                                    :row="row"></datatable-cell>
                                 </template>
                             </tr>
                         </template>
                     </datatable>
                 </div>
             </div>
-
-            <div class="card-footer">
-                <datatable-pager class="custom-pagination" v-model="dataTable.page" type="abbreviated" :per-page="dataTable.perPage"></datatable-pager>
-            </div>
-
         </div>
+        <datatable-pager class="custom-pagination mt-2" v-model="dataTable.page" type="abbreviated"
+                         :per-page="dataTable.perPage"></datatable-pager>
     </div>
 
 </template>
@@ -41,7 +42,7 @@
         },
         middleware: ['auth', 'subscribed'],
         name: 'brands',
-        created () {
+        created() {
             this.setApiBrands();
         },
         data: () => ({
@@ -60,8 +61,8 @@
             }
         },
         methods: {
-             async setApiBrands () {
-                 await this.$store.dispatch('creative/setApiBrands');
+            async setApiBrands() {
+                await this.$store.dispatch('creative/setApiBrands');
             }
         },
     }

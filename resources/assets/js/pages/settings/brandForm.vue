@@ -29,7 +29,9 @@
                 </div>
 
                 <div class="card col-md-7 offset-md-3 p-0">
-                    <img v-if="brandImage" class="card-img-top" :src="brandImage" alt="Card image cap">
+                    <div v-if="brandImage">
+                        <img v-if="brandImage!=='/storage/'" class="card-img-top" :src="brandImage">
+                    </div>
                     <div class="form-group" style="margin: 1rem;">
                         <div class="custom-file">
                             <input type="file" class="custom-file-input" id="brand-logo" @change="setFile">

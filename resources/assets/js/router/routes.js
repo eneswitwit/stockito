@@ -2,7 +2,7 @@
 const Dashboard = () => import('~/pages/Dashboard').then(m => m.default || m)
 const Medias = () => import('~/pages/common/Medias').then(m => m.default || m)
 const Brands = () => import('~/pages/creative/Brands').then(m => m.default || m)
-const BrandDetails = () => import('~/pages/creative/parts/BrandDetails').then(m => m.default || m)
+const BrandDetails = () => import('~/pages/creative/BrandDetailsPage').then(m => m.default || m)
 const ShowMedia = () => import('~/pages/common/ShowMediaComponent').then(m => m.default || m)
 const EditMedia = () => import('~/pages/common/EditMediaComponent').then(m => m.default || m)
 const EditLicense = () => import('~/pages/common/EditLicenseComponent').then(m => m.default || m)

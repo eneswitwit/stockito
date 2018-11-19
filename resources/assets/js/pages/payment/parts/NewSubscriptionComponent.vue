@@ -107,7 +107,6 @@
                         voucher: this.voucher,
                         selectedCard: this.selectedCard
                     }).then(({data}) => {
-                        this.requesting = false;
                         if (data.success) {
                             this.$store.dispatch('auth/fetchUser').then(() => {
                                 this.$router.push({name: 'dashboard'});
@@ -125,7 +124,6 @@
                         this.token = token;
                         this.error = '';
 
-                        this.requesting = true;
                         axios.post('/api/subscription/pay-subscription', {
                             token: this.token,
                             plan: this.plan,
@@ -142,7 +140,6 @@
                         });
                     }
                 }
-                this.requesting = false;
             },
 
             mountStripe() {

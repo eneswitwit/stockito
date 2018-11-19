@@ -8,6 +8,10 @@
             <b-col>
                 <soon-expiring-licenses-component></soon-expiring-licenses-component>
                 <br>
+            </b-col>
+        </b-row>
+        <b-row :class="'mb-4'">
+            <b-col>
                 <brands-widget></brands-widget>
             </b-col>
         </b-row>

@@ -27,12 +27,15 @@
         </div>
 
         <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
-            <div v-if="selectedBrand" class="nav-item">
-                <img v-if="selectedBrand.logo" :class="'brand-logo-nav'" :src="logoConvert(selectedBrand.logo)">
+
+            <div class="nav-item" style="margin:auto;">
+                <span v-if="selectedBrand">
+                    <img v-if="selectedBrand.logo" :class="'brand-logo-nav'" :src="logoConvert(selectedBrand.logo)">
+                    {{ selectedBrand.company_name.substring(0,4) + '...' }}
+                </span>
+                <button v-if="user && canUpload()" class="btn btn-primary" @click="showUploadModal = true">Upload File</button>
             </div>
-            <div v-if="user && canUpload()" class="nav-item" style="margin-left: 10vw;margin-right: 7vw;">
-                <button class="btn btn-primary" @click="showUploadModal = true">Upload File</button>
-            </div>
+
             <!-- Authenticated -->
             <div v-if="user" class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle text-dark"
@@ -54,8 +57,8 @@
                         <fa icon="cog" fixed-width/>
                         {{ $t('settings') }}
                     </router-link>
-                    <div v-if="user.creative && selectedBrand" class="dropdown-divider"></div>
-                    <div v-if="selectedBrand"> {{ selectedBrand.company_name }}</div>
+                    <div style="padding: .25rem 1.5rem;" v-if="selectedBrand"> {{ selectedBrand.company_name }}</div>
+                    <div v-if="user.creative && selectedBrand" style="padding: .25rem 1.5rem;"> <hr style="margin-top:0;"> </div>
                     <router-link
                             v-if="user && (user.brand || ((isHeadOfTeam() || isActiveEditing()) && selectedBrand))"
                             :to="{ name: 'brand.creatives' }" class="dropdown-item pl-3">
@@ -88,9 +91,9 @@
                     </router-link>
 
 
-                    <div class="dropdown-divider"></div>
+                    <div style="padding: .25rem 1.5rem;"> <hr style="margin:0;"> </div>
                     <a @click.prevent="logout" class="dropdown-item pl-3" href="#">
-                        <fa icon="sign-out-alt" fixed-width/>
+                        <fa icon="sign-out-alt" style="color: rgb(199,212,230);" fixed-width/>
                         {{ $t('logout') }}
                     </a>
                 </div>

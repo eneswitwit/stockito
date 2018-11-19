@@ -2,8 +2,8 @@
     <div class="container mt-4">
 
         <form @submit.prevent="saveMedia" v-if="media">
-            <div class="row mb-4">
-                <div class="col-lg-3">
+            <div class="row mb-2">
+                <div class="col-lg-4">
                     <card :title="'Basic information'" :class="'mb-2'">
 
                         <div class="form-group">
@@ -69,59 +69,44 @@
                             <has-error :form="form" field="supplier"/>
                         </div>
 
-                        <div class="form-group">
-                            <label>License</label>
-                            <button v-color-license:background.border="media.licenses[0]"
-                                    type="button"
-                                    class="btn btn-success brn-xs"
-                                    @click="showLicenseModal = true">
-                                {{ media.license ? media.license.type + ' - license' : 'Set license' }}
-                            </button>
-                        </div>
-
-                        <set-license-modal-component :show.sync="showLicenseModal"
-                                                     :selectedMedia="selectedMedia"
-                                                     :media="media"
-                                                     :license="media.license"
-                        ></set-license-modal-component>
-
                     </card>
-                    <card :title="'License Bills'">
-                        <div v-if="media.license && media.license.billFile" class="row">
-                            <div class="col-lg-12 text-center">
-                                <b>{{ $t('bill') }}</b>
-                                <a :href="media.license.url" class="btn btn-primary btn block">{{
-                                    media.license.billFileOriginName }}</a>
-                            </div>
-                        </div>
-                    </card>
-                    <router-link class="btn btn-primary btn-block"
-                                 :to="{ name: 'medias.show', props: { id: media.id }}">{{ $t('show') }}
-                    </router-link>
-                    <button @click.prevent="saveMedia" class="btn btn-primary btn-block">
-                        {{ $t('save') }}
-                    </button>
-                    <card :title="'Note'">
-                        <div class="form-group">
 
-                                <textarea class="form-control"
-                                          v-model="form.notes"
-                                          placeholder="Write a note concerning this upload">
-                                </textarea>
-                            <has-error :form="form" field="notes"/>
-                        </div>
-                    </card>
                 </div>
 
-                <div class="col-lg-9 flex-column">
+                <div class="col-lg-8 flex-column">
                     <video-image-component v-bind:media="media"></video-image-component>
                 </div>
 
             </div>
+
+            <div class="row mb-2">
+                <div class="col-md-12">
+                    <div class="card mb-2">
+                        <div class="card-header">
+                            Note
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <textarea class="form-control"
+                                          v-model="form.notes"
+                                          placeholder="Write a note concerning this upload">
+                                </textarea>
+                                <has-error :form="form" field="notes"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <button @click.prevent="saveMedia" class="btn btn-primary btn-block">
+                        {{ $t('save') }}
+                    </button>
+                </div>
+            </div>
+
         </form>
-
-
-
 
     </div>
 </template>
@@ -185,11 +170,13 @@
             media() {
                 return this.$store.getters['media/media'];
             },
+
             categoriesOptions() {
-                return this.categories.map((el) => {
-                    return {label: el.name, value: el.id}
-                });
+                return this.categories ? this.categories.map((el) => {
+                    return {label: el.name, value: el.id};
+                }) : [];
             },
+
             suppliersOptions() {
                 return this.suppliers ? this.suppliers.map((el) => {
                     return {label: el.name, value: el.id};
@@ -221,20 +208,24 @@
                 this.form.source = value.source;
                 this.form.supplier = value.supplier.name;
             },
+
             async getCategories() {
-                let {data} = await axios.get('/api/medias/categories');
+                let {data} = await axios.get('/api/brands/' + this.brand.id + '/categories');
                 this.categories = data;
             },
+
             getSuppliers() {
                 axios.get('/api/brands/' + this.brand.id + '/suppliers').then(({data}) => {
                     this.suppliers = data;
                 });
             },
+
             getTypes() {
                 axios.get('/api/medias/types').then(({data}) => {
                     this.types = data;
                 });
             }
+            
         },
 
         directives: {

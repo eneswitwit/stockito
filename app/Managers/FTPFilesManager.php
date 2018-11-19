@@ -1,7 +1,9 @@
 <?php
 
+// namespace
 namespace App\Managers;
 
+// use
 use App\Exceptions\FtpFileNotFoundException;
 use App\Managers\Processors\AIFileProcessor;
 use App\Managers\Processors\EPSFileProcessor;
@@ -14,6 +16,11 @@ use App\Services\UploadService;
 use Carbon\Carbon;
 use Illuminate\Http\File;
 
+/**
+ * Class FTPFilesManager
+ *
+ * @package App\Managers
+ */
 class FTPFilesManager
 {
     /**

@@ -1,27 +1,12 @@
 <template>
 
-    <div class="container mt-2 mb-4">
-        <card class="mt-4" v-if="selectedBrand" :title="selectedBrand.brand_name">
-            <div class="card-body">
-
-                <div class="row mb-4">
-                    <router-link class="btn btn-primary mr-2"
-                                 :to="{ name: 'creative.brand.medias', params: { creative_brand_id: selectedBrand.id  }}">
-                        Media Files
-                    </router-link>
-
-                    <router-link class="btn btn-primary"
-                                 :to="{ name: 'creative.brand.uploaded', params: { creative_brand_id: selectedBrand.id  }}">
-                        Uploads
-                    </router-link>
-                </div>
-
-                <hr>
-
-                <h5 class="card-title mb-2"> Brand Details </h5>
-
+    <div class="mt-2 mb-4">
+        <h5 class="card-title main-heading mb-2"> Brand Details </h5>
+        <b-row class="mt-4" v-if="selectedBrand" :title="selectedBrand.brand_name">
+            <div class="col-md-3">
                 <img v-if="selectedBrand.logo" class="card-img-top" :src="logoConvert(selectedBrand.logo)">
-
+            </div>
+            <div class="col-md-5">
                 <table class="creative-table">
                     <tr>
                         <td><strong>{{ $t('company_name') }} </strong></td>
@@ -33,9 +18,7 @@
                     </tr>
                 </table>
 
-                <hr>
-
-                <h5 class="card-title mt-4"> Brand Team </h5>
+                <h5 class="card-title main-heading mt-4"> Brand Team </h5>
 
                 <table class="creative-table" v-if="selectedBrand.creatives && selectedBrand.creatives.length">
                     <tr>
@@ -44,14 +27,24 @@
                     </tr>
 
                     <tr v-for="(member,index) in selectedBrand.creatives">
-                        <td> <strong v-if="index === 0"> {{ $t('team_members') }} </strong></td>
+                        <td><strong v-if="index === 0"> {{ $t('team_members') }} </strong></td>
                         <td>{{ member.first_name + ' ' + member.last_name }}</td>
                     </tr>
 
                 </table>
-
             </div>
-        </card>
+            <div class="col-md-4" style="text-align: right">
+                <router-link class="btn btn-primary mr-2"
+                             :to="{ name: 'creative.brand.medias', params: { creative_brand_id: selectedBrand.id  }}">
+                    Media Files
+                </router-link>
+
+                <router-link class="btn btn-primary"
+                             :to="{ name: 'creative.brand.uploaded', params: { creative_brand_id: selectedBrand.id  }}">
+                    Uploads
+                </router-link>
+            </div>
+        </b-row>
 
     </div>
 </template>

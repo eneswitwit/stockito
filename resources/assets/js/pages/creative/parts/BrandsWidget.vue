@@ -1,20 +1,25 @@
 <template>
 	<div>
+
 		<card class="mt-4" :title="$t('choose_brand')">
 			<div v-if="brands.length" class="row brands-block">
-				<div v-for="(brand, index) in brands" class="mt-3 col-md-4">
-					<div v-bind:class="[(selectedBrand ? selectedBrand.id === brand.id : false) ? 'bg-warning' : '']" v-on:click="selectBrand(index)" class="card h-100">
+				<div v-for="(brand, index) in brands" class="col-md-2 text-center">
+					<div v-bind:class="[(selectedBrand ? selectedBrand.id === brand.id : false) ? 'btn-info' : '']" v-on:click="selectBrand(index)" class="card h-100">
 						<div class="card-body">
 							{{ brand.brand_name }}
 						</div>
 					</div>
 				</div>
 			</div>
+
+			<hr v-if="selectedBrand">
+
+			<transition name="fade">
+				<brand-details v-if="selectedBrand"></brand-details>
+			</transition>
+
 		</card>
 
-		<transition name="fade">
-			<brand-details v-if="selectedBrand"></brand-details>
-		</transition>
 
 	</div>
 </template>

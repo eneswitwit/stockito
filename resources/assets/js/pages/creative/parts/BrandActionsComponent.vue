@@ -1,6 +1,6 @@
 <template>
     <div class="pull-right" v-if="row.id">
-        <button @click="changeView" class="btn btn-success btn-sm">Change view</button>
+        <button @click="changeView" class="btn btn-info btn-sm">Change view</button>
         <button @click="setSelectedBrand" class="btn btn-primary btn-sm">Details</button>
         <button @click="removeCreativeBrand" class="btn btn-warning btn-sm">Remove</button>
     </div>
