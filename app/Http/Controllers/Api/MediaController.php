@@ -212,6 +212,7 @@ class MediaController extends Controller
          */
         $user = auth()->user();
         $brand = $user->brand ?? Brand::find($brandId);
+
         if (!$brand) {
             return new JsonResponse();
         }
@@ -221,15 +222,13 @@ class MediaController extends Controller
             ->where('processing', false)
             ->where('username', $brand->ftpUser->userid)
             ->get();
-
         $ftpFiles->each(function (FTPFile $FTPFile) {
+            $this->ftpFilesManager->handleFTPFile($FTPFile);
             $FTPFile->queuing = true;
             $FTPFile->save();
             ProcessFTPFile::dispatch($FTPFile);
         });
-
         $medias = $brand->media()->notPublished()->where('created_by', $user->id)->orderBy('created_at', 'decs')->get();
-
         $medias->map(function (Media $media) {
             if (!Storage::disk('s3')->exists($media->getFilePath())) {
                 $media->delete();
@@ -285,7 +284,6 @@ class MediaController extends Controller
      */
     public function submit(Request $request, Media $media): JsonResponse
     {
-
         /**
          * @var Supplier $supplier
          * @var Media\Category $category
