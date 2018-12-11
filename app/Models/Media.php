@@ -342,10 +342,9 @@ class Media extends Model implements TargetActivityInterface
      */
     public function getIPTC(): ?ImageMetadataParser
     {
-        /*if (!$this->iptc) {
-            $this->iptc = new ImageMetadataParser(storage_path('app/brands/' . $this->getFilePath()));
-            $this->iptc->parseIPTC();
-        }*/
+        if (!$this->iptc) {
+            $this->iptc = new ImageMetadataParser($this->getFilePath());
+        }
 
         return $this->iptc;
     }
