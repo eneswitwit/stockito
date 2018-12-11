@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Storage;
 use Longman\LaravelLodash\Eloquent\UserIdentities;
+use phpDocumentor\Reflection\Types\Boolean;
 use PHPExif\Exif;
 use PHPExif\Reader\Reader;
 
@@ -350,11 +351,11 @@ class Media extends Model implements TargetActivityInterface
     }
 
     /**
-     * @param ImageMetadataParser $iptc
+     * @param bool $iptc
      *
      * @return Media
      */
-    public function setIPTC(ImageMetadataParser $iptc): self
+    public function setIPTC($iptc): self
     {
         $this->iptc = $iptc;
 
