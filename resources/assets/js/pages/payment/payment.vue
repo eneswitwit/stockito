@@ -1,9 +1,12 @@
 <template>
     <div class="container mt-4">
+
         <new-subscription-component v-if="currentPlan === null"
                                     :plan="plan"
                                     :cards="cards"
                                     :stripe="stripe"
+                                    :user="user"
+                                    :taxRate="taxRate"
         ></new-subscription-component>
 
         <div v-else>
@@ -13,12 +16,16 @@
                                :currentPlan="currentPlan"
                                :stripe="stripe"
                                :cards="cards"
+                               :user="user"
+                               :taxRate="taxRate"
             ></upgrade-component>
+
             <downgrade-component v-else
                                  :plan="plan"
                                  :currentPlan="currentPlan"
                                  :stripe="stripe"
                                  :cards="cards"
+                                 :taxRate="taxRate"
             ></downgrade-component>
 
         </div>
@@ -48,16 +55,23 @@
             cards: [],
             currentPlan: null,
             stripe: Stripe('pk_test_liDTANMEZoxjT5okqvFofeUO'),
+            user: null,
+            taxRate: 0
         }),
 
         created() {
             this.getPlan();
             this.getCurrentPlan();
             this.getCards();
-
+            this.getUser();
+            this.getTaxRate();
         },
 
         methods: {
+
+            getUser() {
+                this.user = this.$store.getters['auth/user'];
+            },
 
             getPlan() {
                 axios.get('/api/plans/' + this.$route.params.id).then(({data}) => {
@@ -68,6 +82,12 @@
             getCards() {
                 axios.get('/api/cards').then(({data}) => {
                     this.cards = data;
+                });
+            },
+
+            getTaxRate() {
+                axios.get('/api/subscription/tax').then(({data}) => {
+                    this.taxRate = data;
                 });
             },
 

@@ -1,11 +1,13 @@
 <template>
     <div class="container mt-4 mb-2">
+
         <b-row>
             <b-col>
                 <plans-list-component @select-plan="changePlan" :plans="plans"
                                       :currentPlan="currentPlan"></plans-list-component>
             </b-col>
         </b-row>
+
         <b-row>
             <b-col>
                 <card :title="'Terms and Conditions'" :class="'mt-2 mb-4'">
@@ -24,6 +26,7 @@
                 </card>
             </b-col>
         </b-row>
+
         <b-row v-if="selectedPlanId && checked" :class="'text-right mb-4'">
             <b-col>
                 <router-link class="btn btn-success btn-block"
@@ -32,6 +35,7 @@
                 </router-link>
             </b-col>
         </b-row>
+
     </div>
 </template>
 
@@ -51,20 +55,34 @@
         created() {
             this.getCurrentPlan();
             this.getPlans();
+            this.getUser();
+            this.getTaxRate();
         },
 
         data: () => ({
             plans: [],
             currentPlan: null,
             selectedPlanId: null,
-            checked: false
+            checked: false,
+            user: null,
+            taxRate: 0
         }),
 
         methods: {
 
+            getUser() {
+                this.user = this.$store.getters['auth/user'];
+            },
+
             getPlans() {
                 axios.get('/api/plans/all').then(({data}) => {
                     this.plans = data;
+                });
+            },
+
+            getTaxRate() {
+                axios.get('/api/subscription/tax').then(({data}) => {
+                    this.taxRate = data;
                 });
             },
 

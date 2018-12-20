@@ -114,8 +114,8 @@
                     </tr>
                     <tr>
                         <td class="invoice-data-row-td table-totals right-block">
-                            <div class="table-total data-total-title">VAT</div>
-                            <div class="table-total data-total-value"> 0 {{ $stripeInvoice->currency }}</div>
+                            <div class="table-total data-total-title">VAT {{$stripeInvoice->tax_percent }} % </div>
+                            <div class="table-total data-total-value"> {{ number_format($stripeInvoice->tax/100, 2) }} {{ $stripeInvoice->currency }}</div>
                         </td>
                     </tr>
                     <tr>

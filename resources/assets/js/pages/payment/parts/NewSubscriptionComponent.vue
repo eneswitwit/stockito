@@ -4,19 +4,25 @@
         <card v-if="plan" >
             <div class="card-body">
                 <div class="row">
+
                     <div class="col-lg-6">
+
                         <h2 class="plan-title">Pay for <span class="plan-name"> {{ plan.title }} </span>
                             subscription plan</h2>
+
                         <div class="plan-info">
-                            <mark>{{ plan.price / 100 }} {{ plan.currencySymbol }}</mark>
+                            <mark>{{ plan.price / 100 }} {{ plan.currencySymbol }} + {{ plan.price*taxRate/10000 }} {{ plan.currencySymbol }} VAT </mark>
                         </div>
+
                         <div class="form-group text-center">
                             <button class="btn btn-primary" :class="{ 'd-none' : requesting}" type="submit">{{ $t('pay') }}
                             </button>
                             <img v-if="requesting" :src="require('../../../../images/loading.gif')"/>
                         </div>
+
                     </div>
                     <div class="col-lg-6">
+
                         <div v-if="cards.length > 0" class="form-group">
                             <select v-model="selectedCard" class="form-control" name="" id="">
                                 <option value="">Select your credit card</option>
@@ -24,6 +30,7 @@
                                 </option>
                             </select>
                         </div>
+
                         <div v-if="cards.length > 0" class="form-group text-center">
                             <h3>- OR -</h3>
                         </div>
@@ -49,6 +56,7 @@
                                    type="text" name="voucher" v-model="voucher">
                             <div v-if="errors.voucher" class="invalid-feedback">{{ errors.voucher }}</div>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -74,7 +82,7 @@
             cardExpiry: null,
             cardCvc: null,
             errors: {},
-            requesting: false
+            requesting: false,
         }),
 
         props: {
@@ -86,6 +94,12 @@
             },
             stripe: {
                 'default': null
+            },
+            user: {
+                'default' : null
+            },
+            taxRate: {
+                'default' : 0
             }
         },
 
@@ -94,7 +108,6 @@
                 this.mountStripe();
             })
         }, 450),
-
 
         methods: {
 
@@ -135,6 +148,7 @@
                                     this.$router.push({name: 'dashboard'});
                                 });
                             } else {
+                                this.requesting = false;
                                 this.errors = data.errors;
                             }
                         });
@@ -195,6 +209,7 @@
 
                 this.cardNumber.addEventListener('change', ({error}) => {
                     if (error) {
+                        this.requesting = false;
                         this.error = error.message;
                     } else {
                         this.error = '';

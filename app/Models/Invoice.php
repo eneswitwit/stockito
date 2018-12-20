@@ -16,6 +16,8 @@ use Stripe\Invoice as StripeInvoice;
  * @property string|null $number
  * @property string|null $stripe_id
  * @property int|null $amount
+ * @property int|null $tax
+ * @property int|null $tax_percent
  * @property string|null $currency
  * @property string|null $customer
  * @property string|null $customer_email
@@ -86,7 +88,9 @@ class Invoice extends Model
         'period_start',
         'period_end',
         'brand_id',
-        'plan_id'
+        'plan_id',
+        'tax',
+        'tax_percent'
     ];
 
     /**

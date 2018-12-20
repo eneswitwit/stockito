@@ -4,6 +4,7 @@
 namespace App\Managers;
 
 // use
+use App\Events\UploadedFileEvent;
 use App\Exceptions\FtpFileNotFoundException;
 use App\Managers\Processors\AIFileProcessor;
 use App\Managers\Processors\EPSFileProcessor;
@@ -15,6 +16,9 @@ use App\Models\Media;
 use App\Services\UploadService;
 use Carbon\Carbon;
 use Illuminate\Http\File;
+use Illuminate\Support\Facades\Storage;
+use App\Classes\ImageMetadataParser;
+use PHPExif\Reader\Reader;
 
 /**
  * Class FTPFilesManager
@@ -46,6 +50,7 @@ class FTPFilesManager
 
     /**
      * FTPFilesManager constructor.
+     *
      * @param MediaManager $mediaManager
      * @param UploadService $uploadService
      */
@@ -56,15 +61,19 @@ class FTPFilesManager
     }
 
     /**
-     * @param FTPFile $ftpFile
-     * @return Media
-     * @throws FtpFileNotFoundException
+     * @param \App\Models\FTPFile $ftpFile
+     *
+     * @return \App\Models\Media
+     * @throws \App\Exceptions\FtpFileNotFoundException
+     * @throws \ImagickException
+     * @throws \Exception
      */
     public function handleFTPFile(FTPFile $ftpFile): Media
     {
         if (!file_exists($ftpFile->file)) {
             throw new FtpFileNotFoundException('File not found', $ftpFile);
         }
+
         /**
          * @var Media[] $medias
          */
@@ -74,26 +83,73 @@ class FTPFilesManager
         $file = new File($ftpFile->file);
         $brand = $ftpFile->ftpUser->brand;
 
-        $media = (new Media())
-            ->where('file_name', $file->getFilename())
-            ->where('dir', $brand->id)
-            ->first();
+        try {
 
-        /**
-         * @var FileProcessorInterface $processor
-         */
-        $processorClass = $this->processors[$file->getMimeType()];
-        $processor = \App::get($processorClass);
+            $media = new Media([
+                'file_name' => Media::FILE_PREFIX . $file->hashName(),
+                'origin_name' => $file->getFilename(),
+                'content_type' => $file->getMimeType(),
+                'file_size' => $file->getSize(),
+                'brand_id' => $brand->id,
+                'dir' => $brand->getImagePath()
+            ]);
 
-        $media = $processor->getMediaForFile($file->getRealPath(), $brand, $media);
+            if (\in_array($file->extension(), ['ai', 'eps'])) {
+                $status = Storage::disk('s3')->putFileAs($media->brand->getImagePath(), $file,
+                    Media::FILE_PREFIX . $file->hashName());
+                $image = new \Imagick();
+                $image->readImage($file->getRealPath());
+                $image->thumbnailImage(640, 480);
+                $image->writeImage(storage_path('app/brands_thumbnail/' . $media->brand->id . '/' . $media->file_name . '.png'));
+                $media->thumbnail = $media->file_name . '.png';
+                $media->width = $image->getImageWidth();
+                $media->height = $image->getImageHeight();
+            } elseif (\in_array($file->extension(), ['mp4'])) {
+                $media = UploadService::setVideoData($media, $file, $brand);
+                $status = Storage::disk('s3')->putFileAs($media->brand->getImagePath(), $file,
+                    Media::FILE_PREFIX . $file->hashName());
+            } else {
+                $this->mediaManager->read($file->getRealPath());
+                $status = Storage::disk('s3')->putFileAs($media->brand->getImagePath(), $file,
+                    Media::FILE_PREFIX . $file->hashName());
+                $media = $this->mediaManager->setSizes($media);
+                $status = $status && $this->mediaManager->makeAndStoreThumbnail($media);
+                $media->thumbnail = $media->file_name;
+                $iptc = new ImageMetadataParser($file);
+                if ($iptc->parseIPTC()) {
+                    $media->setIPTC($iptc->parseIPTC());
+                }
+                $media->setEXIF(Reader::factory(Reader::TYPE_NATIVE)->read($file));
+            }
 
-        $media->save();
-        $ftpFile->media()->associate($media);
-        $ftpFile->handled = true;
-        $ftpFile->handled_at = Carbon::now();
-        $ftpFile->processing = false;
-        $ftpFile->save();
+            if (!$status) {
+                throw new \LogicException('Can\'t upload file');
+            }
+            try {
+                $media->title = $media->getIPTC() ? $media->getIPTC()->getTitle() : '';
+            } catch (\Exception $exception) {
+            }
+            $media->keywords = $media->getEXIF() && $media->getEXIF()->getKeywords() ? implode(', ',
+                $media->getEXIF()->getKeywords()) : '';
+            $media->source = $media->getEXIF() && $media->getEXIF()->getSource() ? $media->getEXIF()->getSource() : '';
 
-        return $media;
+
+            $media->save();
+            $ftpFile->media()->associate($media);
+            $ftpFile->handled = true;
+            $ftpFile->handled_at = Carbon::now();
+            $ftpFile->processing = false;
+            $ftpFile->save();
+            event(new UploadedFileEvent($media, $brand));
+            return $media;
+
+
+        } catch (\Exception $exception) {
+            $ftpFile->delete();
+            /*if($media) {
+                UploadService::removeMedia($media);
+            }*/
+            throw new \LogicException($exception);
+        }
     }
 }

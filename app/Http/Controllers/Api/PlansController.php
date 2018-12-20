@@ -10,7 +10,6 @@ use App\Transformers\SimplePlanTransformer;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use LukeVear\LaravelTransformer\TransformerEngine;
-use Log;
 
 /**
  * Class PlansController

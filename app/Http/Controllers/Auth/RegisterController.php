@@ -231,10 +231,9 @@ class RegisterController extends Controller
     }
 
     /**
-     * @param Request $request
+     * @param \Illuminate\Http\Request $request
      *
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
-     * @throws \Exception
+     * @return \Illuminate\Http\JsonResponse
      */
     public function confirmEmail(Request $request)
     {

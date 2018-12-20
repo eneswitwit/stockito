@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Storage;
 use Longman\LaravelLodash\Eloquent\UserIdentities;
 use PHPExif\Exif;
+use phpDocumentor\Reflection\Types\Boolean;
 use PHPExif\Reader\Reader;
 
 /**
@@ -342,11 +343,23 @@ class Media extends Model implements TargetActivityInterface
      */
     public function getIPTC(): ?ImageMetadataParser
     {
-        if (!$this->iptc) {
-            $this->iptc = new ImageMetadataParser(storage_path('app/brands/' . $this->getFilePath()));
-            $this->iptc->parseIPTC();
+        if ($this->iptc) {
+            $this->iptc = new ImageMetadataParser($this->getFilePath());
+        } else {
+            $this->iptc = null;
         }
         return $this->iptc;
+    }
+
+    /**
+     * @param bool $iptc
+     *
+     * @return \App\Models\Media
+     */
+    public function setIPTC($iptc): self
+    {
+        $this->iptc = $iptc;
+        return $this;
     }
 
     /**
@@ -354,13 +367,24 @@ class Media extends Model implements TargetActivityInterface
      */
     public function getEXIF(): ?Exif
     {
-        if (!$this->exif) {
+        /*if (!$this->exif) {
             $exif = Reader::factory(Reader::TYPE_NATIVE)->read(storage_path('app/brands/' . $this->getFilePath()));
             if ($exif) {
                 $this->exif = $exif;
             }
-        }
+        }*/
         return $this->exif;
+    }
+
+    /**
+     * @param Exif $exif
+     *
+     * @return Media
+     */
+    public function setEXIF(Exif $exif): self
+    {
+        $this->exif = $exif;
+        return $this;
     }
 
     /**
@@ -389,7 +413,7 @@ class Media extends Model implements TargetActivityInterface
      *
      * @return Media
      */
-    public function setExif(array $exif): self
+    /*public function setExif(array $exif): self
     {
         if (isset($exif['camera'])) {
             $this->getEXIF()->setCamera($exif['camera']);
@@ -407,7 +431,7 @@ class Media extends Model implements TargetActivityInterface
             $this->getEXIF()->setCamera($exif['author']);
         }
         return $this;
-    }
+    }*/
 
     /**
      * @return string

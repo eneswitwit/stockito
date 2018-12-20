@@ -212,6 +212,7 @@ class MediaController extends Controller
          */
         $user = auth()->user();
         $brand = $user->brand ?? Brand::find($brandId);
+
         if (!$brand) {
             return new JsonResponse();
         }
@@ -223,6 +224,7 @@ class MediaController extends Controller
             ->get();
 
         $ftpFiles->each(function (FTPFile $FTPFile) {
+            $this->ftpFilesManager->handleFTPFile($FTPFile);
             $FTPFile->queuing = true;
             $FTPFile->save();
             ProcessFTPFile::dispatch($FTPFile);
@@ -285,7 +287,6 @@ class MediaController extends Controller
      */
     public function submit(Request $request, Media $media): JsonResponse
     {
-
         /**
          * @var Supplier $supplier
          * @var Media\Category $category
@@ -297,15 +298,14 @@ class MediaController extends Controller
             $media->category_id = $category->id;
         }
 
-        if ($request->input('category', false)) {
+        /*if ($request->input('category', false)) {
             $category = Media\Category::firstOrCreate(
-                ['name' => $request->input('category.label'), 'brand_id' => $media->brand->id]
+                ['name' => $request->input('category'), 'brand_id' => $media->brand->id]
             );
             $media->category_id = $category->id;
-        }
+        }*/
 
         if ($request->input('supplier.label', false)) {
-
             $supplier = Supplier::firstOrCreate(
                 ['name' => $request->input('supplier.label'), 'brand_id' => $media->brand->id]
             );
@@ -349,9 +349,7 @@ class MediaController extends Controller
      */
     public function submitMultiple(Request $request): JsonResponse
     {
-
         $mediaFiles = (new Media)->whereIn('id', $request->input('media'))->get();
-
 
         foreach ($mediaFiles as $media) {
 
@@ -359,6 +357,8 @@ class MediaController extends Controller
              * @var Supplier $supplier
              * @var Media\Category $category
              */
+
+
             if ($request->input('category.label', false)) {
                 $category = Media\Category::firstOrCreate(
                     ['name' => $request->input('category.label'), 'brand_id' => $media->brand->id]
@@ -366,9 +366,9 @@ class MediaController extends Controller
                 $media->category_id = $category->id;
             }
 
-            if ($request->input('form.category', false)) {
+            if ($request->input('category', false)) {
                 $category = Media\Category::firstOrCreate(
-                    ['name' => $request->input('category.label'), 'brand_id' => $media->brand->id]
+                    ['name' => $request->input('category'), 'brand_id' => $media->brand->id]
                 );
                 $media->category_id = $category->id;
             }

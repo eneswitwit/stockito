@@ -56,7 +56,7 @@
                                         <td class="label">
                                             Host
                                         </td>
-                                        <td>
+                                        <td style="word-break: break-word !important;">
                                             stockito.com
                                         </td>
                                     </tr>
@@ -72,7 +72,7 @@
                                         <td class="label">
                                             User
                                         </td>
-                                        <td>
+                                        <td style="word-break: break-word !important;">
                                             Your Accounts Email
                                         </td>
                                     </tr>
@@ -80,7 +80,7 @@
                                         <td class="label">
                                             Password
                                         </td>
-                                        <td>
+                                        <td style="word-break: break-word !important;">
                                             Your Accounts Password
                                         </td>
                                     </tr>

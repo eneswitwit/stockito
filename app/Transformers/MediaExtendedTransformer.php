@@ -42,7 +42,7 @@ class MediaExtendedTransformer extends AbstractTransformer
             'category' => $model->category,
             'fileType' => $model->getTypeTitle(),
             'type' => $model->getType(),
-            'iptc' => $model->getIPTC()->all(),
+            'iptc' => $model->getIPTC() !== null ? $model->getIPTC()->all() : null,
             'exif' => $model->getAllEXIF(),
             'downloadLink' => url('/api/medias/'.$model->id.'/download'),
             'playVideo' => \Storage::disk('brands')->url($model->file_name),

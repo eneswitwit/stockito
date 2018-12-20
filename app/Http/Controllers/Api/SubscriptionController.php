@@ -15,9 +15,9 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Laravel\Cashier\Billable;
 use LukeVear\LaravelTransformer\TransformerEngine;
 use Stripe\Error\InvalidRequest;
-use Log;
 use Illuminate\Notifications\Notifiable;
 
 /**
@@ -37,7 +37,6 @@ class SubscriptionController extends Controller
      */
     public function upgrade(SwapSubscriptionRequest $request): JsonResponse
     {
-        Log::info('test');
         /**
          * @var User $user
          */
@@ -47,11 +46,9 @@ class SubscriptionController extends Controller
          * @var Plan $plan
          */
         $plan = (new Plan)->where('id', $request->input('plan.id'))->first();
-        Log::info('test2');
 
         // Stripe plan
         $stripePlan = $plan->getStripePlan();
-        Log::info('test3');
 
         // Upgrade
         try {
@@ -100,7 +97,7 @@ class SubscriptionController extends Controller
         try {
 
             Subscription::where('user_id', $user->id)->first()->downgradeToPlan($stripePlan->id);
-            if($user->subscription('main')->onGracePeriod()) {
+            if ($user->subscription('main')->onGracePeriod()) {
                 $user->subscription('main')->resume();
             }
             // Create GDPR entry
@@ -135,8 +132,6 @@ class SubscriptionController extends Controller
          * @var Plan $plan
          */
         $plan = (new Plan)->where('id', $request->input('plan.id'))->first();
-        Log::info($plan);
-
 
         // Stripe plan
         $stripePlan = $plan->getStripePlan();
@@ -190,7 +185,17 @@ class SubscriptionController extends Controller
         $expYear = $request->input('token')['card']['exp_year'];
         $expirationDate = Carbon::createFromDate($expYear, $expMount);
 
-        $options = [];
+        // Stripe options
+        $options['business_vat_id'] =  $user->brand->eur_uid;
+        $options['description'] = $user->brand->company_name;
+        $options['metadata'] = [
+            'address_line1' => $user->brand->address_1,
+            'address_line2' => $user->brand->address_2,
+            'address_city' => $user->brand->city,
+            'address_zip' => $user->brand->zip,
+            'address_country' => $user->brand->country->iso_3166_2,
+            'tax_number' => $user->brand->eur_uid
+        ];
 
         if ($request->input('selectedCard', false)) {
             $options['default_source'] = $request->input('selectedCard');
@@ -202,6 +207,7 @@ class SubscriptionController extends Controller
                 if (!$user->subscribed('main')) {
                     $user->newSubscription('main', $stripePlan->id)
                         ->withCoupon($request->input('voucher'))
+                        ->withMetadata(['ip_address' => \Request::ip()])
                         ->create($request->input('selectedCard', false) ? null : $request->input('token.id'), $options);
                 } else {
                     // Upgrade or Downgrade
@@ -213,8 +219,9 @@ class SubscriptionController extends Controller
         } else {
             try {
                 if (!$user->subscribed('main')) {
-                    $user->newSubscription('main', $stripePlan->id)->create($request->input('selectedCard',
-                        false) ? null : $request->input('token.id'), $options);
+                    $user->newSubscription('main', $stripePlan->id)
+                        ->withMetadata(['ip_address' => \Request::ip()])
+                        ->create($request->input('selectedCard', false) ? null : $request->input('token.id'), $options);
                 } else {
                     // Upgrade or Downgrade
                     $user->subscription('main')->swap($stripePlan->id);
@@ -292,5 +299,12 @@ class SubscriptionController extends Controller
             'message' => 'User is not in grace period!!',
             'data' => new TransformerEngine($user, new UserTransformer())
         ]);
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getTaxPercentage() {
+        return Billable::taxPercentage();
     }
 }

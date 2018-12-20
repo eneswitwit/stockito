@@ -10,7 +10,6 @@ use Illuminate\Http\JsonResponse;
 use App\Models\Voucher;
 use App\Models\Invoice;
 use Carbon\Carbon;
-use Log;
 
 /**
  * Class StripeController
@@ -101,6 +100,8 @@ class StripeController extends Controller
             $invoiceStripe->paid = $data['paid'];
             $invoiceStripe->quantity = $data['lines']['data'][0]['quantity'];
             $invoiceStripe->subscription = $data['lines']['data'][0]['subscription_item'];
+            $invoiceStripe->tax = $data['tax'];
+            $invoiceStripe->tax_percent = $data['tax_percent'];
             $invoiceStripe->save();
 
             if ($invoiceStripe->user && $invoiceStripe->user->brand) {

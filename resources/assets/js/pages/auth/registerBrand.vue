@@ -103,7 +103,7 @@
                         </div>
 
                         <div class="form-group row">
-                            <label class="col-md-3 col-form-label text-md-right">{{ $t('european_uid_number') }}</label>
+                            <label class="col-md-3 col-form-label text-md-right">{{ $t('vat_number') }}</label>
                             <div class="col-md-7">
                                 <input v-model="form.eur_uid" type="text" name="eur_uid" class="form-control"
                                        :class="{ 'is-invalid': form.errors.has('eur_uid') }">

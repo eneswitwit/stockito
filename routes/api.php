@@ -113,6 +113,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     });
 
     Route::group(['prefix' => 'subscription'], function () {
+        Route::get('tax', 'Api\SubscriptionController@getTaxPercentage');
         Route::post('pay-subscription', 'Api\SubscriptionController@paySubscription');
         Route::post('downgrade-subscription', 'Api\SubscriptionController@downgradeSubscription');
         Route::post('upgrade', 'Api\SubscriptionController@upgrade');

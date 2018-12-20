@@ -12,6 +12,9 @@ use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\FFMpeg;
 use Illuminate\Http\Request;
 use Intervention\Image\ImageManager;
+use App\Classes\ImageMetadataParser;
+use PHPExif\Reader\Reader;
+use Log;
 
 /**
  * Class UploadService
@@ -49,14 +52,15 @@ class UploadService
     public static function calculateUsedStorage(Brand $brand): array
     {
         $sData = [];
+        $used = 0;
 
-        $dir = storage_path('app/brands/' . $brand->getImagePath());
-
-//        $sData['photo'] = self::folderSize($dir, ['jpg', 'pjpg', 'jpeg']);
-//        $sData['illustration'] = self::folderSize($dir, ['ai', 'eps']);
-//        $sData['video'] = self::folderSize($dir, ['mp4']);
+        $dir = \Storage::disk('s3')->allFiles($brand->getImagePath());
+        foreach($dir as $file) {
+            $used += \Storage::disk('s3')->size($file);
+        }
+        
         $sData['all'] = $brand->getProduct() ? $brand->getProduct()->storage : 0;
-        $sData['used'] = self::folderSize($dir);
+        $sData['used'] = $used;
 
         return $sData;
     }
@@ -137,13 +141,14 @@ class UploadService
         return round($bytes, $precision) . ' ' . $units[$pow];
     }
 
+
     /**
      * @param Media $media
      *
      * @return bool
      * @throws \Exception
      */
-    public function removeMedia(Media $media): bool
+    public static function removeMedia(Media $media): bool
     {
         $status = true;
         if (file_exists(storage_path('app/brands/' . $media->getFilePath()))) {
@@ -157,7 +162,6 @@ class UploadService
         if (\Storage::disk('s3')->get($media->getFilePath())) {
             \Storage::disk('s3')->delete($media->getFilePath());
         }
-
         return $status && $media->delete();
     }
 
@@ -199,14 +203,17 @@ class UploadService
         } elseif (\in_array($file->getClientOriginalExtension(), ['mp4'])) {
             $media = $this->setVideoData($media, $file, $brand);
             $status = $this->mediaManager->storeMedia($media, $file);
-
-
         } else {
             $this->mediaManager->read($file->getRealPath());
             $status = $this->mediaManager->storeMedia($media, $file);
             $media = $this->mediaManager->setSizes($media);
             $status = $status && $this->mediaManager->makeAndStoreThumbnail($media);
             $media->thumbnail = $media->file_name;
+            $iptc = new ImageMetadataParser($file);
+            if ($iptc->parseIPTC()) {
+                $media->setIPTC($iptc);
+            }
+            $media->setEXIF(Reader::factory(Reader::TYPE_NATIVE)->read($file));
         }
 
         if (!$status) {
@@ -217,6 +224,7 @@ class UploadService
             $media->title = $media->getIPTC() ? $media->getIPTC()->getTitle() : '';
         } catch (\Exception $exception) {
         }
+
         $media->keywords = $media->getEXIF() && $media->getEXIF()->getKeywords() ? implode(', ',
             $media->getEXIF()->getKeywords()) : '';
         $media->source = $media->getEXIF() && $media->getEXIF()->getSource() ? $media->getEXIF()->getSource() : '';
@@ -247,7 +255,7 @@ class UploadService
      *
      * @return Media
      */
-    public function setVideoData(Media $media, $file, $brand)
+    public static function setVideoData(Media $media, $file, $brand)
     {
         $ffmpeg = FFMpeg::create([
             'ffmpeg.binaries' => '/usr/bin/ffmpeg',

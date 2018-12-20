@@ -46,6 +46,7 @@
   "zip_code": "ZIP Code",
   "country": "Country",
   "european_uid_number": "European UID Number",
+  "vat_number": "VAT ID",
   "continue_to_payment": "Continue to Payment",
   "phone": "Phone",
   "homepage": "Homepage",

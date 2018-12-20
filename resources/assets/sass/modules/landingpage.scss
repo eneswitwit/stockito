@@ -842,5 +842,8 @@ a.title:hover img {
   background-image: linear-gradient(100deg, #ff4242, #ff0000);
 }
 
-
+.vertical-align {
+  display: flex;
+  align-items: center;
+}
 

@@ -12,11 +12,12 @@
 
 </head>
 <body class="overflow-hidden">
-<header id="home">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+<header id="home" style="background: linear-gradient(90deg, rgb(55,87,197), rgb(180,69,256));">
+    <nav class="navbar navbar-expand-lg"
+         style="background: linear-gradient(90deg, rgb(55,87,197), rgb(180,69,256)) !important; -webkit-box-shadow: none !important;-moz-box-shadow: none !important; box-shadow: none !important;">
         <div class="container">
-            <a class="navbar-brand" href="#">
-                <img src="{{ asset('images/landingpage/logo.png') }}" alt="image" height="40px">
+            <a class="navbar-brand" href="#" style="margin: 30px;">
+                <img src="{{ asset('images/landingpage/logo.png') }}" alt="image" height="30px">
             </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#site-nav"
                     aria-controls="site-nav" aria-expanded="false" aria-label="Toggle navigation">
@@ -30,11 +31,13 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#pricing" style="color: #fff !important;">Pricing</a>
                     </li>
-                    <li class="nav-item text-center">
-                        <a href="/login" class="btn align-middle btn-outline-primary my-2 my-lg-0" style="color: #fff !important;">Login</a>
+                    <li class="nav-item">
+                        <a href="/login" class="nav-link" style="color: #fff !important;">Login</a>
                     </li>
                     <li class="nav-item text-center">
-                        <a href="/register" class="btn align-middle btn-primary my-2 my-lg-0" style="color: #fff !important;">Sign Up</a>
+                        <a href="/register" class="btn align-middle btn-primary my-2 my-lg-0"
+                           style="color: #fff !important; background-color: rgb(74,204,255); border-color: rgb(74,204,255); border-radius: 50px; padding: 10px 30px;">Sign
+                            Up</a>
                     </li>
                 </ul>
             </div>
@@ -44,17 +47,22 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-12 col-md-5">
-                    <h1 class="display-5">Smart media manager</h1>
-                    <p class="text-muted mb-3">
-                        Our mantra is: Create the smartest tool for managing media files and their licenses.
-                        With Stockito you have an effective media storage with an excepetional license manager to keep
-                        track of your licenses. It's for you, your company and the creatives who work for you.</p>
-                    <p>
-                        <a href="/register" class="btn btn-xl btn-primary">Get started free</a>
+                    <h1 class="display-5 mb-0" style="color: rgb(255,255,255);"> All-In-One Cloud-Based </h1>
+                    <h1 class="display-5 mb-4" style="font-weight: 100 !important; color: rgb(255,255,255);"> Storage and License Manager </h1>
+                    <p class="text-muted mb-3" style="color: rgb(255,255,255) !important; font-weight: 100;">
+                        It's never been easier to store and share all your digital media in one place, with <strong>
+                            Stockito.</strong>
+                        Never again miss an expiry date or lose a file on someone's hard disk.
+
+                    </p>
+                    <p style="padding-top: 40px;">
+                        <a href="/register" class="btn align-middle btn-primary my-2 my-lg-0"
+                           style="color: #fff !important; background-color: rgb(74,204,255); border-color: rgb(74,204,255); border-radius: 50px; padding: 10px 30px;">
+                            Get Started </a>
                     </p>
                 </div>
-                <div class="col-12 col-md-7 my-3 my-md-lg">
-                    <img src="{{ asset('images/landingpage/screen2.jpg') }}" alt="image" class="img-fluid">
+                <div class="col-12 col-md-7">
+                    <img src="{{ asset('images/landingpage/1.png') }}" alt="image" class="img-fluid">
                 </div>
             </div>
         </div>
@@ -65,7 +73,7 @@
 </header>
 <div class="section bg-light pt-lg">
     <div class="container">
-        <div class="row">
+    <!--<div class="row">
             <div class="col-md-6 col-lg-4">
                 <div class="media mb-5">
                     <div class="media-icon d-flex mr-3"><img
@@ -133,40 +141,74 @@
                     </div>
                 </div>
             </div>
+        </div>-->
+        <div class="row vertical-align">
+            <div class="col-md-6">
+                <h4 style="margin: 20px;"> Lightning fast upload & keywording </h4>
+                <p>
+                    Use our simple drag and drop uploader or ftp to rapidly upload files to your
+                    new digital media library. You can choose keywording manually or Stockito
+                    does it automatically for you.
+                </p>
+            </div>
+            <div class="col-md-6">
+                <img src="{{ asset('images/landingpage/2.png') }}" alt="image" class="img-fluid">
+            </div>
+        </div>
+        <div class="row vertical-align">
+            <div class="col-md-6">
+                <img src="{{ asset('images/landingpage/3.png') }}" alt="image" class="img-fluid">
+            </div>
+            <div class="col-md-6">
+                <h4 style="margin: 20px;"> License editing and management </h4>
+                <p>
+                    Gain a perfect bides-eye view of your licenses and manage them with ease.
+                    Define the type of your license, upload licence bills and always be aware
+                    of their statuses.
+                </p>
+            </div>
+        </div>
+        <div class="row vertical-align">
+            <div class="col-md-6">
+                <h4 style="margin: 20px;"> Clever user access </h4>
+                <p>
+                    Easily grant access to all your media buyers, coworkers and creative
+                    agencies working for you and define what rights they have.
+                </p>
+            </div>
+            <div class="col-md-6">
+                <img src="{{ asset('images/landingpage/4.png') }}" alt="image" class="img-fluid">
+            </div>
         </div>
     </div>
 </div>
-<div class="section" id="features">
+
+<div class="section" id="features" style="background: linear-gradient(90deg,rgb(180,69,256),rgb(55,87,197));">
     <div class="container">
         <div class="row align-items-center">
-            <div class="col-sm-8">
-                <div class="browser-window limit-height my-5 mr-0 mr-sm-5">
-                    <div class="top-bar">
-                        <div class="circles">
-                            <div class="circle circle-red"></div>
-                            <div class="circle circle-yellow"></div>
-                            <div class="circle circle-blue"></div>
-                        </div>
-                    </div>
-                    <div class="content">
-                        <img src="{{ asset('images/landingpage/dashboard.png') }}" alt="image">
-                    </div>
-                </div>
+            <div class="col-md-6">
+                <img src="{{ asset('images/landingpage/5.png') }}" alt="image" class="img-fluid">
             </div>
-            <div class="col-sm-4">
+            <div class="col-md-6">
                 <div class="media">
                     <div class="media-body">
-                        <div style="text-align: center;"><img src="{{ asset('images/landingpage/perfect.png') }}"
-                                                              height="150px"></div>
-                        <h3 class="mt-0">Award-winning Dashboard</h3>
-                        <p> A perfect overview of all the licenses, media files and activites of your brand
-                            collaborators.</p>
+                        <h3 class="mb-5" style="color: white;">Your brand's own online media library</h3>
+                        <p class="mb-5" style="color: white;">
+                            Use the vibrant digital media library tools, search and exercise easy access
+                            to any media at your disposal and save license costs bby re-using your media files.
+                        </p>
+                        <p style="padding-top: 30px;">
+                            <a href="/register" class="btn align-middle btn-primary my-2 my-lg-0"
+                               style="color: #fff !important; background-color: rgb(74,204,255); border-color: rgb(74,204,255); border-radius: 50px; padding: 10px 30px;">
+                                Get Started </a>
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<!--
 <div class="section bg-light py-lg" id="brandscreatives">
     <div class="container">
         <div class="section-title text-center mt-0 mb-5">
@@ -240,35 +282,52 @@
         </div>
     </div>
 </div>
+-->
 <div class="section bg-light py-lg" id="pricing">
     <div class="container">
         <div class="section-title text-center mt-0 mb-5">
-            <h3>Choose your plan</h3>
-            <p>Simple pricing. No hidden charges. Choose a plan fit your needs</p>
+            <h3>Choose <strong> Your Plan </strong></h3>
+            <p>Simple pricing depending on required storage space. </p>
+            <p><strong> No hidden charges or setup fees. </strong></p>
         </div>
         <div class="row">
             @foreach($plans as $plan)
-            <div class="col-lg-4">
-                <div class="card pricing">
-                    <div class="card-body">
-                        <small class="text-muted"> {{ $plan->product->name }} </small>
-                        <h5 class="card-title">$ {{ $plan->price }}</h5>
-                        <p class="card-text">
-                        </p>
-                        <ul class="list-unstyled">
-                            <li>{{ $plan->product->storage/1000000000 }} GB Storage</li>
-                            <li>Team Collaboration</li>
-                            <li>Analytics &amp; Reports</li>
-                        </ul>
-                        <p></p>
-                        <a href="/register/brand" class="btn btn-xl btn-outline-primary">Choose this plan</a>
+                <div class="col-lg-4">
+                    <div class="card pricing">
+                        <div class="card-header" style="background: transparent !important; color: black;">
+                            <small class="text-muted"> {{ $plan->product->name }} </small>
+                            <h5 class="card-title mb-0" style="color: rgb(149,70,229);"> {{ $plan->price }} € </h5>
+                            <p class="mt-0"> Per year </p>
+                        </div>
+                        <div class="card-body">
+
+                            <ul class="list-unstyled">
+                                <li><strong> {{ $plan->product->storage/1000000000 }} GB Storage </strong></li>
+                                <li>Team Collaboration</li>
+                                <li>Analytics &amp; Reports</li>
+                            </ul>
+                            <p></p>
+                            <p style="padding-top: 30px;">
+                                <a href="/register" class="btn align-middle btn-primary my-2 my-lg-0"
+                                   style="color: #fff !important; background-color: rgb(74,204,255); border-color: rgb(74,204,255); border-radius: 50px; padding: 10px 30px;">
+                                    Get Started </a>
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
             @endforeach
         </div>
+        <div class="row" style="text-align: center;">
+            <div class="col-md-12">
+                <p><strong> All prices subject to VAT </strong></p>
+                <h6 style="margin: 30px;"> Need even more space? <strong> <a href="#" style="color: rgb(180,69,256) !important;"> Get in touch </a> for personal packages. </strong>
+                </h6>
+            </div>
+        </div>
     </div>
+
 </div>
+<!--
 <div class="section" id="signup">
     <div class="container">
         <div class="section-title text-center">
@@ -298,48 +357,48 @@
         </div>
     </div>
 </div>
-<div class="section bg-light mt-4" id="footer">
+-->
+<div class="section mt-0" id="footer" style="background:linear-gradient(90deg, rgb(55,87,197), rgb(180,69,256)) !important;"">
     <div class="container">
         <div class="row">
-            <div class="col-sm-4"><img src="{{ asset('images/landingpage/logo.png') }}" height="50px"
-                                       alt="Stockito Logo">
-                <p class="mt-3 ml-1 text-muted">Media storage with license manager </p>
+            <div class="col-sm-4">
+                <div class="row">
+                    <div class="col-sm-4">
+                    <a href="#contact" style="color: white !important;">Contact</a>
+                    </div>
+                    <div class="col-sm-4">
+                    <a href="#" style="color: white !important;">Terms</a>
+                    </div>
+                    <div class="col-sm-4">
+                    <a href="#about" style="color: white !important;">Privacy</a>
+                    </div>
+                </div>
             </div>
-            <div class="col-sm-2">
-                <ul class="list-unstyled footer-links ml-1">
-                    <li><a href="#contact">Contact</a></li>
-                </ul>
+            <div class="col-sm-4" style="text-align: center;">
+                <img src="{{ asset('images/landingpage/logo.png') }}" height="20px" alt="Stockito Logo">
             </div>
-            <div class="col-sm-2">
-                <ul class="list-unstyled footer-links ml-1">
-                    <li><a href="#">Terms</a></li>
-                    <li><a href="#about">Privacy</a></li>
-                </ul>
-            </div>
-            <div class="col-sm-2">
-                <ul class="list-unstyled footer-links ml-1">
+            <div class="col-sm-4" style="text-align: right;">
+                <!--<ul class="list-unstyled ml-1">
                     <li><a href="#">Facebook</a></li>
                     <li><a href="#">Twitter</a></li>
                     <li><a href="#">Linkedin</a></li>
-                </ul>
+                </ul>-->
             </div>
-            <div class="col-sm-2">
+            <!--<div class="col-sm-2">
                 <a href="#home" class="btn btn-sm btn-outline-primary ml-1">Go to Top</a>
-            </div>
+            </div>-->
         </div>
         <div class=" text-center mt-4">
             <small class="text-muted">Copyright ©
                 <script type="text/javascript">
                     document.write(new Date().getFullYear());
                 </script>
-                2018
-                All rights reserved. Stockito.
+                Stockito
             </small>
         </div>
     </div>
 </div>
-<div id="viewPortSize" style="background-color: rgb(0, 0, 0); color: rgb(255, 255, 255); font-size: 12px;"
-     class="bottom_right"><br></div>
+
 <iframe scrolling="no" frameborder="0" allowtransparency="true" style="display: none;"></iframe>
 <iframe id="rufous-sandbox" scrolling="no" frameborder="0" allowtransparency="true" allowfullscreen="true"
         style="position: absolute; visibility: hidden; display: none; width: 0px; height: 0px; padding: 0px; border: none;"

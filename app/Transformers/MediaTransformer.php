@@ -41,7 +41,7 @@ class MediaTransformer extends AbstractTransformer
             'keywords' => $model->keywords,
             'fileType' => $model->getTypeTitle(),
             'category' => $model->category,
-            'iptc' => $model->getIPTC()->all(),
+            'iptc' => $model->getIPTC() !== null ? $model->getIPTC()->all() : null,
             'exif' => $model->getAllEXIF(),
             'downloadLink' => url('/api/medias/' . $model->id . '/download'),
             'imageInfo' => [

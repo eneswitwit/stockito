@@ -25,13 +25,14 @@
     "longman/laravel-lodash": "^0.8.0",
     "lukevear/laravel-transformer": "^1.0",
     "miljar/php-exif": "^0.6.3",
-    "php-ffmpeg/php-ffmpeg": "^0.11.1",
+    "php-ffmpeg/php-ffmpeg": "^0.13.0",
     "phpzip/phpzip": ">=2.0.7",
     "spatie/laravel-stripe-webhooks": "^1.0",
     "stripe/stripe-php": "~5.0",
     "tymon/jwt-auth": "^1.0.0-rc.1",
     "webpatser/laravel-countries": "dev-develop",
-    "yajra/laravel-datatables-oracle": "^8.0"
+    "yajra/laravel-datatables-oracle": "^8.0",
+    "ext-imagick": "*"
   },
   "require-dev": {
     "barryvdh/laravel-debugbar": "^3.1",
