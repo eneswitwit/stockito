@@ -85,7 +85,7 @@ class FTPFilesManager
             $media->width = $image->getImageWidth();
             $media->height = $image->getImageHeight();
         } elseif (\in_array($file->extension(), ['mp4'])) {
-            $media = $this->setVideoData($media, $file, $brand);
+            $media = $this->uploadService->setVideoData($media, $file, $brand);
             $status = Storage::disk('s3')->putFileAs($media->brand->getImagePath(), $file, Media::FILE_PREFIX . $file->hashName());
         } else {
             $this->mediaManager->read($file->getRealPath());
