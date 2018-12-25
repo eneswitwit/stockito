@@ -42,16 +42,20 @@ class ShareMediaMail extends Mailable
     }
 
     /**
-     * Build the message.
+     * Build message
      *
-     * @return $this
+     * @return \App\Mail\ShareMediaMail
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function build(): self
     {
         $mail = $this->view('mails.share-media', ['text' => $this->text]);
 
         foreach ($this->medias as $media) {
-            $mail->attach(storage_path('app/brands/'.$media->dir.'/'.$media->file_name), ['as' => $media->origin_name, 'mime' => $media->content_type]);
+            $localFile = storage_path('app/brands/' . $media->dir . '/' . $media->file_name);
+            $remoteFile = \Storage::disk('s3')->get($media->getFilePath());
+            file_put_contents($localFile, $remoteFile);
+            $mail->attach($localFile, ['as' => $media->origin_name, 'mime' => $media->content_type]);
         }
 
         return $mail;

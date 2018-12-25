@@ -55,10 +55,10 @@ class UploadService
         $used = 0;
 
         $dir = \Storage::disk('s3')->allFiles($brand->getImagePath());
-        foreach($dir as $file) {
+        foreach ($dir as $file) {
             $used += \Storage::disk('s3')->size($file);
         }
-        
+
         $sData['all'] = $brand->getProduct() ? $brand->getProduct()->storage : 0;
         $sData['used'] = $used;
 
@@ -159,9 +159,8 @@ class UploadService
             $status = $status && unlink(storage_path('app/brands_thumbnail/' . $media->getFilePath()));
         }
 
-        if (\Storage::disk('s3')->get($media->getFilePath())) {
-            \Storage::disk('s3')->delete($media->getFilePath());
-        }
+        \Storage::disk('s3')->delete($media->getFilePath());
+
         return $status && $media->delete();
     }
 
@@ -191,18 +190,47 @@ class UploadService
             'dir' => $brand->getImagePath()
         ]);
 
+
         if (\in_array($file->getClientOriginalExtension(), ['ai', 'eps'])) {
+
             $status = $this->mediaManager->storeMedia($media, $file);
             $image = new \Imagick();
+            $image->setResolution(300, 300);
             $image->readImage($file->getRealPath());
-            $image->thumbnailImage(640, 480);
-            $image->writeImage(storage_path('app/brands_thumbnail/' . $media->brand->id . '/' . $media->file_name . '.png'));
-            $media->thumbnail = $media->file_name . '.png';
+            $jpeg = storage_path('app/brands_thumbnail/' . $media->brand->id . '/' . $media->file_name . '.jpeg');
+
+            // create good thumbnail
+            $dimensions = $image->getImageGeometry();
+            $width = $dimensions['width'];
+            $height = $dimensions['height'];
+            $maxWidth = 600;
+            $maxHeight = 600;
+
+            if ($height >= $width) {
+                //Portrait
+                if ($height > $maxHeight) {
+                    $cmd = escapeshellcmd("convert -resize 'x{$maxHeight}' -density 600 -flatten {$file->getRealPath()} -colorspace rgb {$jpeg}");
+                } else {
+                    $cmd = escapeshellcmd("convert -resize 'x{$height}' -density 600 -flatten {$file->getRealPath()} -colorspace rgb {$jpeg}");
+                }
+            } elseif ($height < $width) {
+                if ($width > $maxWidth) {
+                    $cmd = escapeshellcmd("convert -resize '{$maxWidth}' -density 600 -flatten {$file->getRealPath()} -colorspace rgb {$jpeg}");
+                } else {
+                    $cmd = escapeshellcmd("convert -resize '{$width}' -density 600 -flatten {$file->getRealPath()} -colorspace rgb {$jpeg}");
+                }
+            }
+
+            exec($cmd, $out, $return_var);
+
+            $media->thumbnail = $media->file_name . '.jpeg';
             $media->width = $image->getImageWidth();
             $media->height = $image->getImageHeight();
+
         } elseif (\in_array($file->getClientOriginalExtension(), ['mp4'])) {
             $media = $this->setVideoData($media, $file, $brand);
             $status = $this->mediaManager->storeMedia($media, $file);
+
         } else {
             $this->mediaManager->read($file->getRealPath());
             $status = $this->mediaManager->storeMedia($media, $file);
@@ -242,7 +270,7 @@ class UploadService
     {
         $width = $image->width();
         $height = $image->height();
-        $image->width() < $image->height() ? $width=null : $height=null;
+        $image->width() < $image->height() ? $width = null : $height = null;
         return $image->resize($width, $height, function ($constraint) {
             $constraint->aspectRatio();
             $constraint->upsize();

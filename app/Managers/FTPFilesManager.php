@@ -19,6 +19,7 @@ use Illuminate\Http\File;
 use Illuminate\Support\Facades\Storage;
 use App\Classes\ImageMetadataParser;
 use PHPExif\Reader\Reader;
+use Log;
 
 /**
  * Class FTPFilesManager
@@ -83,6 +84,11 @@ class FTPFilesManager
         $file = new File($ftpFile->file);
         $brand = $ftpFile->ftpUser->brand;
 
+        if (UploadService::calculateUsedStorageFull($brand) + $file->getSize() >= $brand->getProduct()->storage) {
+            throw new \LogicException('This file bigger than you have the free space');
+        }
+
+
         try {
 
             $media = new Media([
@@ -94,27 +100,66 @@ class FTPFilesManager
                 'dir' => $brand->getImagePath()
             ]);
 
+
             if (\in_array($file->extension(), ['ai', 'eps'])) {
-                $status = Storage::disk('s3')->putFileAs($media->brand->getImagePath(), $file,
-                    Media::FILE_PREFIX . $file->hashName());
+
+                $status = Storage::disk('s3')->putFileAs(
+                    $media->brand->getImagePath(),
+                    $file,
+                    Media::FILE_PREFIX . $file->hashName()
+                );
+
                 $image = new \Imagick();
                 $image->readImage($file->getRealPath());
-                $image->thumbnailImage(640, 480);
-                $image->writeImage(storage_path('app/brands_thumbnail/' . $media->brand->id . '/' . $media->file_name . '.png'));
-                $media->thumbnail = $media->file_name . '.png';
+                $dimensions = $image->getImageGeometry();
+                $width = $dimensions['width'];
+                $height = $dimensions['height'];
+                $maxWidth = 600;
+                $maxHeight = 600;
+
+
+                if ($height >= $width) {
+                    //Portrait
+                    if ($height > $maxHeight) {
+                        $image->thumbnailImage(0, $maxHeight, false);
+                    } else {
+                        $image->thumbnailImage(0, $height, false);
+                    }
+                } elseif ($height < $width) {
+                    if ($width > $maxWidth) {
+                        $image->thumbnailImage($maxWidth, 0, false);
+                    } else {
+                        $image->thumbnailImage($width, 0, false);
+                    }
+                }
+
+                $image->writeImage(storage_path('app/brands_thumbnail/' . $media->brand->id . '/' . $media->file_name . '.jpeg'));
+                $media->thumbnail = $media->file_name . '.jpeg';
                 $media->width = $image->getImageWidth();
                 $media->height = $image->getImageHeight();
+
             } elseif (\in_array($file->extension(), ['mp4'])) {
+
                 $media = UploadService::setVideoData($media, $file, $brand);
-                $status = Storage::disk('s3')->putFileAs($media->brand->getImagePath(), $file,
-                    Media::FILE_PREFIX . $file->hashName());
+                $status = Storage::disk('s3')->putFileAs(
+                    $media->brand->getImagePath(),
+                    $file,
+                    Media::FILE_PREFIX . $file->hashName()
+                );
+
             } else {
                 $this->mediaManager->read($file->getRealPath());
-                $status = Storage::disk('s3')->putFileAs($media->brand->getImagePath(), $file,
-                    Media::FILE_PREFIX . $file->hashName());
+
+                $status = Storage::disk('s3')->putFileAs(
+                    $media->brand->getImagePath(),
+                    $file,
+                    Media::FILE_PREFIX . $file->hashName()
+                );
+
                 $media = $this->mediaManager->setSizes($media);
                 $status = $status && $this->mediaManager->makeAndStoreThumbnail($media);
                 $media->thumbnail = $media->file_name;
+
                 $iptc = new ImageMetadataParser($file);
                 if ($iptc->parseIPTC()) {
                     $media->setIPTC($iptc->parseIPTC());
@@ -125,30 +170,34 @@ class FTPFilesManager
             if (!$status) {
                 throw new \LogicException('Can\'t upload file');
             }
+
             try {
+
                 $media->title = $media->getIPTC() ? $media->getIPTC()->getTitle() : '';
+
             } catch (\Exception $exception) {
             }
+
             $media->keywords = $media->getEXIF() && $media->getEXIF()->getKeywords() ? implode(', ',
                 $media->getEXIF()->getKeywords()) : '';
             $media->source = $media->getEXIF() && $media->getEXIF()->getSource() ? $media->getEXIF()->getSource() : '';
-
-
             $media->save();
+
             $ftpFile->media()->associate($media);
             $ftpFile->handled = true;
             $ftpFile->handled_at = Carbon::now();
             $ftpFile->processing = false;
             $ftpFile->save();
+
             event(new UploadedFileEvent($media, $brand));
             return $media;
 
 
         } catch (\Exception $exception) {
             $ftpFile->delete();
-            /*if($media) {
+            if($media) {
                 UploadService::removeMedia($media);
-            }*/
+            }
             throw new \LogicException($exception);
         }
     }

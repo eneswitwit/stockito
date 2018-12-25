@@ -191,6 +191,10 @@
                 }
 
                 this.$store.dispatch('media/setFilterQuery', {query: this.searchQuery});
+                if(document.getElementById('closeAdvancedSearch') !== null) {
+                    document.getElementById('closeAdvancedSearch').click();
+                }
+                this.$store.dispatch('media/setFilter', {filter: ''});
                 this.$router.push({name: 'medias'})
             },
 

@@ -4,9 +4,63 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "b415ab2ab88ece744ed6c4e7af30c29d",
-    "content-hash": "4923dc4ea3fbb3280ca53b08a7821844",
+    "hash": "55e92a2f9a2906acb445957efe099a15",
+    "content-hash": "fd06bff69a91d5582aea9b2228858084",
     "packages": [
+        {
+            "name": "0ctobat/octobat-php",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/0ctobat/octobat-php.git",
+                "reference": "c60bc6b1127511cc54edb3f79689e8e0f0b1a0f2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/0ctobat/octobat-php/zipball/c60bc6b1127511cc54edb3f79689e8e0f0b1a0f2",
+                "reference": "c60bc6b1127511cc54edb3f79689e8e0f0b1a0f2",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0",
+                "satooshi/php-coveralls": "~0.6.1",
+                "squizlabs/php_codesniffer": "~2.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Octobat\\": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Octobat and contributors",
+                    "homepage": "https://github.com/0ctobat/octobat-php/contributors"
+                }
+            ],
+            "description": "Octobat PHP Library",
+            "homepage": "https://www.octobat.com/",
+            "keywords": [
+                "api",
+                "octobat"
+            ],
+            "time": "2018-05-02 14:23:44"
+        },
         {
             "name": "alchemy/binary-driver",
             "version": "v2.0.0",

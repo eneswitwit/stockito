@@ -3,7 +3,7 @@
         <div class="card">
             <div class="card-header" style="border-radius: 0 !important;">
                 <span> Advanced Search Options </span>
-                <span class="btn btn-link remove-btn float-md-right" @click="closeAdvancedSearch">
+                <span id="closeAdvancedSearch" class="btn btn-link remove-btn float-md-right" @click="closeAdvancedSearch">
                     <fa icon="times" fixed-width/>
                 </span>
             </div>
