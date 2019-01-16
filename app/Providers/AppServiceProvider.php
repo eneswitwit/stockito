@@ -1,7 +1,9 @@
 <?php
 
+// namespace
 namespace App\Providers;
 
+// use
 use App\Managers\Processors\AIFileProcessor;
 use App\Managers\Processors\EPSFileProcessor;
 use App\Managers\Processors\ImageFileProcessor;

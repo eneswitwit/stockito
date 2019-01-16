@@ -6,6 +6,11 @@ use App\Models\Brand;
 use App\Rules\ExtensionsRule;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class UploadRequest
+ *
+ * @package App\Http\Requests\Media
+ */
 class UploadRequest extends FormRequest
 {
     /**

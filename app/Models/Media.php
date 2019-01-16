@@ -116,6 +116,7 @@ class Media extends Model implements TargetActivityInterface
     public const MP4_MIME = 'video/mp4';
     public const EPS_MIME = 'image/x-eps';
     public const AI_MIME = 'application/pdf';
+    public const MOV_MIME = 'video/mov';
 
     /**
      * @var array
@@ -292,6 +293,14 @@ class Media extends Model implements TargetActivityInterface
     public function getFilePath(): string
     {
         return $this->dir . '/' . $this->file_name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFilePathOrigin(): string
+    {
+        return $this->dir . '/' . $this->origin_name;
     }
 
     /**

@@ -25,7 +25,9 @@
             <datatable-pager class="custom-pagination" v-model="dataTable.page" type="abbreviated" :per-page="dataTable.perPage"></datatable-pager>
         </div>
 
-        <button v-if="isBrand() || isHeadOfTeam()" class="btn btn-primary btn-block" @click="addCreative">{{ $t('invite_creative') }}</button>
+        <button v-if="isBrand()" class="btn btn-primary btn-block" @click="addCreative">{{ $t('invite_creative') }}</button>
+
+        <button v-if="isHeadOfTeam()" class="btn btn-primary btn-block" @click="addCreative">Invite Creative to {{ this.selectedBrand.brand_name }}</button>
 
         <invite-creative-modal :show="showModal" @close="showModal = false" @sendMessage="getCreatives"></invite-creative-modal>
         <edit-creative-modal @editCreative="getCreatives"></edit-creative-modal>

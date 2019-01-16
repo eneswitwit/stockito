@@ -168,30 +168,45 @@
                     </card>
 
                     <card :title="'Policy'" :class="'mb-2'">
-                        <div class="form-check">
-                            <input required="true" v-model="form.terms_conditions" type="checkbox" class="form-check-input col-md-2"
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                            <input required="true" v-model="form.terms_conditions" type="checkbox"
+                                   class="checkbox-inline"
                                    name="terms_conditions" id="terms_conditions">
-                            <label class="form-check-label" for="terms_conditions">
-                                I have read and accept the Stockito <u><router-link :to="{ name: 'gdpr.terms-conditions' }">
-                                Terms and Conditions </router-link></u> <strong>
-                                (required) </strong>
-                            </label>
+                                <label class="form-check-label">
+                                    I have read and accept the Stockito <u>
+                                    <router-link :to="{ name: 'gdpr.terms-conditions' }">
+                                        Terms and Conditions
+                                    </router-link>
+                                </u> <strong>
+                                    (required) </strong>
+                                </label>
+                            </div>
                         </div>
-                        <div class="form-check">
-                            <input required="true" type="checkbox" v-model="form.privacy_policy" class="form-check-input col-md-2"
-                                   id="privacy_policy" name="privacy_policy">
-                            <label class="form-check-label" for="privacy_policy">
-                                I agree to Stockito <u><router-link :to="{ name: 'gdpr.privacy-policy' }">
-                                Privacy Policy </router-link></u> <strong>(required) </strong>
-                            </label>
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <input required="true" type="checkbox" v-model="form.privacy_policy"
+                                       class="checkbox-inline"
+                                       id="privacy_policy" name="privacy_policy">
+                                <label class="form-check-label">
+                                    I agree to Stockito <u>
+                                    <router-link :to="{ name: 'gdpr.privacy-policy' }">
+                                        Privacy Policy
+                                    </router-link>
+                                </u> <strong>(required) </strong>
+                                </label>
+                            </div>
                         </div>
-                        <div class="form-check">
-                            <input type="checkbox" v-model="form.newsletter" class="form-check-input col-md-2"
-                                   id="newsletter" name="newsletter">
-                            <label class="form-check-label" for="newsletter">
-                                I would like to recieve the Stockito Newsletter and Special Promotions
-                            </label>
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <input type="checkbox" v-model="form.newsletter" class="checkbox-inline"
+                                       id="newsletter" name="newsletter">
+                                <label class="form-check-label">
+                                    I would like to recieve the Stockito Newsletter and Special Promotions
+                                </label>
+                            </div>
                         </div>
+
                     </card>
 
                     <v-button :loading="form.busy" :class="'btn-block mb-8'"> Confirm</v-button>

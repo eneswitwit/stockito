@@ -1,7 +1,8 @@
 <template>
     <div>
         <modal v-bind:show="show">
-            <modal-header @close="onClose">Invite a creative to your brand</modal-header>
+            <modal-header v-if="isBrand()" @close="onClose">Invite a creative to your brand</modal-header>
+            <modal-header v-if="isHeadOfTeam()" @close="onClose">Invite a creative to {{ this.selectedBrand.brand_name }} </modal-header>
             <modal-body>
                 <template>
                     <div v-if="mailSuccess" class="alert alert-success" role="alert">
@@ -57,19 +58,27 @@
     import Modal from '../../components/Modal/ModalLarge.vue';
     import ModalHeader from '../../components/Modal/ModalHeader.vue';
     import ModalBody from '../../components/Modal/ModalBody.vue';
+    import CheckCreativePermission from '../../pages/common/parts/services/CheckCreativePermissionService';
     import {mapGetters} from 'vuex';
 
     export default {
         name: 'invite-creative-modal',
+
         components: {
             Modal,
             ModalHeader,
             ModalBody
         },
+
+        middleware: ['auth', 'subscribed'],
+
+        mixins: [CheckCreativePermission],
+
         computed: mapGetters({
             user: 'auth/user',
             selectedBrand: 'creative/selectedBrand',
         }),
+
         data: () => ({
             mailSuccess: false,
             form: new Form({
@@ -78,12 +87,14 @@
                 position: 3
             })
         }),
+
         props: {
             media: {},
             show: {
                 'default': false
             }
         },
+
         methods: {
             async sendRequest() {
                 let url = this.selectedBrand ? `/api/brand/${this.selectedBrand.id}/invite-creative` : '/api/brand/invite-creative';

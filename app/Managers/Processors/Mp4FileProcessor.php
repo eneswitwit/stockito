@@ -1,7 +1,9 @@
 <?php
 
+// namespace
 namespace App\Managers\Processors;
 
+// use
 use App\Models\Brand;
 use App\Models\Media;
 use FFMpeg\Coordinate\TimeCode;
@@ -10,6 +12,11 @@ use Illuminate\Http\File;
 use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
 
+/**
+ * Class Mp4FileProcessor
+ *
+ * @package App\Managers\Processors
+ */
 class Mp4FileProcessor extends AbstractFileProcessor
 {
     /**
@@ -62,7 +69,6 @@ class Mp4FileProcessor extends AbstractFileProcessor
 
         $video = $ffmpeg->open($file->getRealPath());
         $frameImage = $video->frame(TimeCode::fromSeconds(1));
-//        $parameters = $frameImage->getVideo()->getStreams()->getIterator()[0]->all();
         $frameImage->save(storage_path('app/brands_thumbnail/'.$brand->id.'/'.$file->getBasename().'.jpg'));
         $media->thumbnail = $file->getBasename().'.jpg';
         $media->width = 0;

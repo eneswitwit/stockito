@@ -253,7 +253,7 @@
              * @returns {boolean}
              */
             checkVideoType(media) {
-                return media.content_type === 'video/mp4' ? true : false;
+                return (media.content_type === 'video/mp4' || media.content_type === 'video/quicktime');
             }
         }
     }

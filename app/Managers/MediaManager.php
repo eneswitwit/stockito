@@ -6,6 +6,7 @@ namespace App\Managers;
 // use
 use App\Models\FTPFile;
 use App\Models\Media;
+use App\Services\UploadService;
 use Illuminate\Http\File;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -13,6 +14,7 @@ use Intervention\Image\Constraint;
 use Intervention\Image\Image;
 use Log;
 use Intervention\Image\ImageManager;
+use SleepingOwl\Admin\Form\Element\Upload;
 
 /**
  * Class MediaManager
@@ -129,8 +131,18 @@ class MediaManager implements FTPFilesManagerInterface
      */
     public function storeMedia(Media $media, UploadedFile $file): bool
     {
-        return \Storage::disk('s3')->putFileAs($media->brand->getImagePath(), $file,
-            Media::FILE_PREFIX . $file->hashName());
+        /*if($file->guessExtension() === null || $file->guessExtension() === '') {
+            if($file->getClientOriginalExtension() === 'pdf') {
+                return \Storage::disk('s3')->putFileAs($media->brand->getImagePath(), $file,
+                    Media::FILE_PREFIX . $file->hashName() . 'ai');
+            } else {
+                return \Storage::disk('s3')->putFileAs($media->brand->getImagePath(), $file,
+                    Media::FILE_PREFIX . $file->hashName() . $file->getClientOriginalExtension());
+            }
+        } else {*/
+            return \Storage::disk('s3')->putFileAs($media->brand->getImagePath(), $file,
+                Media::FILE_PREFIX . UploadService::hashName($file));
+        //}
     }
 
     /**

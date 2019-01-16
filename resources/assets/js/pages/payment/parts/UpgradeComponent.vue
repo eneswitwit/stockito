@@ -2,6 +2,10 @@
     <form action="" method="post" id="payment-form" @submit.prevent="upgradeSubscription">
         <card class="upgrade-template" :title="'Upgrade your plan'" style="text-align: center;">
 
+            <div id="card-wrapper-number" style="display: none;"></div>
+            <div id="card-wrapper-cvc" style="display: none;"></div>
+            <div id="card-wrapper-expiry" style="display: none;"></div>
+
             <span style="padding: 10px">
             The amount you have to pay in order to upgrade to Plan {{ plan.title }} is {{ this.upgradePrice() }}
             {{ plan.currencySymbol }}
@@ -10,6 +14,7 @@
             <v-button :loading="requesting" class="btn btn-primary" :class="{ 'd-none' : requesting}" type="submit">
                 {{ $t('pay') }}
             </v-button>
+
             <img v-if="requesting" :src="require('../../../../images/loading.gif')"/>
 
         </card>
@@ -75,19 +80,24 @@
 
             async upgradeSubscription() {
 
+                console.log('true');
                 this.requesting = true;
                 axios.post('/api/subscription/upgrade', {
                     plan: this.plan,
                 }).then(({data}) => {
+                    console.log('true 2');
                     if (data.success) {
+                        console.log('true 3');
                         this.$store.dispatch('auth/fetchUser').then(() => {
                             this.$swal('Successfully updated subscription', '', 'success');
                             this.$router.push({name: 'dashboard'});
                         });
                     } else {
+                        console.log('true 4');
                         this.errors = data.errors;
                     }
                 });
+                console.log('true 5');
                 this.requesting = false;
             }
         }

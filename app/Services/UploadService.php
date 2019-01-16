@@ -6,14 +6,15 @@ namespace App\Services;
 // use
 use App\Managers\MediaManager;
 use App\Managers\Processors\Mp4FileProcessor;
-use App\Models\Brand;
 use App\Models\Media;
+use App\Models\Brand;
 use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\FFMpeg;
 use Illuminate\Http\Request;
 use Intervention\Image\ImageManager;
 use App\Classes\ImageMetadataParser;
 use PHPExif\Reader\Reader;
+use Illuminate\Support\Str;
 use Log;
 
 /**
@@ -165,6 +166,24 @@ class UploadService
     }
 
     /**
+     * Get a filename for the file.
+     *
+     * @param $file
+     * @param  string  $path
+     * @return string
+     */
+    public static function hashName($file, $path = null) {
+
+        if ($path) {
+            $path = rtrim($path, '/').'/';
+        }
+
+        $hash = $file->hashName() ? substr($file->hashName(), 0, strpos($file->hashName(), ".")) : Str::random(40);
+
+        return $path.$hash.'.'.$file->getClientOriginalExtension();
+    }
+
+    /**
      * @param Request $request
      * @param Brand $brand
      *
@@ -173,6 +192,7 @@ class UploadService
      */
     public function uploadMedia(Request $request, Brand $brand): Media
     {
+
         if ($brand->user->cant('upload', Media::class)) {
             throw new \LogicException('You can\'t upload more files');
         }
@@ -181,15 +201,15 @@ class UploadService
             throw new \LogicException('This file bigger than you have the free space');
         }
 
+        // change file hash name to extension wise
         $media = new Media([
-            'file_name' => Media::FILE_PREFIX . $file->hashName(),
+            'file_name' => Media::FILE_PREFIX . $this->hashName($file),
             'origin_name' => $file->getClientOriginalName(),
             'content_type' => $file->getMimeType(),
             'file_size' => $file->getSize(),
             'brand_id' => $brand->id,
             'dir' => $brand->getImagePath()
         ]);
-
 
         if (\in_array($file->getClientOriginalExtension(), ['ai', 'eps'])) {
 
@@ -227,11 +247,11 @@ class UploadService
             $media->width = $image->getImageWidth();
             $media->height = $image->getImageHeight();
 
-        } elseif (\in_array($file->getClientOriginalExtension(), ['mp4'])) {
+        } elseif (\in_array($file->getClientOriginalExtension(), ['mp4', 'mov'])) {
             $media = $this->setVideoData($media, $file, $brand);
             $status = $this->mediaManager->storeMedia($media, $file);
 
-        } else {
+        } elseif (\in_array($file->getClientOriginalExtension(), ['jpeg', 'jpg'])) {
             $this->mediaManager->read($file->getRealPath());
             $status = $this->mediaManager->storeMedia($media, $file);
             $media = $this->mediaManager->setSizes($media);
@@ -242,6 +262,8 @@ class UploadService
                 $media->setIPTC($iptc);
             }
             $media->setEXIF(Reader::factory(Reader::TYPE_NATIVE)->read($file));
+        } else {
+            throw new \LogicException('Can\'t upload file. File type not allowed.');
         }
 
         if (!$status) {

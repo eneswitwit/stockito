@@ -19,6 +19,7 @@ use Laravel\Cashier\Billable;
 use LukeVear\LaravelTransformer\TransformerEngine;
 use Stripe\Error\InvalidRequest;
 use Illuminate\Notifications\Notifiable;
+use Log;
 
 /**
  * Class SubscriptionController
@@ -37,6 +38,7 @@ class SubscriptionController extends Controller
      */
     public function upgrade(SwapSubscriptionRequest $request): JsonResponse
     {
+
         /**
          * @var User $user
          */
@@ -50,6 +52,19 @@ class SubscriptionController extends Controller
         // Stripe plan
         $stripePlan = $plan->getStripePlan();
 
+        // Tax information
+        // Stripe options
+        $options['business_vat_id'] =  $user->brand->eur_uid;
+        $options['description'] = $user->brand->company_name;
+        $options['metadata'] = [
+            'address_line1' => $user->brand->address_1,
+            'address_line2' => $user->brand->address_2,
+            'address_city' => $user->brand->city,
+            'address_zip' => $user->brand->zip,
+            'address_country' => $user->brand->country->iso_3166_2,
+            'tax_number' => $user->brand->eur_uid
+        ];
+
         // Upgrade
         try {
             $user->subscription('main')->swap($stripePlan->id);
@@ -62,6 +77,11 @@ class SubscriptionController extends Controller
             $gdpr->user_id = $user->id;
             $gdpr->stripe_plan_id = $plan->stripe_id;
             $gdpr->save();
+
+            // Set the plan id for the brand
+            $brand = $user->brand;
+            $brand->plan_id = $plan->id;
+            $brand->save();
 
 
         } catch (InvalidRequest $exception) {
@@ -233,6 +253,11 @@ class SubscriptionController extends Controller
 
         // Update expiration date
         User::where('id', $user->id)->update(['trial_ends_at' => $expirationDate]);
+
+        // Set the plan id for the brand
+        $brand = $user->brand;
+        $brand->plan_id = $plan->id;
+        $brand->save();
 
         // Create GDPR entry
         $gdpr = new GDPR;

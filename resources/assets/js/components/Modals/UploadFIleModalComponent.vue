@@ -85,7 +85,7 @@
                                         </td>
                                     </tr>
                                 </table>
-                                 <span class="ftp-info"> Only MP4 files are allowed </span>
+                                 <span class="ftp-info"> Only MP4 and MOV files are allowed </span>
                             </div>
                         </div>
                     </div>

@@ -36,6 +36,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use LukeVear\LaravelTransformer\TransformerEngine;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Log;
 
 
 /**
@@ -298,12 +299,12 @@ class MediaController extends Controller
             $media->category_id = $category->id;
         }
 
-        /*if ($request->input('category', false)) {
+        if ($request->input('category', false)) {
             $category = Media\Category::firstOrCreate(
                 ['name' => $request->input('category'), 'brand_id' => $media->brand->id]
             );
             $media->category_id = $category->id;
-        }*/
+        }
 
         if ($request->input('supplier.label', false)) {
             $supplier = Supplier::firstOrCreate(
@@ -315,7 +316,7 @@ class MediaController extends Controller
         if ($request->input('supplier', false)) {
 
             $supplier = Supplier::firstOrCreate(
-                ['name' => $request->input('supplier.label'), 'brand_id' => $media->brand->id]
+                ['name' => $request->input('supplier'), 'brand_id' => $media->brand->id]
             );
             $media->supplier_id = $supplier->id;
         }
@@ -384,7 +385,7 @@ class MediaController extends Controller
             if ($request->input('supplier', false)) {
 
                 $supplier = Supplier::firstOrCreate(
-                    ['name' => $request->input('supplier.label'), 'brand_id' => $media->brand->id]
+                    ['name' => $request->input('supplier'), 'brand_id' => $media->brand->id]
                 );
                 $media->supplier_id = $supplier->id;
             }

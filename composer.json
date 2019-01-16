@@ -10,8 +10,6 @@
   "type": "project",
   "require": {
     "php": ">=7.1.0",
-    "ext-imagick": "*",
-    "0ctobat/octobat-php": "^2.0",
     "barryvdh/laravel-snappy": "^0.4.3",
     "cnlpete/image-metadata-parser": "^0.0.6",
     "doctrine/dbal": "^2.6",
@@ -33,7 +31,9 @@
     "stripe/stripe-php": "~5.0",
     "tymon/jwt-auth": "^1.0.0-rc.1",
     "webpatser/laravel-countries": "dev-develop",
-    "yajra/laravel-datatables-oracle": "^8.0"
+    "yajra/laravel-datatables-oracle": "^8.0",
+    "ext-imagick": "*",
+    "ext-zip": "*"
   },
   "require-dev": {
     "barryvdh/laravel-debugbar": "^3.1",

@@ -1,10 +1,14 @@
 <?php
 
+// namespace
 namespace App\Models;
 
+// use
+use App\Services\UploadService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use SleepingOwl\Admin\Form\Element\Upload;
 use Stripe\Product as StripProduct;
 
 /**
@@ -79,6 +83,12 @@ class Product extends Model
      */
     public function getUsedStorage(): int
     {
-        return Brand::whereIn('plan_id', $this->plans()->pluck('id')->toArray())->sum('used_storage_photo');
+        $usedStorage = 0;
+        $brands = Brand::whereIn('plan_id', $this->plans()->pluck('id'))->get();
+        foreach($brands as $brand) {
+            $usedStorage += UploadService::calculateUsedStorage($brand)['used'];
+        }
+
+        return $usedStorage;
     }
 }

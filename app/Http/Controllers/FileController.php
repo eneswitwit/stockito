@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use PDF;
+use Log;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -131,10 +132,12 @@ class FileController extends Controller
         );
     }
 
+
     /**
      * @param $hash
      *
      * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function shareImage($hash)
     {
@@ -145,38 +148,30 @@ class FileController extends Controller
         $share->opened = true;
         $share->save();
 
-        $media = (new Media)->whereIn('id', $share->medias)->get();
         $fileName = $hash;
         $zip = new \ZipArchive();
         $path = 'zips/' . $fileName . '.zip';
         $filename = storage_path('app/brands/' . $path);
         $deleteFiles = [];
-
-        if(!file_exists($filename)) {
-
+        if (!file_exists($filename)) {
             if ($zip->open($filename, \ZipArchive::CREATE) !== true) {
                 exit("cannot open <$filename>\n");
             }
-
-            foreach ($media as $mediaItem) {
+            foreach ($share->medias as $mediaItem) {
                 /**
                  * @var Media $mediaItem
                  */
                 $localFile = storage_path('app/brands/' . $mediaItem->dir . '/' . $mediaItem->file_name);
                 $remoteFile = \Storage::disk('s3')->get($mediaItem->getFilePath());
                 file_put_contents($localFile, $remoteFile);
-                $zip->addFile($localFile, $mediaItem->origin_name);
+                $zip->addFile($localFile, $mediaItem->file_name);
                 $deleteFiles[] = $localFile;
             }
-
             $zip->close();
-
             foreach ($deleteFiles as $deleteFile) {
                 unlink($deleteFile);
             }
         }
-
-        return Storage::disk('brands')->download('zips/' . $hash . '.zip', 'images.zip');
-
+        return \Storage::disk('brands')->download('zips/' . $hash . '.zip', 'images.zip');
     }
 }

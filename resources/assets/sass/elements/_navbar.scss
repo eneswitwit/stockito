@@ -180,11 +180,20 @@
 }
 
 #shareNav {
+  width: 100px !important;
+  height: 40px !important;
+  border: 0 !important;
+  text-align: center;
   color: white;
   background: #494949;
 }
 
 #shareNav .active {
+  border: 0 !important;
+  width: 100px !important;
+  height: 40px !important;
+  text-align: center;
+  color: #ff9800 !important;
   background: #000000;
 }
 

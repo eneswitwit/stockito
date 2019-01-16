@@ -172,16 +172,14 @@
              */
             openShareModal() {
                 this.openedShareMediaModal = true;
-            }
-            ,
+            },
 
             /**
              * clear all
              */
             clearAll() {
                 this.selectedMedia = [];
-            }
-            ,
+            },
 
 
             /**
@@ -195,8 +193,7 @@
                     this.$store.dispatch('media/getUploads', {selectedBrandId: selectedBrandId});
                 this.isGotUploads = true;
                 this.showPage = true;
-            }
-            ,
+            },
 
             /**
              * refresh list
@@ -205,8 +202,7 @@
                 this.getMedias();
                 let selectedBrandId = this.selectedBrand ? this.selectedBrand.id : null;
                 this.$store.dispatch('media/getProcessing', {selectedBrandId: selectedBrandId});
-            }
-            ,
+            },
 
             /**
              * download
@@ -215,8 +211,7 @@
                 axios.get('/api/medias/download-multiple', {params: {media: this.selectedMedia}}).then((response) => {
                     window.open(response.data.url);
                 });
-            }
-            ,
+            },
 
             /**
              * Share one media file
@@ -226,8 +221,7 @@
             shareOneMedia(media) {
                 this.shareMediaObjects = [media.id];
                 this.openShareModal();
-            }
-            ,
+            },
 
             /**
              * Share multiple media files
@@ -235,8 +229,7 @@
             shareMultipleMedia() {
                 this.shareMediaObjects = this.selectedMedia;
                 this.openShareModal();
-            }
-            ,
+            },
 
 
             /**
@@ -260,8 +253,7 @@
                         }
                     });
                 })
-            }
-            ,
+            },
 
             /**
              * check video type
@@ -270,9 +262,8 @@
              * @returns {boolean}
              */
             checkVideoType(media) {
-                return media.content_type === 'video/mp4' ? true : false;
-            }
-            ,
+                return (media.content_type === 'video/mp4' || media.content_type === 'video/quicktime');
+            },
 
             /**
              * when picture is clicked add to selected media

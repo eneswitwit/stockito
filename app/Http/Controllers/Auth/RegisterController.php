@@ -70,9 +70,9 @@ class RegisterController extends Controller
         event(new Registered($user));
         $user->creative()->create($request->only('first_name', 'last_name', 'company'));
 
-        $confirmationToken = md5(time());
+        /*$confirmationToken = md5(time());
         User::where('id', $user->id)->update(['confirmation_token' => $confirmationToken]);
-        $user->sendConfirmationEmail($confirmationToken);
+        $user->sendConfirmationEmail($confirmationToken);*/
 
         if ($request->input('invite_token', false)) {
             $data = json_decode(decrypt($request->invite_token), true);

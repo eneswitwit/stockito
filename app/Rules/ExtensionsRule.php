@@ -1,9 +1,16 @@
 <?php
 
+// namespace
 namespace App\Rules;
 
+// use
 use Illuminate\Contracts\Validation\Rule;
 
+/**
+ * Class ExtensionsRule
+ *
+ * @package App\Rules
+ */
 class ExtensionsRule implements Rule
 {
     /**

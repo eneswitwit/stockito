@@ -55,7 +55,7 @@
         }),
         methods: {
             checkMediaType(media) {
-                if (media.content_type === 'video/mp4') {
+                if (media.content_type === 'video/mp4' || media.content_type === 'video/quicktime') {
                     this.playerOptions.sources[0].src = media.downloadLink;
                     return true;
                 }

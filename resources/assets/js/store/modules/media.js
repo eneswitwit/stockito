@@ -55,7 +55,6 @@ export const mutations = {
         let i = 0;
         uploads.forEach(function(upload){
             let media = state.uploads.find(m => m.id === upload);
-            console.log('license: ' + licenses[i]);
             media.license = licenses[i];
             i++;
         });

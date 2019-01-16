@@ -31,7 +31,7 @@
             <div class="nav-item" style="margin:auto;">
                 <span v-if="selectedBrand">
                     <img v-if="selectedBrand.logo" :class="'brand-logo-nav'" :src="logoConvert(selectedBrand.logo)">
-                    {{ selectedBrand.company_name.substring(0,4) + '...' }}
+                    {{ selectedBrand.company_name.substring(0,8) + '...' }}
                 </span>
                 <button v-if="user && canUpload()" class="btn btn-primary" @click="showUploadModal = true">Upload File</button>
             </div>
