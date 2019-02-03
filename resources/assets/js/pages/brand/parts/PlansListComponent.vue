@@ -11,7 +11,7 @@
                                 <h5 class="card-title">{{ plan.price }} {{ plan.currencySymbol }}</h5>
                                 <p class="card-text"> yearly </p>
                                 <ul class="list-unstyled">
-                                    <li> {{ plan.storageGb }} GB Storage</li>
+                                    <li> {{ plan.storageGb }} Storage</li>
                                     <li>Team Collaboration</li>
                                     <li>Analytics &amp; Reports</li>
                                 </ul>
@@ -35,7 +35,7 @@
                                     <h5 class="card-title">{{ plan.price }} {{ plan.currencySymbol }}</h5>
                                     <p class="card-text"> yearly </p>
                                     <ul class="list-unstyled">
-                                        <li> {{ plan.storageGb }} GB Storage</li>
+                                        <li> {{ plan.storageGb }} Storage</li>
                                         <li>Team Collaboration</li>
                                         <li>Analytics &amp; Reports</li>
                                     </ul>
@@ -58,7 +58,7 @@
                                     <h5 class="card-title">{{ plan.price }} {{ plan.currencySymbol }}</h5>
                                     <p class="card-text"> yearly </p>
                                     <ul class="list-unstyled">
-                                        <li> {{ plan.storageGb }} GB Storage</li>
+                                        <li> {{ plan.storageGb }} Storage</li>
                                         <li>Team Collaboration</li>
                                         <li>Analytics &amp; Reports</li>
                                     </ul>

@@ -128,6 +128,10 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::post('', 'Api\LicensesController@create');
     });
 
+    Route::group(['prefix' => 'ftp'], function () {
+        Route::get('{email}/{brand_id?}', 'Api\FtpController@show');
+    });
+
     Route::group(['prefix' => 'usage-license'], function () {
         Route::post('', 'UsageLicenseController@create');
     });

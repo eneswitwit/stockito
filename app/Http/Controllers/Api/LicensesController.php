@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Requests\License\CreateLicenseRequest;
 use App\Http\Requests\License\UpdateLicenseRequest;
 use App\ModelManagers\LicenseModelManager;
+use App\ModelManagers\UsageLicenseModelManager;
 use App\Models\Brand;
 use App\Models\UsageLicense;
 use App\Models\License;
@@ -20,6 +21,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Response;
 use LukeVear\LaravelTransformer\TransformerEngine;
+use Log;
 
 /**
  * Class LicensesController
@@ -44,9 +46,10 @@ class LicensesController extends Controller
         if (!$brand) {
             return new JsonResponse($licenses);
         }
+
         $licenses = (new UsageLicense)->whereIn(
             'license_id',
-            $brand->media->pluck('license')->pluck('id')->toArray()
+            $brand->media->whereStrict('published',1)->pluck('license')->pluck('id')->toArray()
         )->orderBy(
             'expired_at',
             'ASC'
@@ -92,7 +95,11 @@ class LicensesController extends Controller
                 $media->license_id = $license->id;
                 $media->save();
             } else {
-                $licensesMedia[0] = $licenseModelManager->fillFromRequest($licensesMedia[0], $requestSingle);
+                if($media->published === 0) {
+                    $licensesMedia[0] = $licenseModelManager->editUnprocessedLicense($licensesMedia[0], $requestSingle);
+                } else {
+                    $licensesMedia[0] = $licenseModelManager->fillFromRequest($licensesMedia[0], $requestSingle);
+                }
                 $licensesId[] = $licensesMedia[0]->id;
             }
         }
@@ -103,19 +110,24 @@ class LicensesController extends Controller
 
     /**
      * @param UpdateLicenseRequest $request
-     * @param License $license
+     * @param string $usageLicense
+     * @param UsageLicenseModelManager $usageLicenseModelManager
      *
      * @return JsonResponse
      * @throws \Exception
      */
     public function update(
         UpdateLicenseRequest $request,
-        License $license,
-        LicenseModelManager $licenseModelManager
+        $usageLicense,
+        UsageLicenseModelManager $usageLicenseModelManager
     ): JsonResponse {
-        $license = $licenseModelManager->fillFromRequest($license, $request);
-        return new JsonResponse(new TransformerEngine($license, new LicenseTransformer()));
+
+        $usageLicense = UsageLicense::find(intval($request->input('id')));
+        $usageLicense = $usageLicenseModelManager->fillFromRequest($usageLicense, $request);
+
+        return new JsonResponse(new TransformerEngine($usageLicense, new UsageLicenseTransformer()));
     }
+
 
     /**
      * @return JsonResponse

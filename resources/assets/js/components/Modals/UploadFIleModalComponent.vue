@@ -88,6 +88,46 @@
                                  <span class="ftp-info"> Only MP4 and MOV files are allowed </span>
                             </div>
                         </div>
+                        <div class="card" v-if="selectedBrand">
+                            <div class="card-body">
+                                <p class="description-upload"> Videos (SFTP Upload) </p>
+                                <table class="upload-ftp">
+                                    <tr>
+                                        <td class="label">
+                                            Host
+                                        </td>
+                                        <td style="word-break: break-word !important;">
+                                            stockito.com
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="label">
+                                            Port
+                                        </td>
+                                        <td>
+                                            2222
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="label">
+                                            User
+                                        </td>
+                                        <td style="word-break: break-word !important;">
+                                            {{  ftp.userid }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="label">
+                                            Password
+                                        </td>
+                                        <td style="word-break: break-word !important;">
+                                            {{  ftp.passwd }}
+                                        </td>
+                                    </tr>
+                                </table>
+                                <span class="ftp-info"> Only MP4 and MOV files are allowed </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </modal-body>
@@ -96,6 +136,7 @@
 </template>
 
 <script>
+    import axios from 'axios';
     import Modal from '../Modal/ModalLarge.vue';
     import ModalBody from '../Modal/ModalBody.vue';
     import ModalHeader from '../Modal/ModalHeader.vue';
@@ -104,13 +145,16 @@
     require('vue2-dropzone/dist/vue2Dropzone.css');
 
     export default {
+
         components: {
             ModalHeader,
             ModalBody,
             Modal,
             vue2Dropzone
         },
+
         name: 'upload-file-modal-component',
+
         data: () => ({
             showFtpSettings: false,
             filesUploaded: false,
@@ -122,9 +166,16 @@
                 createImageThumbnails: true,
             },
             errors: {},
-            countUploadFiles: false
+            countUploadFiles: false,
+            ftp: null
         }),
+
         props: ['modalShow'],
+
+        created() {
+            this.getFTPUser();
+        },
+
         computed: {
             token() {
                 return this.$store.getters['auth/token'];
@@ -132,11 +183,25 @@
             brand() {
                 return this.$store.getters['auth/brand'];
             },
+            creative() {
+                return this.$store.getters['auth/creative'];
+            },
+            user() {
+                return this.$store.getters['auth/user'];
+            },
             selectedBrand() {
                 return this.$store.getters['creative/selectedBrand'];
             }
         },
+
+        watch: {
+            selectedBrand: function() {
+                this.getFTPUser();
+            }
+        },
+
         methods: {
+
             closeModal() {
                 this.$refs.myVueDropzone.removeAllFiles();
                 if (this.filesUploaded) {
@@ -144,9 +209,11 @@
                 }
                 this.$emit('close');
             },
+
             uploadError(file, message, xhr) {
                 this.errors = message.errors;
             },
+
             async successUploaded(file, response) {
                 this.errors = {};
                 await this.$store.dispatch('media/addUpload', {media: response.data});
@@ -156,15 +223,34 @@
                     this.closeModal();
                 }
             },
+
             uploadFile(file, xhr, formData) {
                 if (this.selectedBrand) {
                     formData.append('brandId', this.selectedBrand.id);
                 }
                 xhr.setRequestHeader('Authorization', 'Bearer ' + this.token);
             },
+
             progressUploadFiles(files) {
                 this.countUploadFiles = files.length;
-            }
+            },
+
+            getFTPUser() {
+
+                let selectedBrandId = this.selectedBrand ? this.selectedBrand.id : null;
+
+                var url = '';
+                if(selectedBrandId !== null) {
+                    url = `api/ftp/${this.user.id}/${selectedBrandId}`;
+                } else {
+                    url = `api/ftp/${this.user.id}`;
+                }
+
+                axios.get(url).then(response => {
+                    this.ftp = response.data;
+                });
+
+            },
         }
     }
 </script>

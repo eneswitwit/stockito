@@ -5,11 +5,14 @@
         </div>
         <div v-if="checkMediaType(media)">
             <video-player class="vjs-custom-skin big-size-video"
+                          preload="auto"
                           :class="{'search-page-video-size': showSearch}"
                           ref="videoPlayer"
                           :options="playerOptions"
                           :playsinline="true">
             </video-player>
+
+
         </div>
     </div>
 </template>
@@ -57,6 +60,9 @@
             checkMediaType(media) {
                 if (media.content_type === 'video/mp4' || media.content_type === 'video/quicktime') {
                     this.playerOptions.sources[0].src = media.downloadLink;
+                    if(media.content_type === 'video/quicktime') {
+                        //this.playerOptions.sources[0].type = false;
+                    }
                     return true;
                 }
                 return false;

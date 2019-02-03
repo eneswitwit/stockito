@@ -38,6 +38,7 @@ mix.webpackConfig({
   resolve: {
     extensions: ['.js', '.json', '.vue'],
     alias: {
+      'vuejs-datatable': 'vuejs-datatable/dist/vuejs-datatable.esm.js',
       '~': path.join(__dirname, './resources/assets/js')
     }
   },

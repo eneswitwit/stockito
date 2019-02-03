@@ -90,4 +90,21 @@ class Creative extends AbstractCreativeModel
     {
         return 'Creative';
     }
+
+    /**
+     * @return BelongsTo
+     */
+    public function ftpUser(): HasMany
+    {
+        return $this->hasMany(FTPUser::class, 'creative_id');
+    }
+
+    /**
+     * @param Brand $brand
+     *
+     * @return string
+     */
+    public function getFTPUsername($brand) {
+        return $this->user->email . '/' . $brand->id;
+    }
 }

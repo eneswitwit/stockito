@@ -90,10 +90,14 @@ class FTPFilesManager
      * @throws \ImagickException
      * @throws \Exception
      */
-    public function handleFTPFile(FTPFile $ftpFile): Media
+    public function handleFTPFile(FTPFile $ftpFile)
     {
+
         if (!file_exists($ftpFile->file)) {
-            throw new FtpFileNotFoundException('File not found', $ftpFile);
+            Log::info('file does not exist');
+            $ftpFile->delete();
+            //throw new \LogicException('The file was not found');
+            return null;
         }
 
         /**
@@ -104,9 +108,13 @@ class FTPFilesManager
 
         $file = new File($ftpFile->file);
         $brand = $ftpFile->ftpUser->brand;
+        $user = $ftpFile->ftpUser->user;
 
         if (UploadService::calculateUsedStorageFull($brand) + $file->getSize() >= $brand->getProduct()->storage) {
-            throw new \LogicException('This file bigger than you have the free space');
+            Log::info('not enough storage');
+            $ftpFile->delete();
+            //throw new \LogicException('This file bigger than you have the free space');
+            return null;
         }
 
         try {
@@ -117,10 +125,13 @@ class FTPFilesManager
                 'content_type' => $file->getMimeType(),
                 'file_size' => $file->getSize(),
                 'brand_id' => $brand->id,
-                'dir' => $brand->getImagePath()
+                'dir' => $brand->getImagePath(),
+                'created_by' => $user->id
             ]);
 
-            if (\in_array($file->getExtension(), ['ai', 'eps'])) {
+            Log::info('made 1');
+
+            if (\in_array(strtolower($file->getExtension()), ['ai', 'eps'])) {
 
                 $status = \Storage::disk('s3')->putFileAs(
                     $media->brand->getImagePath(),
@@ -162,7 +173,7 @@ class FTPFilesManager
                 $media->height = $image->getImageHeight();
 
 
-            } elseif (\in_array($file->getExtension(), ['mp4', 'mov'])) {
+            } elseif (\in_array(strtolower($file->getExtension()), ['mp4', 'mov'])) {
 
                 $media = $this->uploadService->setVideoData($media, $file, $brand);
                 $status = \Storage::disk('s3')->putFileAs(
@@ -171,9 +182,10 @@ class FTPFilesManager
                     Media::FILE_PREFIX . $this->hashName($file)
                 );
 
-            } elseif (\in_array($file->getExtension(), ['jpeg', 'jpg'])) {
+            } elseif (\in_array(strtolower($file->getExtension()), ['jpeg', 'jpg'])) {
 
-                Log::info('jpg');
+                Log::info('made 2');
+
                 $this->mediaManager->read($file->getRealPath());
 
                 $status = \Storage::disk('s3')->putFileAs(
@@ -182,35 +194,93 @@ class FTPFilesManager
                     Media::FILE_PREFIX . $this->hashName($file)
                 );
 
+                Log::info('made 3');
+
                 $media = $this->mediaManager->setSizes($media);
                 $status = $status && $this->mediaManager->makeAndStoreThumbnail($media);
                 $media->thumbnail = $media->file_name;
 
                 $iptc = new ImageMetadataParser($file);
+
                 if ($iptc->parseIPTC()) {
                     $media->setIPTC($iptc->parseIPTC());
                 }
+
                 $media->setEXIF(Reader::factory(Reader::TYPE_NATIVE)->read($file));
 
+                Log::info('made 4');
+
             } else {
-                throw new \LogicException('Can\'t upload file. File type not allowed.');
+
+                Log::info('not recognized format');
+
+                $ftpFile->delete();
+                if (file_exists(storage_path('app/brands/' . $media->getFilePathOrigin()))) {
+                    unlink(storage_path('app/brands/' . $media->getFilePathOrigin()));
+                }
+                if ($media) {
+                    UploadService::removeMedia($media);
+                }
+
+                //throw new \LogicException('Can\'t upload file. File type not allowed.');
+                return null;
+
             }
 
             if (!$status) {
+
+                Log::info('status not');
+                $ftpFile->delete();
+                if (file_exists(storage_path('app/brands/' . $media->getFilePathOrigin()))) {
+                    unlink(storage_path('app/brands/' . $media->getFilePathOrigin()));
+                }
+                if ($media) {
+                    UploadService::removeMedia($media);
+                }
+
                 throw new \LogicException('Can\'t upload file');
             }
 
-            try {
+            Log::info('made 6');
 
-                $media->title = $media->getIPTC() ? $media->getIPTC()->getTitle() : '';
-
-            } catch (\Exception $exception) {
+            if($media->getIPTC() !== null) {
+                if($media->getIPTC()->getTitle()) {
+                    $title = $media->getIPTC()->getTitle();
+                } else {
+                    $title = '';
+                }
+                Log::info('houston');
+                $media->title = $title !== null && is_string($title) ? $title : '';
+                Log::info('media title');
+                Log::info($media->title);
             }
 
-            $media->keywords = $media->getEXIF() && $media->getEXIF()->getKeywords() ? implode(', ',
-                $media->getEXIF()->getKeywords()) : '';
-            $media->source = $media->getEXIF() && $media->getEXIF()->getSource() ? $media->getEXIF()->getSource() : '';
+            Log::info('made 6.2');
+
+            if($media->getEXIF()) {
+
+                Log::info('made 6.3');
+
+                if($media->getEXIF()->getKeywords()) {
+                    Log::info('made 6.4');
+                    $media->keywords = $media->getEXIF() && $media->getEXIF()->getKeywords() ? implode(', ',
+                        $media->getEXIF()->getKeywords()) : '';
+                    Log::info('made 6.5');
+                }
+
+                if($media->getEXIF()->getSource()) {
+                    Log::info('made 6.6');
+                    $media->source = $media->getEXIF() && $media->getEXIF()->getSource() ? $media->getEXIF()->getSource() : '';
+                    Log::info('made 6.7');
+                }
+
+            }
+
+            Log::info('made 7');
+
             $media->save();
+
+            Log::info('made 8');
 
             $ftpFile->media()->associate($media);
             $ftpFile->handled = true;
@@ -218,20 +288,30 @@ class FTPFilesManager
             $ftpFile->processing = false;
             $ftpFile->save();
 
+            Log::info('made 9');
+
             if (file_exists(storage_path('app/brands/' . $media->getFilePathOrigin()))) {
                 unlink(storage_path('app/brands/' . $media->getFilePathOrigin()));
             }
 
             event(new UploadedFileEvent($media, $brand));
+
+            Log::info('made 10');
+
             return $media;
 
 
         } catch (\Exception $exception) {
+            Log::info('general failure');
             $ftpFile->delete();
+            if (file_exists(storage_path('app/brands/' . $media->getFilePathOrigin()))) {
+                unlink(storage_path('app/brands/' . $media->getFilePathOrigin()));
+            }
             if ($media) {
                 UploadService::removeMedia($media);
             }
-            throw new \LogicException($exception);
+            //throw new \LogicException($exception);
+            return null;
         }
     }
 }

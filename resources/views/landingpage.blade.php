@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 
 </head>
-<body class="overflow-hidden">
+<body>
 <header id="home" style="background: linear-gradient(90deg, rgb(55,87,197), rgb(180,69,256));">
     <nav class="navbar navbar-expand-lg"
          style="background: linear-gradient(90deg, rgb(55,87,197), rgb(180,69,256)) !important; -webkit-box-shadow: none !important;-moz-box-shadow: none !important; box-shadow: none !important;">

@@ -17,7 +17,7 @@
                 </div>
                 <div v-show="[1,2].indexOf(parseInt(form.type)) != -1" class="form-group">
                     <label for="form-printrun">Printrun</label>
-                    <select v-if="form.type != 2" id="orm-printrun" class="form-control"
+                    <select v-if="form.type != 2" id="form-printrun" class="form-control"
                             :class="{ 'is-invalid': form.errors.has('printrun') }"
                             name="printrun" v-model="form.printrun">
                         <option value="+ unlimited printrun (standard setting)">+ unlimited printrun (standard
@@ -108,7 +108,7 @@
                     <button type="button" v-if="!form.id" @click="submitCreateLicense" :disabled="form.busy"
                             class="btn btn-primary btn-block">{{ $t('save') }}
                     </button>
-                    <button type="button" v-if="form.id" @click="submitCreateLicense" :disabled="form.busy"
+                    <button type="button" v-if="form.id" @click="submitEditLicense" :disabled="form.busy"
                             class="btn btn-primary btn-block">{{ $t('edit') }}
                     </button>
                 </div>
@@ -146,6 +146,7 @@
 
         data: () => ({
             licenseTypes: [],
+
             form: new Vform({
                 id: '',
                 licenseId: '',
@@ -231,8 +232,11 @@
         },
 
         mounted() {
+
             this.form.type = this.parentLicense.license_type;
             this.form.licenseId = this.parentLicense.id;
+
+
             if (this.license) {
                 this.form.id = this.license.id;
                 this.form.usage = this.license.usage;
@@ -268,8 +272,10 @@
 
         watch: {
             license() {
+
                 this.form.type = this.parentLicense.license_type;
                 this.form.licenseId = this.parentLicense.id;
+
                 if (this.license) {
                     this.form.id = this.license.id;
                     this.form.usage = this.license.usage;
@@ -290,6 +296,7 @@
         methods: {
 
             submitCreateLicense() {
+                this.form.licenseId = this.parentLicense.id;
                 this.form.startDate = this.date.startDate.time;
                 this.form.expireDate = this.date.expireDate.time;
                 this.form.selectedBrand = this.selectedBrand ? this.selectedBrand.id : '';
@@ -304,6 +311,16 @@
                 });
             },
 
+            submitEditLicense() {
+                this.form.startDate = this.date.startDate.time;
+                this.form.expireDate = this.date.expireDate.time;
+
+                this.$store.dispatch('license/updateLicense', {form: this.form}).then(({data}) => {
+                    delete this.form.billFile;
+                    delete this.form.removeBill;
+                    this.$swal('Successfully updated', '', 'success');
+                });
+            },
 
             setFile(e) {
                 this.form.billFile = e.target.files[0];

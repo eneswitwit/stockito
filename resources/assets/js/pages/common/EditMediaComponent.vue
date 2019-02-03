@@ -200,13 +200,19 @@
                 this.form.fileType = value.fileType;
                 this.form.keywords = value.keywords;
                 this.form.notes = value.notes;
-                if (value.category) {
+                if (value.category.id) {
                     this.form.category = {label: value.category.name, value: value.category.id};
+                } else {
+                    this.form.category = value.category;
                 }
-                this.form.peoplesAttribute = value.peoples_attribute;
+                this.form.peoplesAttribute = value.peoplesAttribute;
                 this.form.language = value.language;
                 this.form.source = value.source;
-                this.form.supplier = value.supplier.name;
+                if(value.supplier.id) {
+                    this.form.supplier = value.supplier.name;
+                } else {
+                    this.form.supplier = value.supplier;
+                }
             },
 
             async getCategories() {
@@ -225,7 +231,7 @@
                     this.types = data;
                 });
             }
-            
+
         },
 
         directives: {

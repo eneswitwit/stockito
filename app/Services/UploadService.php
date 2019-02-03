@@ -211,7 +211,7 @@ class UploadService
             'dir' => $brand->getImagePath()
         ]);
 
-        if (\in_array($file->getClientOriginalExtension(), ['ai', 'eps'])) {
+        if (\in_array(strtolower($file->getClientOriginalExtension()), ['ai', 'eps'])) {
 
             $status = $this->mediaManager->storeMedia($media, $file);
             $image = new \Imagick();
@@ -247,21 +247,25 @@ class UploadService
             $media->width = $image->getImageWidth();
             $media->height = $image->getImageHeight();
 
-        } elseif (\in_array($file->getClientOriginalExtension(), ['mp4', 'mov'])) {
+        } elseif (\in_array(strtolower($file->getClientOriginalExtension()), ['mp4', 'mov'])) {
             $media = $this->setVideoData($media, $file, $brand);
             $status = $this->mediaManager->storeMedia($media, $file);
 
-        } elseif (\in_array($file->getClientOriginalExtension(), ['jpeg', 'jpg'])) {
+        } elseif (\in_array(strtolower($file->getClientOriginalExtension()), ['jpeg', 'jpg'])) {
+
             $this->mediaManager->read($file->getRealPath());
             $status = $this->mediaManager->storeMedia($media, $file);
             $media = $this->mediaManager->setSizes($media);
             $status = $status && $this->mediaManager->makeAndStoreThumbnail($media);
             $media->thumbnail = $media->file_name;
             $iptc = new ImageMetadataParser($file);
+
             if ($iptc->parseIPTC()) {
                 $media->setIPTC($iptc);
             }
+
             $media->setEXIF(Reader::factory(Reader::TYPE_NATIVE)->read($file));
+
         } else {
             throw new \LogicException('Can\'t upload file. File type not allowed.');
         }
@@ -276,8 +280,10 @@ class UploadService
         }
 
         $media->keywords = $media->getEXIF() && $media->getEXIF()->getKeywords() ? implode(', ',
-            $media->getEXIF()->getKeywords()) : '';
+                $media->getEXIF()->getKeywords()) : '';
+
         $media->source = $media->getEXIF() && $media->getEXIF()->getSource() ? $media->getEXIF()->getSource() : '';
+
         $media->save();
 
         return $media;

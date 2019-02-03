@@ -37,7 +37,7 @@ class ProcessFTPFile implements ShouldQueue
      */
     public function handle(FTPFilesManager $filesManager): void
     {
-        if ($this->FTPFile->queuing && !$this->FTPFile->processing) {
+        if (!$this->FTPFile->processing) {
             \DB::beginTransaction();
             try {
                 $filesManager->handleFTPFile($this->FTPFile);

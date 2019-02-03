@@ -61,7 +61,7 @@ class CheckFTPUsersCommand extends Command
             $this->info('Checking brand '.$brand->id);
             if (!$this->FTPService::checkExistFTPUserForBrand($brand)) {
                 $this->info('Creating FTP user for brand '.$brand->id);
-                $ftpUser = $this->FTPService::makeFTPUserForBrand($brand, $brand->user->password);
+                $ftpUser = $this->FTPService::makeFTPUserForBrand($brand, $brand->user->email, $brand->user->password);
                 $ftpUser->save();
                 $brand->ftpUser()->associate($ftpUser);
                 $brand->save();

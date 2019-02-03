@@ -330,6 +330,6 @@ class SubscriptionController extends Controller
      * @return int|null
      */
     public function getTaxPercentage() {
-        return Billable::taxPercentage();
+        return Billable::taxPercentage() === null ? Billable::taxPercentage() : 0;
     }
 }

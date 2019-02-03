@@ -80,15 +80,34 @@ class MediaController extends Controller
          * @var Collection $medias
          */
         $user = auth()->user();
-        $brand = $user->brand ?? Brand::find($brandId);
-        if (!$brand) {
+        $brand = $user->brand;
+        $creative = $user->creative;
+
+
+        if ($creative && !$brand) {
+            $creativeBrand = Brand::find($brandId);
+            if($creativeBrand) {
+                $result['processing'] = (new FTPFile())::notHandled()->where('username',
+                    $creative->getFTPUsername($creativeBrand))->where('processing', true)->count();
+
+                $result['queuing'] = (new FTPFile())::notHandled()->where('username',
+                    $creative->getFTPUsername($creativeBrand))->where('queuing',
+                    true)->count();
+
+            } else {
+                return new JsonResponse();
+            }
+        } else if ($brand && !$creative) {
+
+            $result['processing'] = (new FTPFile())::notHandled()->where('username',
+                $brand->ftpUser->userid)->where('processing', true)->count();
+
+            $result['queuing'] = (new FTPFile())::notHandled()->where('username',
+                $brand->ftpUser->userid)->where('queuing',
+                true)->count();
+        } else {
             return new JsonResponse();
         }
-
-        $result['processing'] = (new FTPFile())::notHandled()->where('username',
-            $brand->ftpUser->userid)->where('processing', true)->count();
-        $result['queuing'] = (new FTPFile())::notHandled()->where('username', $brand->ftpUser->userid)->where('queuing',
-            true)->count();
 
         return new JsonResponse($result);
     }
@@ -206,32 +225,78 @@ class MediaController extends Controller
      */
     public function uploads($brandId = null): JsonResponse
     {
+
         /**
          * @var User $user
          * @var Collection $medias
          * @var FTPFile[] $ftpFiles
          */
         $user = auth()->user();
-        $brand = $user->brand ?? Brand::find($brandId);
+        $brand = $user->brand;
+        $creative = $user->creative;
 
-        if (!$brand) {
+        if ($brand && !$creative) {
+
+            $ftpFiles = (new FTPFile())
+                ->where('handled', false)
+                ->where('processing', false)
+                ->where('username', $brand->ftpUser->userid)
+                ->get();
+
+            $ftpFiles->each(function (FTPFile $FTPFile) {
+
+                $FTPFile->queuing = true;
+                $FTPFile->save();
+
+                $processFTP = new ProcessFTPFile($FTPFile);
+                $processFTP->handle($this->ftpFilesManager);
+
+                /*$this->ftpFilesManager->handleFTPFile($FTPFile);
+                $FTPFile->queuing = true;
+                $FTPFile->save();*/
+                ProcessFTPFile::dispatch($FTPFile);
+            });
+
+
+        } else if (!$brand && $creative) {
+
+            $brand = Brand::find($brandId);
+            if($brand) {
+
+                $ftpFiles = (new FTPFile())
+                    ->where('handled', false)
+                    ->where('processing', false)
+                    ->where('username', $creative->getFTPUsername($brand))
+                    ->get();
+
+
+                $ftpFiles->each(function (FTPFile $FTPFile) {
+
+                    $FTPFile->queuing = true;
+                    $FTPFile->save();
+
+                    $processFTP = new ProcessFTPFile($FTPFile);
+                    $processFTP->handle($this->ftpFilesManager);
+
+                    /*$this->ftpFilesManager->handleFTPFile($FTPFile);
+                    $FTPFile->queuing = true;
+                    $FTPFile->save();*/
+                    ProcessFTPFile::dispatch($FTPFile);
+                });
+            } else {
+                return new JsonResponse();
+            }
+
+        } else {
             return new JsonResponse();
         }
 
-        $ftpFiles = (new FTPFile())
-            ->where('queuing', false)
-            ->where('processing', false)
-            ->where('username', $brand->ftpUser->userid)
-            ->get();
-
-        $ftpFiles->each(function (FTPFile $FTPFile) {
-            $this->ftpFilesManager->handleFTPFile($FTPFile);
-            $FTPFile->queuing = true;
-            $FTPFile->save();
-            ProcessFTPFile::dispatch($FTPFile);
-        });
-
-        $medias = $brand->media()->notPublished()->where('created_by', $user->id)->orderBy('created_at', 'decs')->get();
+        if($brand) {
+            $medias = $brand->media()->where('created_by', $user->id)->notPublished()->orderBy('created_at',
+                'decs')->get();
+        } else {
+            return new JsonResponse();
+        }
 
         $medias->map(function (Media $media) {
             if (!Storage::disk('s3')->exists($media->getFilePath())) {
@@ -255,6 +320,7 @@ class MediaController extends Controller
          */
         $user = $request->user();
         $brand = $user->brand ?? Brand::find($request->brandId);
+
         try {
             $media = $this->uploadService->uploadMedia($request, $brand);
         } catch (\Exception $exception) {
@@ -292,6 +358,7 @@ class MediaController extends Controller
          * @var Supplier $supplier
          * @var Media\Category $category
          */
+
         if ($request->input('category.label', false)) {
             $category = Media\Category::firstOrCreate(
                 ['name' => $request->input('category.label'), 'brand_id' => $media->brand->id]
@@ -299,12 +366,15 @@ class MediaController extends Controller
             $media->category_id = $category->id;
         }
 
-        if ($request->input('category', false)) {
+
+        if ($request->input('category',
+                false) && is_string($request->input('category')) && $request->input('category') !== '') {
             $category = Media\Category::firstOrCreate(
                 ['name' => $request->input('category'), 'brand_id' => $media->brand->id]
             );
             $media->category_id = $category->id;
         }
+
 
         if ($request->input('supplier.label', false)) {
             $supplier = Supplier::firstOrCreate(
@@ -313,7 +383,9 @@ class MediaController extends Controller
             $media->supplier_id = $supplier->id;
         }
 
-        if ($request->input('supplier', false)) {
+
+        if ($request->input('supplier',
+                false) && is_string($request->input('supplier')) && $request->input('supplier') !== '') {
 
             $supplier = Supplier::firstOrCreate(
                 ['name' => $request->input('supplier'), 'brand_id' => $media->brand->id]
@@ -321,22 +393,28 @@ class MediaController extends Controller
             $media->supplier_id = $supplier->id;
         }
 
+
         if ($request->input('peopleAttributes', null)) {
             $media->peoples_attribute = $request->input('peopleAttributes');
         }
+
 
         if ($request->input('title') === null) {
             $media->title = $request->input('originName', '');
         } else {
             $media->title = $request->input('title', '');
         }
+
+
         $media->file_type = $request->input('fileType', '');
         $media->keywords = $request->input('keywords', '');
         $media->source = $request->input('source', '');
         $media->language = $request->input('language', '');
         $media->origin_name = $request->input('originName', '');
 
+
         $media->publish()->save();
+
         event(new EditedFileEvent($media, $media->brand));
 
         return new JsonResponse(new TransformerEngine($media, new MediaTransformer()));
@@ -352,6 +430,8 @@ class MediaController extends Controller
     {
         $mediaFiles = (new Media)->whereIn('id', $request->input('media'))->get();
 
+
+
         foreach ($mediaFiles as $media) {
 
             /**
@@ -359,39 +439,42 @@ class MediaController extends Controller
              * @var Media\Category $category
              */
 
-
-            if ($request->input('category.label', false)) {
+            if ($request->input('form.category.label', false)) {
                 $category = Media\Category::firstOrCreate(
-                    ['name' => $request->input('category.label'), 'brand_id' => $media->brand->id]
+                    ['name' => $request->input('form.category.label'), 'brand_id' => $media->brand->id]
                 );
                 $media->category_id = $category->id;
             }
 
-            if ($request->input('category', false)) {
+
+            if ($request->input('form.category',
+                    false) && is_string($request->input('form.category')) && $request->input('form.category') !== '') {
                 $category = Media\Category::firstOrCreate(
-                    ['name' => $request->input('category'), 'brand_id' => $media->brand->id]
+                    ['name' => $request->input('form.category'), 'brand_id' => $media->brand->id]
                 );
                 $media->category_id = $category->id;
             }
 
-            if ($request->input('supplier.label', false)) {
 
+            if ($request->input('form.supplier.label', false)) {
                 $supplier = Supplier::firstOrCreate(
-                    ['name' => $request->input('supplier.label'), 'brand_id' => $media->brand->id]
+                    ['name' => $request->input('form.supplier.label'), 'brand_id' => $media->brand->id]
                 );
                 $media->supplier_id = $supplier->id;
             }
 
-            if ($request->input('supplier', false)) {
+
+            if ($request->input('form.supplier',
+                    false) && is_string($request->input('form.supplier')) && $request->input('form.supplier') !== '') {
 
                 $supplier = Supplier::firstOrCreate(
-                    ['name' => $request->input('supplier'), 'brand_id' => $media->brand->id]
+                    ['name' => $request->input('form.supplier'), 'brand_id' => $media->brand->id]
                 );
                 $media->supplier_id = $supplier->id;
             }
 
-            if ($request->input('peopleAttributes', null)) {
-                $media->peoples_attribute = $request->input('peopleAttributes');
+            if ($request->input('form.peopleAttributes', null)) {
+                $media->peoples_attribute = $request->input('form.peopleAttributes');
             }
 
             if ($request->input('form.title') === null) {

@@ -18,6 +18,7 @@ use Longman\LaravelLodash\Eloquent\UserIdentities;
 use PHPExif\Exif;
 use phpDocumentor\Reflection\Types\Boolean;
 use PHPExif\Reader\Reader;
+use Log;
 
 /**
  * App\Models\Media
@@ -353,7 +354,9 @@ class Media extends Model implements TargetActivityInterface
     public function getIPTC(): ?ImageMetadataParser
     {
         if ($this->iptc) {
+            Log::info('we are in iptc');
             $this->iptc = new ImageMetadataParser($this->getFilePath());
+            Log::info('imagemetaparser did not work');
         } else {
             $this->iptc = null;
         }

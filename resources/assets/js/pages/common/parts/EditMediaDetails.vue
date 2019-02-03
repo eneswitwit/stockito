@@ -144,7 +144,7 @@
                 </button>
             </div>
 
-            <div v-if="media.license" class="form-group">
+            <div v-if="licenseSet" class="form-group">
                 <button class="btn btn-primary" type="submit">Submit</button>
             </div>
 
@@ -174,6 +174,7 @@
         },
 
         name: 'edit-media-details',
+
         props: {
             media: {
                 'default': undefined
@@ -204,6 +205,7 @@
             this.getSuppliers();
             this.getTypes();
             this.setValues(this.media);
+            this.checkLicenseIsSet();
         },
 
         data: () => ({
@@ -225,23 +227,35 @@
                 orientation: '',
                 multiTitle: 'Will be set automatically'
             }),
-            selected: ''
+            selected: '',
+            licenseSet: false
         }),
 
         watch: {
+
             media(value) {
                 this.setValues(value);
             },
+
             selectedMedia() {
                 this.getSelectedMedias();
             },
+
             selectedMedias() {
                 this.setMultipleValues();
+                this.checkLicenseIsSet();
+            },
+
+            showLicenseModal() {
+                this.checkLicenseIsSet();
+            },
+
+            licenseSet() {
+                this.checkLicenseIsSet();
             }
         },
 
         computed: {
-
 
             chosenMedia: {
                 get: function () {
@@ -308,7 +322,13 @@
                 if (this.selectedMedia.length > 0) {
                     this.selectedMedias.forEach(function (mediaElement) {
                         if(mediaElement.title) {
-                            value['title'] = value['title'] === null ? mediaElement.title : value['title'] + ',' + mediaElement.title;
+                            if(value['title'] === null) {
+                                value['title'] = mediaElement.title;
+                            } else {
+                                if(!value['title'].includes(mediaElement.title)) {
+                                    value['title'] = value['title'] + ',' + mediaElement.title;
+                                }
+                            }
                         }
                         if(mediaElement.origin_name) {
                             value['origin_name'] = mediaElement.origin_name;
@@ -317,13 +337,25 @@
                             value['fileType'] = mediaElement.fileType;
                         }
                         if(mediaElement.keywords) {
-                            value['keywords'] = value['keywords'] === null ? mediaElement.keywords : value['keywords'] + ',' + mediaElement.keywords;
+                            if(value['keywords'] === null) {
+                                value['keywords'] = mediaElement.keywords;
+                            } else {
+                                if(!value['keywords'].includes(mediaElement.keywords)) {
+                                    value['keywords'] = value['keywords'] + ',' + mediaElement.keywords;
+                                }
+                            }
                         }
                         if (mediaElement.category) {
                             value['category'] = mediaElement.category.id;
                         }
                         if(mediaElement.source) {
-                            value['source'] = value['source'] === null ? mediaElement.source : value['source'] + ',' + mediaElement.source;
+                            if(value['source'] === null) {
+                                value['source'] = mediaElement.source;
+                            } else {
+                                if(!value['source'].includes(mediaElement.source)) {
+                                    value['source'] = value['source'] + ',' + mediaElement.source;
+                                }
+                            }
                         }
                         value['language'] = null;
                     });
@@ -340,7 +372,6 @@
                     this.form.category = {label: value.category.name, value: value.category.id};
                 }
                 if(value.supplier) {
-                    console.log('set value supplier');
                     this.form.supplier = value.supplier;
                 }
                 this.form.language = value.language;
@@ -382,7 +413,17 @@
                 axios.get('/api/medias/types').then(({data}) => {
                     this.types = data;
                 });
-            }
+            },
+
+            checkLicenseIsSet() {
+                var isSet = true;
+                this.selectedMedias.forEach(function (media) {
+                    if (!media.license) {
+                        isSet = false;
+                    }
+                });
+                this.licenseSet = isSet;
+            },
 
         }
     };

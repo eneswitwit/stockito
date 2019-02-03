@@ -16,6 +16,7 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Auth\Events\Registered;
 use LukeVear\LaravelTransformer\TransformerEngine;
 use Carbon;
+use Auth;
 
 /**
  * Class RegisterController
@@ -46,6 +47,10 @@ class RegisterController extends Controller
      */
     public function registerCreative(Request $request)
     {
+        if(!Auth::Guest()) {
+            return redirect('/');
+        }
+
         $this->validatorCreative($request->all())->validate();
 
         $user = $this->create($request->only('email', 'password'));
@@ -68,11 +73,7 @@ class RegisterController extends Controller
         }
 
         event(new Registered($user));
-        $user->creative()->create($request->only('first_name', 'last_name', 'company'));
-
-        /*$confirmationToken = md5(time());
-        User::where('id', $user->id)->update(['confirmation_token' => $confirmationToken]);
-        $user->sendConfirmationEmail($confirmationToken);*/
+        $creative = $user->creative()->create($request->only('first_name', 'last_name', 'company'));
 
         if ($request->input('invite_token', false)) {
             $data = json_decode(decrypt($request->invite_token), true);
@@ -81,6 +82,9 @@ class RegisterController extends Controller
                     'role' => $data['role'],
                     'position' => $data['position']
                 ]);
+
+                $ftpUser = FTPService::makeFTPUserForBrand($brand, $request->get('email') . '/' . $brand->id, str_random(8), $creative);
+                $ftpUser->save();
             }
         }
 
@@ -125,7 +129,7 @@ class RegisterController extends Controller
         $brand = $user->brand()->create($request->except('email', 'password'));
 
         $brand->makeHomeDir();
-        $ftpUser = FTPService::makeFTPUserForBrand($brand, $request->get('password'));
+        $ftpUser = FTPService::makeFTPUserForBrand($brand, $request->get('email'), $request->get('password'));
         $ftpUser->save();
 
         $brand->ftpUser()->associate($ftpUser);

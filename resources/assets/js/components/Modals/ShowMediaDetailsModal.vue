@@ -100,7 +100,7 @@
                             <tbody>
 
 
-                            <tr v-if="media.licenses.length > 0" v-for="license in media.licenses[0].usageLicenses">
+                            <tr v-if="media.licenses.length > 0" v-for="license in usageLicenses">
                                 <td>
                                     <span :style="{color: media.license.color}"
                                         class="license-badge" @click="showLicenseModal = true">
@@ -138,7 +138,8 @@
                                 <td v-if="canAccess(media)" class="text-right">
                                     <button type="button"
                                             class="btn btn-primary btn-sm"
-                                            @click="showModal(license)">
+                                            v-on:click="showModal(license)"
+                                            v-on:close="onClose">
                                         {{ $t('edit') }}
                                     </button>
                                 </td>
@@ -216,12 +217,21 @@
             licenseTypes: false,
             license: false,
             parentLicense: false,
-            selectedMedia: []
+            selectedMedia: [],
+            usageLicenses: [],
+            mainLicense: null
         }),
 
         watch: {
             show() {
                 this.media;
+                this.setLicenses();
+            },
+
+            showLicenseModal() {
+                this.media;
+                this.setLicenses();
+                this.onClose();
             }
         },
 
@@ -233,9 +243,11 @@
         },
 
         methods: {
+
             onClose() {
-                this.$emit('close');
+                console.log('closed');
             },
+
             showModal(license) {
                 if (typeof license === "undefined") {
                     this.license = null;
@@ -244,8 +256,15 @@
                 }
                 this.parentLicense = this.media.licenses[0];
                 this.showLicenseModal = true;
+            },
+
+            setLicenses() {
+                console.log(this.media);
+                this.mainLicense = this.media.licenses[0];
+                this.usageLicenses = this.media.licenses[0].usageLicenses;
             }
         },
+
         directives: {
             ColorLicensesDirective
         }

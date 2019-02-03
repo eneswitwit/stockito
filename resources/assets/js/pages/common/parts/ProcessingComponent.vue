@@ -37,7 +37,18 @@
                 this.$emit('refreshed');
             },
             async getProcessing() {
-                let selectedBrandId = this.selectedBrand ? this.selectedBrand.id : null;
+
+                var url = window.location.href;
+                var index = url.indexOf("uploaded/");
+                var substring = url.substring(index+9, url.length);
+
+                var selectedBrandId = null;
+                if(substring !== '') {
+                    selectedBrandId = parseInt(substring);
+                } else {
+                    selectedBrandId = this.selectedBrand ? this.selectedBrand.id : null;
+                }
+
                 await this.$store.dispatch('media/getProcessing', {selectedBrandId: selectedBrandId});
             }
         }

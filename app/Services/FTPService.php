@@ -4,8 +4,10 @@
 namespace App\Services;
 
 // use
+use App\Models\Creative;
 use App\Models\FTPUser;
 use App\Models\Brand;
+use Log;
 
 /**
  * Class FTPService
@@ -17,17 +19,37 @@ class FTPService
     /**
      * @param Brand $brand
      * @param string $password
+     * @param string $username
+     * @param Creative $creative
      * @return FTPUser
      */
-    public static function makeFTPUserForBrand(Brand $brand, $password): FTPUser
+    public static function makeFTPUserForBrand(Brand $brand, $username, $password, Creative $creative = null): FTPUser
     {
-        return new FTPUser([
-            'userid' => $brand->user->email,
-            'passwd' => $password,
-            'homedir' => storage_path('app/brands/'.$brand->getImagePath()),
-            'uid' => 33,
-            'gid' => 33
-        ]);
+        if($creative === null) {
+
+            return new FTPUser([
+                'userid' => $username,
+                'passwd' => $password,
+                'brand_id' => $brand->id,
+                'user_id' => $brand->user->id,
+                'homedir' => storage_path('app/brands/' . $brand->getImagePath()),
+                'uid' => 33,
+                'gid' => 33
+            ]);
+
+        } else {
+
+            return new FTPUser([
+                'userid' => $username,
+                'passwd' => $password,
+                'brand_id' => $brand->id,
+                'creative_id' => $creative->id,
+                'user_id' => $creative->user->id,
+                'homedir' => storage_path('app/brands/' . $brand->getImagePath()),
+                'uid' => 33,
+                'gid' => 33
+            ]);
+        }
     }
 
     /**

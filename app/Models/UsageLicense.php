@@ -61,11 +61,11 @@ class UsageLicense extends Model
 
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function license(): BelongsTo
+    public function license(): HasOne
     {
-        return $this->belongsTo(License::class);
+        return $this->hasOne(License::class, 'id', 'license_id');
     }
 
     /**

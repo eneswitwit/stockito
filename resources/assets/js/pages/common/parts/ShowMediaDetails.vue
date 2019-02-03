@@ -28,7 +28,7 @@
 
                 <tr>
                     <td class="label">Keywords </td>
-                    <td v-if="media.keywords"> {{ media.keywords }}</td>
+                    <td v-if="media.keywords" style="word-break: keep-all !important;"> {{ media.keywords }}</td>
                 </tr>
 
                 <tr>

@@ -14,10 +14,12 @@
 </template>
 
 <script>
+
 import { mapGetters } from 'vuex'
 import { loadMessages } from '~/plugins/i18n'
 
-export default {
+export default
+{
   computed: mapGetters({
     locale: 'lang/locale',
     locales: 'lang/locales'

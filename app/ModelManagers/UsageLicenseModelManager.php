@@ -1,44 +1,41 @@
 <?php
 
 // namespace
-namespace App\Http\Controllers;
+namespace App\ModelManagers;
 
 // use
-use App\Http\Requests\License\CreateLicenseRequest;
 use App\Models\UsageLicense;
-use App\Models\License;
-use App\Transformers\UsageLicenseTransformer;
-use Illuminate\Http\JsonResponse;
-use LukeVear\LaravelTransformer\TransformerEngine;
+use App\Models\Media;
 use Carbon\Carbon;
-use Log;
+use Illuminate\Database\Eloquent\MassAssignmentException;
+use Illuminate\Http\Request;
 
 /**
- * Class UsageLicenseController
+ * Class LicenseModelManager
  *
- * @package App\Http\Controllers
+ * @package App\ModelManagers
  */
-class UsageLicenseController extends Controller
+class UsageLicenseModelManager
 {
+    protected $model = UsageLicense::class;
 
     /**
-     * @param  $request
+     * @param UsageLicense $usageLicense
+     * @param Request $request
      *
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Exception
+     * @throws MassAssignmentException
+     * @return UsageLicense
      */
-    public function create(CreateLicenseRequest $request): JsonResponse
+    public function fillFromRequest(UsageLicense $usageLicense, Request $request): UsageLicense
     {
+        $license = $usageLicense->license;
 
-        Log::info($request);
-        $license = License::find($request->get('licenseId'));
-        $media = $license->media;
+        $usageLicense->invoice_number = $request->input('invoiceNumber');
+        $usageLicense->invoice_number_by = $request->input('invoiceNumberBy');
 
-        $usageLicense = UsageLicense::firstOrNew(['id' => $request->get('id')]);
 
-        $usageLicense->license_id = $license->id;
-        $usageLicense->invoice_number = $request->input('invoiceNumber', null);
-        $usageLicense->invoice_number_by = $request->input('invoiceNumberBy', null);
+        $media = $request->get('mediaId') ? (new Media())->where('id',
+            $request->input('mediaId'))->firstOrFail() : $license->media;
 
         switch ($license->license_type) {
             case $license::RF:
@@ -63,7 +60,13 @@ class UsageLicenseController extends Controller
                 break;
         }
 
+        if ((bool)$request->input('removeBill', false)) {
+            $usageLicense->bill_file = null;
+            $usageLicense->bill_file_origin_name = null;
+        }
+
         $addFileStatus = false;
+
         if ($request->hasFile('billFile')) {
             $file = $request->file('billFile');
             $addFileStatus = $file->storeAs($media->brand->getImagePath(), $file->hashName(), 'bill_licenses');
@@ -71,14 +74,17 @@ class UsageLicenseController extends Controller
 
         if ($addFileStatus && $request->hasFile('billFile')) {
             $file = $request->file('billFile');
+
             if ($file) {
                 $usageLicense->bill_file = $file->hashName();
                 $usageLicense->bill_file_origin_name = $file->getClientOriginalName();
             }
         }
 
+        $usageLicense->license_id = $license->id;
         $usageLicense->save();
-        return new JsonResponse(new TransformerEngine($usageLicense, new UsageLicenseTransformer()));
+
+        return $usageLicense;
     }
 
 }

@@ -56,7 +56,7 @@
                                 </div>
 
                                 <span v-if="media.license" class="license-label"
-                                      :style="{color: media.license.color}">{{ media.license.type }}</span>
+                                      :style="{color: getLicenseColor(media.license.type)}">{{ media.license.type }}</span>
 
                             </div>
                         </div>
@@ -188,7 +188,18 @@
              * @returns {Promise<void>}
              */
             async getMedias() {
-                let selectedBrandId = this.selectedBrand ? this.selectedBrand.id : null;
+
+                var url = window.location.href;
+                var index = url.indexOf("uploaded/");
+                var substring = url.substring(index+9, url.length);
+
+                var selectedBrandId = null;
+                if(substring !== '') {
+                    selectedBrandId = parseInt(substring);
+                } else {
+                    selectedBrandId = this.selectedBrand ? this.selectedBrand.id : null;
+                }
+
                 await
                     this.$store.dispatch('media/getUploads', {selectedBrandId: selectedBrandId});
                 this.isGotUploads = true;
@@ -200,7 +211,18 @@
              */
             refreshList() {
                 this.getMedias();
-                let selectedBrandId = this.selectedBrand ? this.selectedBrand.id : null;
+
+                var url = window.location.href;
+                var index = url.indexOf("uploaded/");
+                var substring = url.substring(index+9, url.length);
+
+                var selectedBrandId = null;
+                if(substring !== '') {
+                    selectedBrandId = parseInt(substring);
+                } else {
+                    selectedBrandId = this.selectedBrand ? this.selectedBrand.id : null;
+                }
+
                 this.$store.dispatch('media/getProcessing', {selectedBrandId: selectedBrandId});
             },
 
@@ -277,6 +299,23 @@
                     this.selectedMedia.splice(itemIndex, 1);
                 } else {
                     this.selectedMedia.push(id);
+                }
+            },
+
+            getLicenseColor(license) {
+                switch (license) {
+                    case 'RF':
+                        return 'green';
+
+                    case 'RE':
+                        return 'orange';
+
+                    case 'RM':
+                        return 'red';
+
+                    case 'BO':
+                        return 'blue';
+
                 }
             }
         }

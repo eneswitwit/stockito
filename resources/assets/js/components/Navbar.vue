@@ -131,7 +131,9 @@
     import CheckCreativePermission from '../pages/common/parts/services/CheckCreativePermissionService';
 
     export default {
+
         mixins: [CheckCreativePermission],
+
         data: () => ({
             appName: window.config.appName,
             showUploadModal: false,
@@ -191,7 +193,7 @@
                 }
 
                 this.$store.dispatch('media/setFilterQuery', {query: this.searchQuery});
-                if(document.getElementById('closeAdvancedSearch') !== null) {
+                if (document.getElementById('closeAdvancedSearch') !== null) {
                     document.getElementById('closeAdvancedSearch').click();
                 }
                 this.$store.dispatch('media/setFilter', {filter: ''});

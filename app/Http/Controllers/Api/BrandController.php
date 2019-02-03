@@ -20,6 +20,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use LukeVear\LaravelTransformer\TransformerEngine;
 use Illuminate\Support\Facades\Mail;
+use App\Services\FTPService;
 
 /**
  * Class BrandController
@@ -110,6 +111,10 @@ class BrandController extends Controller
                         'role' => $request->role,
                         'position' => $request->position
                     ]);
+
+                    $ftpUser = FTPService::makeFTPUserForBrand($brand, $creativeUser->email . '/' . $brand->id, str_random(8), $creative);
+                    $ftpUser->save();
+
                     Mail::to($request->email)->send(new CreativeInviteExist($brand->brand_name, $request->role));
                 }
             }

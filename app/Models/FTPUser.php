@@ -34,6 +34,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @mixin \Eloquent
  * @property-read FTPGroup|null $ftp_group
  * @property-read \App\Models\Brand $brand
+ * @property-read \App\Models\Creative $creative
+ * @property-read \App\Models\User $user
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\FTPFile[] $ftpFiles
  */
 class FTPUser extends Model
@@ -55,6 +57,9 @@ class FTPUser extends Model
         'homedir',
         'userid',
         'passwd',
+        'brand_id',
+        'user_id',
+        'creative_id',
         'uid',
         'gid',
     ];
@@ -80,9 +85,24 @@ class FTPUser extends Model
      */
     public function brand(): HasOne
     {
-        return $this->hasOne(Brand::class, 'ftp_user_id');
+        return $this->hasOne(Brand::class, 'id', 'brand_id');
     }
 
+    /**
+     * @return HasOne
+     */
+    public function creative(): HasOne
+    {
+        return $this->hasOne(Creative::class, 'id', 'creative_id');
+    }
+
+    /**
+     * @return HasOne
+     */
+    public function user(): HasOne
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
 
     /**
      * @return FTPGroup|null
