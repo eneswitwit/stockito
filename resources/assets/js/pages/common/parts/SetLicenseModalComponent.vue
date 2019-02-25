@@ -10,7 +10,6 @@
             <license-form-component
                     v-if="selectedMedia"
                     @saved="savedLicense"
-                    :selectedMedia="selectedMedia"
                     :media="media"
                     :license="media.license"
             ></license-form-component>
@@ -41,10 +40,15 @@
 
         props: [
             'show',
-            'selectedMedia',
             'media',
             'license'
         ],
+
+        computed: {
+            selectedMedia() {
+                return this.$store.getters['media/selectedMedia'];
+            },
+        },
 
         methods: {
             savedLicense(licenses) {
@@ -57,7 +61,6 @@
             submitAddLicense() {
                 this.form.startDate = this.date.startDate.time;
                 this.form.expireDate = this.date.expireDate.time;
-
                 this.form.post('/api/medias/' + this.media.id + '/add-license').then(({data}) => {
 
                     this.$store.dispatch('media/updateUpload', {upload: data}).then(() => {

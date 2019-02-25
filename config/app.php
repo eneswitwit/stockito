@@ -193,6 +193,7 @@ return [
 		Yajra\DataTables\DataTablesServiceProvider::class,
 		Laravel\Cashier\CashierServiceProvider::class,
 		App\Providers\ViewComposerServiceProvider::class,
+        Barryvdh\DomPDF\ServiceProvider::class,
         Barryvdh\Snappy\ServiceProvider::class
     ],
 

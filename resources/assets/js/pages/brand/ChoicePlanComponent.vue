@@ -28,7 +28,7 @@
         </b-row>
 
         <b-row v-if="selectedPlanId && checked" :class="'text-right mb-4'">
-            <b-col>
+            <b-col id="pay">
                 <router-link class="btn btn-success btn-block"
                              :to="{name: 'payment', params: {id: selectedPlanId}}">
                     {{ $t('pay') }}
@@ -68,6 +68,18 @@
             taxRate: 0
         }),
 
+        watch: {
+            checked() {
+                setTimeout(function () {
+                    var pay = document.getElementById('pay');
+                    if(pay) {
+                        document.getElementById('pay').scrollIntoView();
+                    }
+                    window.scrollTo(0,document.body.scrollHeight);
+                }, 60);
+            }
+        },
+
         methods: {
 
             getUser() {
@@ -88,6 +100,7 @@
 
             changePlan(data) {
                 this.selectedPlanId = data.plan.id;
+                document.getElementById('terms_conditions').scrollIntoView();
             },
 
             getCurrentPlan() {

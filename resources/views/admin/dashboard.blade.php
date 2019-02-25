@@ -119,4 +119,12 @@
             </div>
         </div>
     </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div id="export">
+                <a href="{{ route('admin.dashboard.export') }}" class="btn btn-primary btn-block"> Export Newsletter List </a>
+            </div>
+        </div>
+    </div>
 </section>

@@ -60,6 +60,6 @@ class MediaFilesController extends Controller
     {
         $media = Media::find($id);
 
-        return Storage::disk('brands')->download($media->dir . '/' . $media->file_name);
+        return Storage::disk('s3')->download($media->dir . '/' . $media->file_name);
     }
 }

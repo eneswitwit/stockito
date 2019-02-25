@@ -94,7 +94,6 @@ class FTPFilesManager
     {
 
         if (!file_exists($ftpFile->file)) {
-            Log::info('file does not exist');
             $ftpFile->delete();
             //throw new \LogicException('The file was not found');
             return null;
@@ -111,7 +110,6 @@ class FTPFilesManager
         $user = $ftpFile->ftpUser->user;
 
         if (UploadService::calculateUsedStorageFull($brand) + $file->getSize() >= $brand->getProduct()->storage) {
-            Log::info('not enough storage');
             $ftpFile->delete();
             //throw new \LogicException('This file bigger than you have the free space');
             return null;
@@ -129,7 +127,6 @@ class FTPFilesManager
                 'created_by' => $user->id
             ]);
 
-            Log::info('made 1');
 
             if (\in_array(strtolower($file->getExtension()), ['ai', 'eps'])) {
 
@@ -184,8 +181,6 @@ class FTPFilesManager
 
             } elseif (\in_array(strtolower($file->getExtension()), ['jpeg', 'jpg'])) {
 
-                Log::info('made 2');
-
                 $this->mediaManager->read($file->getRealPath());
 
                 $status = \Storage::disk('s3')->putFileAs(
@@ -193,8 +188,6 @@ class FTPFilesManager
                     $file,
                     Media::FILE_PREFIX . $this->hashName($file)
                 );
-
-                Log::info('made 3');
 
                 $media = $this->mediaManager->setSizes($media);
                 $status = $status && $this->mediaManager->makeAndStoreThumbnail($media);
@@ -208,11 +201,7 @@ class FTPFilesManager
 
                 $media->setEXIF(Reader::factory(Reader::TYPE_NATIVE)->read($file));
 
-                Log::info('made 4');
-
             } else {
-
-                Log::info('not recognized format');
 
                 $ftpFile->delete();
                 if (file_exists(storage_path('app/brands/' . $media->getFilePathOrigin()))) {
@@ -229,7 +218,6 @@ class FTPFilesManager
 
             if (!$status) {
 
-                Log::info('status not');
                 $ftpFile->delete();
                 if (file_exists(storage_path('app/brands/' . $media->getFilePathOrigin()))) {
                     unlink(storage_path('app/brands/' . $media->getFilePathOrigin()));
@@ -241,46 +229,27 @@ class FTPFilesManager
                 throw new \LogicException('Can\'t upload file');
             }
 
-            Log::info('made 6');
 
-            if($media->getIPTC() !== null) {
-                if($media->getIPTC()->getTitle()) {
-                    $title = $media->getIPTC()->getTitle();
-                } else {
-                    $title = '';
-                }
-                Log::info('houston');
-                $media->title = $title !== null && is_string($title) ? $title : '';
-                Log::info('media title');
-                Log::info($media->title);
+            try {
+                $media->title = $media->getIPTC() ? $media->getIPTC()->getTitle() : '';
+            } catch (\Exception $exception) {
             }
-
-            Log::info('made 6.2');
 
             if($media->getEXIF()) {
 
-                Log::info('made 6.3');
 
                 if($media->getEXIF()->getKeywords()) {
-                    Log::info('made 6.4');
                     $media->keywords = $media->getEXIF() && $media->getEXIF()->getKeywords() ? implode(', ',
                         $media->getEXIF()->getKeywords()) : '';
-                    Log::info('made 6.5');
                 }
 
                 if($media->getEXIF()->getSource()) {
-                    Log::info('made 6.6');
                     $media->source = $media->getEXIF() && $media->getEXIF()->getSource() ? $media->getEXIF()->getSource() : '';
-                    Log::info('made 6.7');
                 }
 
             }
 
-            Log::info('made 7');
-
             $media->save();
-
-            Log::info('made 8');
 
             $ftpFile->media()->associate($media);
             $ftpFile->handled = true;
@@ -288,7 +257,6 @@ class FTPFilesManager
             $ftpFile->processing = false;
             $ftpFile->save();
 
-            Log::info('made 9');
 
             if (file_exists(storage_path('app/brands/' . $media->getFilePathOrigin()))) {
                 unlink(storage_path('app/brands/' . $media->getFilePathOrigin()));
@@ -296,13 +264,10 @@ class FTPFilesManager
 
             event(new UploadedFileEvent($media, $brand));
 
-            Log::info('made 10');
-
             return $media;
 
 
         } catch (\Exception $exception) {
-            Log::info('general failure');
             $ftpFile->delete();
             if (file_exists(storage_path('app/brands/' . $media->getFilePathOrigin()))) {
                 unlink(storage_path('app/brands/' . $media->getFilePathOrigin()));

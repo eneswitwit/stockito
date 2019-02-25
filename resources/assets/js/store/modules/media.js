@@ -5,10 +5,12 @@ import * as types from '../mutation-types'
 export const state = {
     medias: [],
     media: undefined,
+    mediasDisplayed: [],
+    mediaDisplayed: [],
     uploads: [],
     filter: {},
     creativeRole: null,
-    selectedMedia: null,
+    selectedMedia: [],
     processing: null,
     requestingProcessing: false
 }
@@ -17,6 +19,8 @@ export const state = {
 export const getters = {
     medias: state => state.medias,
     media: state => state.media,
+    mediasDisplayed: state => state.mediasDisplayed,
+    mediaDisplayed: state => state.mediaDisplayed,
     uploads: state => state.uploads,
     filter: state => state.filter,
     selectedMedia: state => state.selectedMedia,
@@ -27,26 +31,68 @@ export const getters = {
 
 // mutations
 export const mutations = {
+    [types.ADD_SELECTED_MEDIA](state, {media}) {
+        let media_ = state.selectedMedia.find(m => m.id === media.id);
+        if(media_) {
+            state.selectedMedia = state.selectedMedia.filter(m => m.id !== media.id);
+        } else {
+            state.selectedMedia.push(media);
+        }
+    },
     [types.ADD_MEDIA](state, {media}) {
         state.medias.push(media)
     },
+    [types.ADD_MEDIAS_DISPLAYED](state, {medias}) {
+        medias.forEach(function (media) {
+            let findMedia = state.mediasDisplayed.find(m => m.id === media.id);
+            if(!findMedia) {
+                state.mediasDisplayed.push(media)
+            }
+        });
+    },
+    [types.ADD_MEDIAS_DISPLAYED_CREATIVE](state, {medias, creativeRole}) {
+        medias.forEach(function (media) {
+            let findMedia = state.mediasDisplayed.find(m => m.id === media.id);
+            if(!findMedia) {
+                state.mediasDisplayed.push(media)
+            } else {
+            }
+        });
+        state.creativeRole = creativeRole;
+    },
+    [types.ADD_MEDIA_DISPLAYED](state, {medias}) {
+        medias.forEach(function (media) {
+            let findMedia = state.mediaDisplayed.find(m => m.id === media.id);
+            if(!findMedia) {
+                state.mediaDisplayed.push(media)
+            }
+        });
+    },
     [types.REMOVE_MEDIA](state, {media}) {
         state.medias = state.medias.filter(m => m.id !== media.id);
+        state.mediasDisplayed = state.mediasDisplayed.filter(m => m.id !== media.id);
     },
     [types.REMOVE_MEDIAS](state, {medias}) {
         medias.forEach(function(media){
             state.medias = state.medias.filter(m => m.id !== media);
+            state.mediaDisplayed = state.mediaDisplayed.filter(m => m.id !== media);
+            state.mediasDisplayed = state.mediasDisplayed.filter(m => m.id !== media);
         });
     },
     [types.REMOVE_UPLOAD](state, {media}) {
         state.uploads = state.uploads.filter(m => m.id !== media.id);
+        state.mediaDisplayed = state.mediaDisplayed.filter(m => m.id !== media.id);
+        state.mediasDisplayed = state.mediasDisplayed.filter(m => m.id !== media);
     },
     [types.ADD_UPLOAD](state, {media}) {
         state.uploads.unshift(media)
+        state.mediaDisplayed.unshift(media)
     },
     [types.UPDATE_UPLOAD](state, {upload}) {
         let media = state.uploads.find(m => m.id === upload.id);
         media.license = upload.license;
+        let mediaDisplayed = state.mediaDisplayed.find(m => m.id === upload.id);
+        mediaDisplayed.license = upload.license;
     },
     [types.UPDATE_MEDIA](state, {media}) {
         state.media = media;
@@ -54,10 +100,24 @@ export const mutations = {
     [types.ATTACH_UPLOAD_LICENSES](state, {uploads, licenses}) {
         let i = 0;
         uploads.forEach(function(upload){
-            let media = state.uploads.find(m => m.id === upload);
-            media.license = licenses[i];
-            i++;
+            let mediaDisplayed = state.mediaDisplayed.find(m => m.id === upload.id);
+            if(mediaDisplayed) {
+                mediaDisplayed.license = licenses[i];
+            }
+                i++;
         });
+    },
+    [types.ATTACH_MEDIAS_LICENSES](state, {medias, licenses}) {
+        let i = 0;
+        //console.log(medias.license);
+        medias.licenses.push(licenses);
+        /*medias.forEach(function(media){
+            let media_ = state.medias.find(m => m.id === media.id);
+            if(media_) {
+                media_.license = licenses[i];
+            }
+            i++;
+        });*/
     },
     [types.FETCH_MEDIA_SUCCESS](state, {media}) {
         state.media = media
@@ -71,14 +131,20 @@ export const mutations = {
     },
     [types.SUBMITTED_UPLOAD](state, {upload}) {
         state.uploads = state.uploads.filter(up => up.id !== upload.id);
+        state.mediaDisplayed = state.mediaDisplayed.filter(up => up.id !== upload.id);
     },
     [types.SUBMITTED_MULTIPLE_UPLOAD](state, {uploads}) {
         uploads.forEach(function(upload){
             state.uploads = state.uploads.filter(up => up.id !== upload.id);
+            state.mediaDisplayed = state.mediaDisplayed.filter(up => up.id !== upload.id);
         });
     },
     [types.RESET_MEDIAS](state) {
         state.medias = []
+        state.mediasDisplayed = []
+    },
+    [types.RESET_SELECTED_MEDIA](state) {
+        state.selectedMedia = [];
     },
     [types.SET_FILTER](state, {filter}) {
         if(state.filter.q !== undefined) {
@@ -117,6 +183,9 @@ export const actions = {
     addMedia({commit}, {media}) {
         commit(types.ADD_MEDIA, {media: media})
     },
+    addSelectedMedia({commit}, {media}) {
+        commit(types.ADD_SELECTED_MEDIA, {media: media})
+    },
     removeMedia({commit}, {media}) {
         commit(types.REMOVE_MEDIA, {media: media})
     },
@@ -137,10 +206,23 @@ export const actions = {
         const {data} = await axios.get('/api/medias/brand/' + creative_brand_id);
         commit(types.FETCH_MEDIAS_SUCCESS, {medias: data.medias, creativeRole: data.creativeRole})
     },
+    async getMediasStep({commit, state}, {taken, toTake}) {
+        const {data} = await axios.get('/api/medias/' + taken + '/' + toTake, {params: state.filter});
+        commit(types.ADD_MEDIAS_DISPLAYED, {medias: data})
+    },
+    async getBrandMediaStep({commit}, {taken, toTake, creative_brand_id}) {
+        const {data} = await axios.get('/api/medias/brand/' + taken + '/' + toTake + '/' + creative_brand_id);
+        commit(types.ADD_MEDIAS_DISPLAYED_CREATIVE, {medias: data.medias, creativeRole: data.creativeRole})
+    },
     async getUploads({commit}, {selectedBrandId}) {
         let url = selectedBrandId ? ('/api/medias/uploads' + '/' + selectedBrandId) : '/api/medias/uploads';
         const {data} = await axios.get(url);
         commit(types.FETCH_UPLOADS_SUCCESS, {uploads: data})
+    },
+    async getUploadsStep({commit}, {taken, toTake, selectedBrandId}) {
+        let url = selectedBrandId ? ('/api/medias/uploads/step/' + taken + '/' + toTake + '/' + selectedBrandId) : ('/api/medias/uploads/step/' + taken + '/' + toTake);
+        const {data} = await axios.get(url);
+        commit(types.ADD_MEDIA_DISPLAYED, {medias: data})
     },
     async getProcessing({commit}, {selectedBrandId}) {
         commit(types.SET_REQUESTING_PROCESSING, {status: true})
@@ -153,8 +235,9 @@ export const actions = {
         let {data} = await form.post('/api/medias/' + media.id + '/submit');
         commit(types.SUBMITTED_UPLOAD, {upload: data})
     },
-    async submitMultipleUpload({commit}, {uploads}) {
-        commit(types.SUBMITTED_MULTIPLE_UPLOAD, {uploads: uploads})
+    async submitMultipleUpload({commit}, {form}) {
+        let {data} = await form.post('/api/medias/submit-multiple');
+        commit(types.SUBMITTED_MULTIPLE_UPLOAD, {uploads: data})
     },
     async setSelectedMedia({commit}, {mediaId}) {
         let {data} = await axios.get(`/api/medias/${mediaId}`);
@@ -171,8 +254,11 @@ export const actions = {
             resolve();
         });
     },
-    attachLicenses({commit}, {uploads, licenses}) {
+    async attachLicenses({commit}, {uploads, licenses}) {
         commit(types.ATTACH_UPLOAD_LICENSES, {uploads, licenses});
+    },
+    async attachMediasLicenses({commit}, {medias, licenses}) {
+        commit(types.ATTACH_MEDIAS_LICENSES, {medias, licenses});
     },
     async setLicenseUpload({commit, dispatch}, {upload, form}) {
         return new Promise((resolve, reject) => {
@@ -186,10 +272,16 @@ export const actions = {
     },
     setFilter({commit, dispatch}, {filter}) {
         commit(types.SET_FILTER, {filter});
+        commit(types.RESET_MEDIAS);
         dispatch('getMedias');
+        dispatch('getMediasStep', {taken: 0, toTake: 30});
     },
     setFilterQuery({commit, dispatch}, {query}) {
         commit(types.SET_FILTER_QUERY, {query});
-        dispatch('getMedias');
-    }
+        commit(types.RESET_MEDIAS);
+        dispatch('getMediasStep', {taken: 0, toTake: 30});
+    },
+    resetSelectedMedia({commit}) {
+        commit(types.RESET_SELECTED_MEDIA);
+    },
 }

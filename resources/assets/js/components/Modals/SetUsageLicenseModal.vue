@@ -306,8 +306,8 @@
                     delete this.form.removeBill;
                     this.$swal('Successfully updated licenses', '', 'success');
                     this.$emit('saved', data);
-                    this.form.reset();
                     this.$emit('update:show', false)
+                    this.form.reset();
                 });
             },
 
@@ -319,6 +319,8 @@
                     delete this.form.billFile;
                     delete this.form.removeBill;
                     this.$swal('Successfully updated', '', 'success');
+                    this.$emit('update:show', false)
+                    this.form.reset();
                 });
             },
 

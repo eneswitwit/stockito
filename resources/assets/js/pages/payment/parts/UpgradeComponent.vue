@@ -7,8 +7,10 @@
             <div id="card-wrapper-expiry" style="display: none;"></div>
 
             <span style="padding: 10px">
-            The amount you have to pay in order to upgrade to Plan {{ plan.title }} is {{ this.upgradePrice() }}
-            {{ plan.currencySymbol }}
+                The amount you have to pay in order to upgrade to Plan <strong> {{ plan.title }} </strong> is
+                <div class="plan-info">
+                    <mark>{{ this.upgradePrice() }} {{ plan.currencySymbol }} + {{ this.upgradeTax() }} {{ plan.currencySymbol }} VAT </mark>
+                </div>
             </span>
 
             <v-button :loading="requesting" class="btn btn-primary" :class="{ 'd-none' : requesting}" type="submit">
@@ -16,6 +18,8 @@
             </v-button>
 
             <img v-if="requesting" :src="require('../../../../images/loading.gif')"/>
+
+            <div v-if="errors"> <strong style="color: red;"> Something went wrong. Please contact the support! </strong> </div>
 
         </card>
     </form>
@@ -31,6 +35,7 @@
 
         data: () => ({
             user: null,
+            errors: null,
             requesting: false
         }),
 
@@ -46,6 +51,9 @@
             },
             currentPlan: {
                 'default': null
+            },
+            taxRate: {
+                'default': 0
             }
         },
 
@@ -56,6 +64,12 @@
         computed: {
             subscription() {
                 return this.$store.getters['auth/user'].subscription;
+            }
+        },
+
+        watch: {
+            requesting: function() {
+                return this.requesting;
             }
         },
 
@@ -78,27 +92,28 @@
                 return ((dailyPricePlan - dailyPriceCurrentPlan) * this.leftDays()).toFixed(2);
             },
 
+            upgradeTax() {
+                return (this.upgradePrice()*this.taxRate/100).toFixed(2);
+            },
+
             async upgradeSubscription() {
 
-                console.log('true');
                 this.requesting = true;
+
                 axios.post('/api/subscription/upgrade', {
                     plan: this.plan,
                 }).then(({data}) => {
-                    console.log('true 2');
                     if (data.success) {
-                        console.log('true 3');
                         this.$store.dispatch('auth/fetchUser').then(() => {
                             this.$swal('Successfully updated subscription', '', 'success');
                             this.$router.push({name: 'dashboard'});
                         });
                     } else {
-                        console.log('true 4');
+
                         this.errors = data.errors;
+                        this.requesting = false;
                     }
                 });
-                console.log('true 5');
-                this.requesting = false;
             }
         }
     }

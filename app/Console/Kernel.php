@@ -9,7 +9,9 @@ use App\Console\Commands\CreateAdminCommand;
 use App\Console\Commands\CheckThumbnailsCommand;
 use App\Console\Commands\HandleFTPFilesCommand;
 use App\Console\Commands\RemoveProductsCommand;
+use App\Console\Commands\SendLicenseExpirationReminder;
 use App\Console\Commands\SyncProductsCommand;
+use App\Mail\ReminderExpirationLicense;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -28,7 +30,8 @@ class Kernel extends ConsoleKernel
         CheckMediaCommand::class,
         CheckFTPUsersCommand::class,
         HandleFTPFilesCommand::class,
-        ClearProcessingCommand::class
+        ClearProcessingCommand::class,
+        SendLicenseExpirationReminder::class
     ];
 
     /**
@@ -39,8 +42,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')
-        //          ->hourly();
+        $schedule->command('send:license-expiration-reminder')->daily();
     }
 
     /**

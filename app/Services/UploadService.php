@@ -56,6 +56,8 @@ class UploadService
         $used = 0;
 
         $dir = \Storage::disk('s3')->allFiles($brand->getImagePath());
+
+
         foreach ($dir as $file) {
             $used += \Storage::disk('s3')->size($file);
         }

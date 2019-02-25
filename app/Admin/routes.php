@@ -9,6 +9,12 @@ Route::get('', [
 	'uses' => '\App\Http\Controllers\Admin\DashboardController@index',
 ]);
 
+
+Route::get('customers/export', [
+    'as' => 'admin.dashboard.export',
+    'uses' => '\App\Http\Controllers\Admin\DashboardController@exportNewsletter',
+]);
+
 Route::get('invoices/{id}/show', '\App\Http\Controllers\Admin\FinanceController@show')->name('admin.invoices.show');
 Route::get('invoices/{id}/download', '\App\Http\Controllers\Admin\FinanceController@download')->name('admin.invoices.download');
 
@@ -131,3 +137,4 @@ Route::get('media-files/datatables', [
 	'as' => 'admin.media.data',
 	'uses' => '\App\Http\Controllers\Admin\MediaFilesController@MediasData',
 ]);
+

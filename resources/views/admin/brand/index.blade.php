@@ -16,6 +16,7 @@
         </div>
     </div>
 </div>
+
 <script>
     $(function() {
         var tableBrand = $('#brand-table').DataTable({

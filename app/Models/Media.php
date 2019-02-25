@@ -164,7 +164,8 @@ class Media extends Model implements TargetActivityInterface
         'notes',
         'supplier_id',
         'orientation',
-        'peoples_attribute'
+        'peoples_attribute',
+        'created_by'
     ];
 
     protected static function boot()
@@ -354,9 +355,7 @@ class Media extends Model implements TargetActivityInterface
     public function getIPTC(): ?ImageMetadataParser
     {
         if ($this->iptc) {
-            Log::info('we are in iptc');
             $this->iptc = new ImageMetadataParser($this->getFilePath());
-            Log::info('imagemetaparser did not work');
         } else {
             $this->iptc = null;
         }

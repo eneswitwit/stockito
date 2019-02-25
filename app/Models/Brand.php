@@ -302,10 +302,16 @@ class Brand extends AbstractBrandModel
      */
     public function makeHomeDir(): self
     {
+
+        // local storage
         $dir = storage_path('app/brands/' . $this->getImagePath());
         if (!mkdir($dir) && !is_dir($dir)) {
             throw new \Exception('Can\'t create homedir');
         }
+
+        // s3
+        \Storage::disk('s3')->deleteDirectory($this->getImagePath());
+        \Storage::disk('s3')->makeDirectory($this->getImagePath());
 
         return $this;
     }

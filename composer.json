@@ -13,6 +13,7 @@
     "ext-imagick": "*",
     "ext-zip": "*",
     "0ctobat/octobat-php": "^2.0",
+    "barryvdh/laravel-dompdf": "^0.8.3",
     "barryvdh/laravel-snappy": "^0.4.3",
     "cnlpete/image-metadata-parser": "^0.0.6",
     "doctrine/dbal": "^2.6",

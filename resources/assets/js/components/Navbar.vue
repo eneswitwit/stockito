@@ -144,16 +144,19 @@
             }
         }),
 
-        computed: mapGetters({
-            user: 'auth/user',
-            selectedBrand: 'creative/selectedBrand',
-            creativeRole: 'media/creativeRole'
-        }),
-
         computed: {
             selectedBrand() {
                 return this.$store.getters['creative/selectedBrand'];
             },
+            user() {
+                return this.$store.getters['auth/user'];
+            },
+            selectedBrand() {
+                return this.$store.getters['creative/selectedBrand'];
+            },
+            creativeRole() {
+                return this.$store.getters[ 'media/creativeRole'];
+            }
         },
 
         components: {
@@ -169,15 +172,14 @@
             showDashboard() {
                 window.location.href = '/';
             },
-
             closeModal() {
                 this.showUploadModal = false;
             },
-            computed: {
+            /*computed: {
                 user() {
                     return this.$store.getter['auth/user'];
                 }
-            },
+            },*/
             async logout() {
                 // Log out the user.
                 this.$store.dispatch('creative/setSelectedBrand', {selectedBrand: null});
@@ -199,7 +201,6 @@
                 this.$store.dispatch('media/setFilter', {filter: ''});
                 this.$router.push({name: 'medias'})
             },
-
             logoConvert(path) {
                 return path.replace("public", "/storage");
             }

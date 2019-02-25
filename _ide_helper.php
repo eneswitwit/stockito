@@ -3,7 +3,7 @@
 
 /**
  * A helper file for Laravel 5, to provide autocomplete information to your IDE
- * Generated for Laravel 5.5.44 on 2019-01-21 14:23:54.
+ * Generated for Laravel 5.5.45 on 2019-02-22 06:39:54.
  *
  * This file should not be included in your code, only analyzed by your IDE!
  *
@@ -15246,34 +15246,23 @@ namespace Intervention\Image\Facades {
  
 }
 
-namespace Barryvdh\Snappy\Facades { 
+namespace Barryvdh\DomPDF { 
 
     /**
      * 
      *
      */ 
-    class SnappyPdf {
+    class Facade {
         
         /**
-         * Get the Snappy instance.
+         * Get the DomPDF instance
          *
-         * @return \Knp\Snappy\Pdf 
+         * @return \Barryvdh\DomPDF\Dompdf 
          * @static 
          */ 
-        public static function snappy()
+        public static function getDomPDF()
         {
-            return \Barryvdh\Snappy\PdfWrapper::snappy();
-        }
-        
-        /**
-         * Set temporary folder
-         *
-         * @param string $path
-         * @static 
-         */ 
-        public static function setTemporaryFolder($path)
-        {
-            return \Barryvdh\Snappy\PdfWrapper::setTemporaryFolder($path);
+            return \Barryvdh\DomPDF\PDF::getDomPDF();
         }
         
         /**
@@ -15284,21 +15273,9 @@ namespace Barryvdh\Snappy\Facades {
          * @return $this 
          * @static 
          */ 
-        public static function setPaper($paper, $orientation = null)
+        public static function setPaper($paper, $orientation = 'portrait')
         {
-            return \Barryvdh\Snappy\PdfWrapper::setPaper($paper, $orientation);
-        }
-        
-        /**
-         * Set the orientation (default portrait)
-         *
-         * @param string $orientation
-         * @return $this 
-         * @static 
-         */ 
-        public static function setOrientation($orientation)
-        {
-            return \Barryvdh\Snappy\PdfWrapper::setOrientation($orientation);
+            return \Barryvdh\DomPDF\PDF::setPaper($paper, $orientation);
         }
         
         /**
@@ -15306,61 +15283,36 @@ namespace Barryvdh\Snappy\Facades {
          *
          * @param bool $warnings
          * @return $this 
-         * @deprecated 
          * @static 
          */ 
         public static function setWarnings($warnings)
         {
-            return \Barryvdh\Snappy\PdfWrapper::setWarnings($warnings);
-        }
-        
-        /**
-         * 
-         *
-         * @param string $name
-         * @param mixed $value
-         * @return $this 
-         * @static 
-         */ 
-        public static function setOption($name, $value)
-        {
-            return \Barryvdh\Snappy\PdfWrapper::setOption($name, $value);
-        }
-        
-        /**
-         * 
-         *
-         * @param array $options
-         * @return $this 
-         * @static 
-         */ 
-        public static function setOptions($options)
-        {
-            return \Barryvdh\Snappy\PdfWrapper::setOptions($options);
+            return \Barryvdh\DomPDF\PDF::setWarnings($warnings);
         }
         
         /**
          * Load a HTML string
          *
-         * @param Array|string|\Barryvdh\Snappy\Renderable $html
-         * @return $this 
+         * @param string $string
+         * @param string $encoding Not used yet
+         * @return static 
          * @static 
          */ 
-        public static function loadHTML($html)
+        public static function loadHTML($string, $encoding = null)
         {
-            return \Barryvdh\Snappy\PdfWrapper::loadHTML($html);
+            return \Barryvdh\DomPDF\PDF::loadHTML($string, $encoding);
         }
         
         /**
          * Load a HTML file
          *
          * @param string $file
-         * @return $this 
+         * @return static 
          * @static 
          */ 
         public static function loadFile($file)
         {
-            return \Barryvdh\Snappy\PdfWrapper::loadFile($file);
+            return \Barryvdh\DomPDF\PDF::loadFile($file);
         }
         
         /**
@@ -15369,36 +15321,48 @@ namespace Barryvdh\Snappy\Facades {
          * @param string $view
          * @param array $data
          * @param array $mergeData
-         * @return $this 
+         * @param string $encoding Not used yet
+         * @return static 
          * @static 
          */ 
-        public static function loadView($view, $data = array(), $mergeData = array())
+        public static function loadView($view, $data = array(), $mergeData = array(), $encoding = null)
         {
-            return \Barryvdh\Snappy\PdfWrapper::loadView($view, $data, $mergeData);
+            return \Barryvdh\DomPDF\PDF::loadView($view, $data, $mergeData, $encoding);
+        }
+        
+        /**
+         * Set/Change an option in DomPdf
+         *
+         * @param array $options
+         * @return static 
+         * @static 
+         */ 
+        public static function setOptions($options)
+        {
+            return \Barryvdh\DomPDF\PDF::setOptions($options);
         }
         
         /**
          * Output the PDF as a string.
          *
          * @return string The rendered PDF as string
-         * @throws \InvalidArgumentException
          * @static 
          */ 
         public static function output()
         {
-            return \Barryvdh\Snappy\PdfWrapper::output();
+            return \Barryvdh\DomPDF\PDF::output();
         }
         
         /**
          * Save the PDF to a file
          *
          * @param $filename
-         * @return $this 
+         * @return static 
          * @static 
          */ 
-        public static function save($filename, $overwrite = false)
+        public static function save($filename)
         {
-            return \Barryvdh\Snappy\PdfWrapper::save($filename, $overwrite);
+            return \Barryvdh\DomPDF\PDF::save($filename);
         }
         
         /**
@@ -15410,7 +15374,7 @@ namespace Barryvdh\Snappy\Facades {
          */ 
         public static function download($filename = 'document.pdf')
         {
-            return \Barryvdh\Snappy\PdfWrapper::download($filename);
+            return \Barryvdh\DomPDF\PDF::download($filename);
         }
         
         /**
@@ -15420,120 +15384,16 @@ namespace Barryvdh\Snappy\Facades {
          * @return \Illuminate\Http\Response 
          * @static 
          */ 
-        public static function inline($filename = 'document.pdf')
-        {
-            return \Barryvdh\Snappy\PdfWrapper::inline($filename);
-        }
-        
-        /**
-         * Return a response with the PDF to show in the browser
-         *
-         * @param string $filename
-         * @return \Symfony\Component\HttpFoundation\StreamedResponse 
-         * @deprecated use inline() instead
-         * @static 
-         */ 
         public static function stream($filename = 'document.pdf')
         {
-            return \Barryvdh\Snappy\PdfWrapper::stream($filename);
-        }
-        
-        /**
-         * 
-         *
-         * @static 
-         */ 
-        public static function assertViewIs($value)
-        {
-            return \Barryvdh\Snappy\PdfFaker::assertViewIs($value);
-        }
-        
-        /**
-         * Assert that the response view has a given piece of bound data.
-         *
-         * @param string|array $key
-         * @param mixed $value
-         * @return $this 
-         * @static 
-         */ 
-        public static function assertViewHas($key, $value = null)
-        {
-            return \Barryvdh\Snappy\PdfFaker::assertViewHas($key, $value);
-        }
-        
-        /**
-         * Assert that the response view has a given list of bound data.
-         *
-         * @param array $bindings
-         * @return $this 
-         * @static 
-         */ 
-        public static function assertViewHasAll($bindings)
-        {
-            return \Barryvdh\Snappy\PdfFaker::assertViewHasAll($bindings);
-        }
-        
-        /**
-         * Assert that the response view is missing a piece of bound data.
-         *
-         * @param string $key
-         * @return $this 
-         * @static 
-         */ 
-        public static function assertViewMissing($key)
-        {
-            return \Barryvdh\Snappy\PdfFaker::assertViewMissing($key);
-        }
-        
-        /**
-         * Assert that the given string is contained within the response.
-         *
-         * @param string $value
-         * @return $this 
-         * @static 
-         */ 
-        public static function assertSee($value)
-        {
-            return \Barryvdh\Snappy\PdfFaker::assertSee($value);
-        }
-        
-        /**
-         * Assert that the given string is contained within the response text.
-         *
-         * @param string $value
-         * @return $this 
-         * @static 
-         */ 
-        public static function assertSeeText($value)
-        {
-            return \Barryvdh\Snappy\PdfFaker::assertSeeText($value);
-        }
-        
-        /**
-         * Assert that the given string is not contained within the response.
-         *
-         * @param string $value
-         * @return $this 
-         * @static 
-         */ 
-        public static function assertDontSee($value)
-        {
-            return \Barryvdh\Snappy\PdfFaker::assertDontSee($value);
-        }
-        
-        /**
-         * Assert that the given string is not contained within the response text.
-         *
-         * @param string $value
-         * @return $this 
-         * @static 
-         */ 
-        public static function assertDontSeeText($value)
-        {
-            return \Barryvdh\Snappy\PdfFaker::assertDontSeeText($value);
+            return \Barryvdh\DomPDF\PDF::stream($filename);
         }
          
     }
+ 
+}
+
+namespace Barryvdh\Snappy\Facades { 
 
     /**
      * 
@@ -17739,11 +17599,195 @@ namespace Laravel\Socialite\Facades {
  
 }
 
+namespace Yajra\DataTables\Facades { 
+
+    /**
+     * 
+     *
+     * @mixin \Yajra\DataTables\DataTables
+     * @see \Yajra\DataTables\DataTables
+     */ 
+    class DataTables {
+        
+        /**
+         * Make a DataTable instance from source.
+         * 
+         * Alias of make for backward compatibility.
+         *
+         * @param mixed $source
+         * @return mixed 
+         * @throws \Exception
+         * @static 
+         */ 
+        public static function of($source)
+        {
+            return \Yajra\DataTables\DataTables::of($source);
+        }
+        
+        /**
+         * Make a DataTable instance from source.
+         *
+         * @param mixed $source
+         * @return mixed 
+         * @throws \Exception
+         * @static 
+         */ 
+        public static function make($source)
+        {
+            return \Yajra\DataTables\DataTables::make($source);
+        }
+        
+        /**
+         * Get request object.
+         *
+         * @return \Yajra\DataTables\Utilities\Request 
+         * @static 
+         */ 
+        public static function getRequest()
+        {
+            return \Yajra\DataTables\DataTables::getRequest();
+        }
+        
+        /**
+         * Get config instance.
+         *
+         * @return \Yajra\DataTables\Utilities\Config 
+         * @static 
+         */ 
+        public static function getConfig()
+        {
+            return \Yajra\DataTables\DataTables::getConfig();
+        }
+        
+        /**
+         * 
+         *
+         * @deprecated Please use query() instead, this method will be removed in a next version.
+         * @param $builder
+         * @return \Yajra\DataTables\QueryDataTable 
+         * @static 
+         */ 
+        public static function queryBuilder($builder)
+        {
+            return \Yajra\DataTables\DataTables::queryBuilder($builder);
+        }
+        
+        /**
+         * DataTables using Query.
+         *
+         * @param \Illuminate\Database\Query\Builder|mixed $builder
+         * @return \Yajra\DataTables\DataTableAbstract|\Yajra\DataTables\QueryDataTable 
+         * @static 
+         */ 
+        public static function query($builder)
+        {
+            return \Yajra\DataTables\DataTables::query($builder);
+        }
+        
+        /**
+         * DataTables using Eloquent Builder.
+         *
+         * @param \Illuminate\Database\Eloquent\Builder|mixed $builder
+         * @return \Yajra\DataTables\DataTableAbstract|\Yajra\DataTables\EloquentDataTable 
+         * @static 
+         */ 
+        public static function eloquent($builder)
+        {
+            return \Yajra\DataTables\DataTables::eloquent($builder);
+        }
+        
+        /**
+         * DataTables using Collection.
+         *
+         * @param \Illuminate\Support\Collection|array $collection
+         * @return \Yajra\DataTables\DataTableAbstract|\Yajra\DataTables\CollectionDataTable 
+         * @static 
+         */ 
+        public static function collection($collection)
+        {
+            return \Yajra\DataTables\DataTables::collection($collection);
+        }
+        
+        /**
+         * DataTables using Collection.
+         *
+         * @param \Illuminate\Http\Resources\Json\AnonymousResourceCollection|array $collection
+         * @return \Yajra\DataTables\DataTableAbstract|\Yajra\DataTables\ApiResourceDataTable 
+         * @static 
+         */ 
+        public static function resource($resource)
+        {
+            return \Yajra\DataTables\DataTables::resource($resource);
+        }
+        
+        /**
+         * Get html builder instance.
+         *
+         * @return \Yajra\DataTables\Html\Builder 
+         * @throws \Exception
+         * @static 
+         */ 
+        public static function getHtmlBuilder()
+        {
+            return \Yajra\DataTables\DataTables::getHtmlBuilder();
+        }
+        
+        /**
+         * Register a custom macro.
+         *
+         * @param string $name
+         * @param object|callable $macro
+         * @return void 
+         * @static 
+         */ 
+        public static function macro($name, $macro)
+        {
+            \Yajra\DataTables\DataTables::macro($name, $macro);
+        }
+        
+        /**
+         * Mix another object into the class.
+         *
+         * @param object $mixin
+         * @return void 
+         * @static 
+         */ 
+        public static function mixin($mixin)
+        {
+            \Yajra\DataTables\DataTables::mixin($mixin);
+        }
+        
+        /**
+         * Checks if macro is registered.
+         *
+         * @param string $name
+         * @return bool 
+         * @static 
+         */ 
+        public static function hasMacro($name)
+        {
+            return \Yajra\DataTables\DataTables::hasMacro($name);
+        }
+         
+    }
+ 
+}
+
 namespace Barryvdh\Debugbar { 
 
     /**
      * 
      *
+     * @method static void alert(string $message)
+     * @method static void critical(string $message)
+     * @method static void debug(string $message)
+     * @method static void emergency(string $message)
+     * @method static void error(string $message)
+     * @method static void info(string $message)
+     * @method static void log(string $message)
+     * @method static void notice(string $message)
+     * @method static void warning(string $message)
+     * @see \Barryvdh\Debugbar\LaravelDebugbar
      */ 
     class Facade {
         
@@ -18285,180 +18329,6 @@ namespace Barryvdh\Debugbar {
         {
             //Method inherited from \DebugBar\DebugBar            
             return \Barryvdh\Debugbar\LaravelDebugbar::offsetUnset($key);
-        }
-         
-    }
- 
-}
-
-namespace Yajra\DataTables\Facades { 
-
-    /**
-     * 
-     *
-     * @mixin \Yajra\DataTables\DataTables
-     * @see \Yajra\DataTables\DataTables
-     */ 
-    class DataTables {
-        
-        /**
-         * Make a DataTable instance from source.
-         * 
-         * Alias of make for backward compatibility.
-         *
-         * @param mixed $source
-         * @return mixed 
-         * @throws \Exception
-         * @static 
-         */ 
-        public static function of($source)
-        {
-            return \Yajra\DataTables\DataTables::of($source);
-        }
-        
-        /**
-         * Make a DataTable instance from source.
-         *
-         * @param mixed $source
-         * @return mixed 
-         * @throws \Exception
-         * @static 
-         */ 
-        public static function make($source)
-        {
-            return \Yajra\DataTables\DataTables::make($source);
-        }
-        
-        /**
-         * Get request object.
-         *
-         * @return \Yajra\DataTables\Utilities\Request 
-         * @static 
-         */ 
-        public static function getRequest()
-        {
-            return \Yajra\DataTables\DataTables::getRequest();
-        }
-        
-        /**
-         * Get config instance.
-         *
-         * @return \Yajra\DataTables\Utilities\Config 
-         * @static 
-         */ 
-        public static function getConfig()
-        {
-            return \Yajra\DataTables\DataTables::getConfig();
-        }
-        
-        /**
-         * 
-         *
-         * @deprecated Please use query() instead, this method will be removed in a next version.
-         * @param $builder
-         * @return \Yajra\DataTables\QueryDataTable 
-         * @static 
-         */ 
-        public static function queryBuilder($builder)
-        {
-            return \Yajra\DataTables\DataTables::queryBuilder($builder);
-        }
-        
-        /**
-         * DataTables using Query.
-         *
-         * @param \Illuminate\Database\Query\Builder|mixed $builder
-         * @return \Yajra\DataTables\DataTableAbstract|\Yajra\DataTables\QueryDataTable 
-         * @static 
-         */ 
-        public static function query($builder)
-        {
-            return \Yajra\DataTables\DataTables::query($builder);
-        }
-        
-        /**
-         * DataTables using Eloquent Builder.
-         *
-         * @param \Illuminate\Database\Eloquent\Builder|mixed $builder
-         * @return \Yajra\DataTables\DataTableAbstract|\Yajra\DataTables\EloquentDataTable 
-         * @static 
-         */ 
-        public static function eloquent($builder)
-        {
-            return \Yajra\DataTables\DataTables::eloquent($builder);
-        }
-        
-        /**
-         * DataTables using Collection.
-         *
-         * @param \Illuminate\Support\Collection|array $collection
-         * @return \Yajra\DataTables\DataTableAbstract|\Yajra\DataTables\CollectionDataTable 
-         * @static 
-         */ 
-        public static function collection($collection)
-        {
-            return \Yajra\DataTables\DataTables::collection($collection);
-        }
-        
-        /**
-         * DataTables using Collection.
-         *
-         * @param \Illuminate\Http\Resources\Json\AnonymousResourceCollection|array $collection
-         * @return \Yajra\DataTables\DataTableAbstract|\Yajra\DataTables\ApiResourceDataTable 
-         * @static 
-         */ 
-        public static function resource($resource)
-        {
-            return \Yajra\DataTables\DataTables::resource($resource);
-        }
-        
-        /**
-         * Get html builder instance.
-         *
-         * @return \Yajra\DataTables\Html\Builder 
-         * @throws \Exception
-         * @static 
-         */ 
-        public static function getHtmlBuilder()
-        {
-            return \Yajra\DataTables\DataTables::getHtmlBuilder();
-        }
-        
-        /**
-         * Register a custom macro.
-         *
-         * @param string $name
-         * @param object|callable $macro
-         * @return void 
-         * @static 
-         */ 
-        public static function macro($name, $macro)
-        {
-            \Yajra\DataTables\DataTables::macro($name, $macro);
-        }
-        
-        /**
-         * Mix another object into the class.
-         *
-         * @param object $mixin
-         * @return void 
-         * @static 
-         */ 
-        public static function mixin($mixin)
-        {
-            \Yajra\DataTables\DataTables::mixin($mixin);
-        }
-        
-        /**
-         * Checks if macro is registered.
-         *
-         * @param string $name
-         * @return bool 
-         * @static 
-         */ 
-        public static function hasMacro($name)
-        {
-            return \Yajra\DataTables\DataTables::hasMacro($name);
         }
          
     }
@@ -24001,7 +23871,7 @@ namespace  {
 
     class Image extends \Intervention\Image\Facades\Image {}
 
-    class PDF extends \Barryvdh\Snappy\Facades\SnappyPdf {}
+    class PDF extends \Barryvdh\DomPDF\Facade {}
 
     class SnappyImage extends \Barryvdh\Snappy\Facades\SnappyImage {}
 
@@ -24015,9 +23885,9 @@ namespace  {
 
     class Socialite extends \Laravel\Socialite\Facades\Socialite {}
 
-    class Debugbar extends \Barryvdh\Debugbar\Facade {}
-
     class DataTables extends \Yajra\DataTables\Facades\DataTables {}
+
+    class Debugbar extends \Barryvdh\Debugbar\Facade {}
 
     class PackageManager extends \KodiCMS\Assets\Facades\PackageManager {}
 

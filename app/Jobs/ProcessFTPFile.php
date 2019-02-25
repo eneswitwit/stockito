@@ -1,7 +1,9 @@
 <?php
 
+// namespace
 namespace App\Jobs;
 
+// use
 use App\Exceptions\FtpFileNotFoundException;
 use App\Managers\FTPFilesManager;
 use App\Models\FTPFile;
@@ -13,6 +15,11 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\Log;
 use Psr\Log\LoggerAwareInterface;
 
+/**
+ * Class ProcessFTPFile
+ *
+ * @package App\Jobs
+ */
 class ProcessFTPFile implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;

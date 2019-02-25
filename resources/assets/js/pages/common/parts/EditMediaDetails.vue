@@ -6,23 +6,26 @@
             You are editing {{ selectedMedia.length }} files at the same time
         </div>
 
-        <form @submit.prevent="submitMedia(media)" v-if="selectedMedia.length === 1">
+        <form  @submit.prevent="uploadMultiple" v-if="selectedMedia.length === 1">
+        <!-- v-on:submit.prevent="onSubmit" -->
             <div class="form-group">
                 <label for="media-origin-name">Title</label>
-                <input id="media-title" class="form-control" type="text" v-model="form.title" name="title">
+                <input id="media-title" class="form-control" type="text" v-model="form.title" name="title"
+                       :class="{ 'is-invalid': form.errors.has('title') }" @keydown.enter = "noEnter">
                 <has-error :form="form" field="title"/>
             </div>
 
             <div class="form-group">
                 <label for="media-origin-name">File Name</label>
                 <input id="media-origin-name" class="form-control" type="text" v-model="form.originName"
-                       name="originName">
+                       name="originName" @keydown.enter = "noEnter">
                 <has-error :form="form" field="originName"/>
             </div>
 
             <div class="form-group">
                 <label for="media-file-type">File type</label>
                 <select class="form-control" v-model="form.fileType" name="fileType" id="media-file-type">
+                    <option value="" disabled selected hidden> Choose your file type... </option>
                     <option v-for="(type, key) in types" :value="key">{{ type }}</option>
                 </select>
                 <has-error :form="form" field="fileType"/>
@@ -47,13 +50,15 @@
             <div class="form-group">
                 <label for="media-keywords">Keywords</label>
                 <input id="media-keywords" data-role="tagsinput" class="form-control" type="text"
-                       v-model="form.keywords" name="keywords">
+                       v-model="form.keywords" name="keywords" :class="{ 'is-invalid': form.errors.has('keywords') }"
+                       @keydown.enter = "noEnter">
                 <has-error :form="form" field="keywords"/>
             </div>
 
             <div class="form-group">
                 <label for="media-source">Artist/Copyright</label>
-                <input id="media-source" class="form-control" type="text" v-model="form.source" name="source">
+                <input id="media-source" class="form-control" type="text" v-model="form.source" name="source"
+                       @keydown.enter = "noEnter">
                 <has-error :form="form" field="source"/>
             </div>
 
@@ -72,7 +77,7 @@
             </div>
 
             <div v-if="media.license" class="form-group">
-                <button class="btn btn-primary" type="submit" @click="clearAll()">Submit</button>
+                <input class="btn btn-primary" value="Submit" type="submit">
             </div>
 
         </form>
@@ -82,7 +87,8 @@
 
             <div class="form-group">
                 <label for="media-origin-name">Title</label>
-                <input id="media-title" class="form-control" type="text" v-model="form.title" name="title">
+                <input id="media-title-2" class="form-control" type="text" v-model="form.title" name="title"
+                       :class="{ 'is-invalid': form.errors.has('title') }" @keydown.enter = "noEnter">
                 <has-error :form="form" field="title"/>
             </div>
 
@@ -96,6 +102,7 @@
             <div class="form-group">
                 <label for="media-file-type">File type</label>
                 <select class="form-control" v-model="form.fileType" name="fileType" id="media-file-type">
+                    <option value="" disabled selected hidden> Choose your file type... </option>
                     <option v-for="(type, key) in types" :value="key">{{ type }}</option>
                 </select>
                 <has-error :form="form" field="fileType"/>
@@ -120,13 +127,15 @@
             <div class="form-group">
                 <label for="media-keywords">Keywords</label>
                 <input id="media-keywords" data-role="tagsinput" class="form-control" type="text"
-                       v-model="form.keywords" name="keywords">
+                       v-model="form.keywords" name="keywords" :class="{ 'is-invalid': form.errors.has('keywords') }"
+                       @keydown.enter = "noEnter">
                 <has-error :form="form" field="keywords"/>
             </div>
 
             <div class="form-group">
                 <label for="media-source">Artist/Copyright</label>
-                <input id="media-source" class="form-control" type="text" v-model="form.source" name="source">
+                <input id="media-source" class="form-control" type="text" v-model="form.source" name="source"
+                       @keydown.enter = "noEnter">
                 <has-error :form="form" field="source"/>
             </div>
 
@@ -145,14 +154,13 @@
             </div>
 
             <div v-if="licenseSet" class="form-group">
-                <button class="btn btn-primary" type="submit">Submit</button>
+                <input class="btn btn-primary" value="Submit" type="submit">
             </div>
 
         </form>
 
         <set-license-modal-component
                 :show.sync="showLicenseModal"
-                :selectedMedia="selectedMedia"
                 :media="media"
         ></set-license-modal-component>
 
@@ -167,7 +175,7 @@
 
 
     export default {
-        middleware: ['auth', 'subscribed'],
+        xmiddleware: ['auth', 'subscribed'],
 
         components: {
             SetLicenseModalComponent,
@@ -177,12 +185,6 @@
 
         props: {
             media: {
-                'default': undefined
-            },
-            medias: {
-                'default': undefined
-            },
-            selectedMedia: {
                 'default': undefined
             },
             getMedias: {
@@ -196,6 +198,9 @@
             refreshList: {
                 'default': function () {
                 }
+            },
+            medias: {
+                'default': undefined
             }
         },
 
@@ -225,7 +230,8 @@
                 language: '',
                 source: '',
                 orientation: '',
-                multiTitle: 'Will be set automatically'
+                multiTitle: 'Will be set automatically',
+                mediaId: []
             }),
             selected: '',
             licenseSet: false
@@ -236,16 +242,10 @@
             media(value) {
                 this.setValues(value);
             },
-
             selectedMedia() {
-                this.getSelectedMedias();
-            },
-
-            selectedMedias() {
                 this.setMultipleValues();
                 this.checkLicenseIsSet();
             },
-
             showLicenseModal() {
                 this.checkLicenseIsSet();
             },
@@ -257,28 +257,22 @@
 
         computed: {
 
-            chosenMedia: {
-                get: function () {
-                    return this.selectedMedia;
-                }
+            selectedMedia() {
+                return this.$store.getters['media/selectedMedia'];
             },
-
             brand() {
                 return this.$store.getters['auth/brand'] ? this.$store.getters['auth/brand'] : this.$store.getters['creative/selectedBrand'];
             },
-
             peopleAttributesOptions() {
                 return this.peopleAttributes ? this.peopleAttributes.map((el) => {
                     return {label: el.name, value: el.id};
                 }) : [];
             },
-
             categoriesOptions() {
                 return this.categories ? this.categories.map((el) => {
                     return {label: el.name, value: el.id};
                 }) : [];
             },
-
             suppliersOptions() {
                 return this.suppliers ? this.suppliers.map((el) => {
                     return {label: el.name, value: el.id};
@@ -289,23 +283,15 @@
         methods: {
 
             async uploadMultiple() {
-                await axios.post('/api/medias/submit-multiple', {
-                    media: this.chosenMedia,
-                    form: this.form
-                }).then(({data}) => {
-                    this.$store.dispatch('media/submitMultipleUpload', {uploads: data});
-                    this.form.reset();
+                this.form.mediaId = this.getSelectedMediaArray();
+                try {
+                    await this.$store.dispatch('media/submitMultipleUpload', {form: this.form});
                     this.$emit('submitted');
+                    this.form.reset();
                     this.clearAll();
-                });
-
-            },
-
-            getSelectedMedias() {
-                if (this.selectedMedia.length > 0) {
-                    axios.get('/api/medias/get-multiple', {params: {media: this.selectedMedia}}).then(({data}) => {
-                        this.selectedMedias = data;
-                    });
+                    this.selectedMedia = [];
+                }
+                catch (err) {
                 }
             },
 
@@ -320,27 +306,27 @@
                 value['language'] = null;
 
                 if (this.selectedMedia.length > 0) {
-                    this.selectedMedias.forEach(function (mediaElement) {
-                        if(mediaElement.title) {
-                            if(value['title'] === null) {
+                    this.selectedMedia.forEach(function (mediaElement) {
+                        if (mediaElement.title) {
+                            if (value['title'] === null) {
                                 value['title'] = mediaElement.title;
                             } else {
-                                if(!value['title'].includes(mediaElement.title)) {
+                                if (!value['title'].includes(mediaElement.title)) {
                                     value['title'] = value['title'] + ',' + mediaElement.title;
                                 }
                             }
                         }
-                        if(mediaElement.origin_name) {
+                        if (mediaElement.origin_name) {
                             value['origin_name'] = mediaElement.origin_name;
                         }
-                        if(mediaElement.fileType) {
+                        if (mediaElement.fileType) {
                             value['fileType'] = mediaElement.fileType;
                         }
-                        if(mediaElement.keywords) {
-                            if(value['keywords'] === null) {
+                        if (mediaElement.keywords) {
+                            if (value['keywords'] === null) {
                                 value['keywords'] = mediaElement.keywords;
                             } else {
-                                if(!value['keywords'].includes(mediaElement.keywords)) {
+                                if (!value['keywords'].includes(mediaElement.keywords)) {
                                     value['keywords'] = value['keywords'] + ',' + mediaElement.keywords;
                                 }
                             }
@@ -348,11 +334,11 @@
                         if (mediaElement.category) {
                             value['category'] = mediaElement.category.id;
                         }
-                        if(mediaElement.source) {
-                            if(value['source'] === null) {
+                        if (mediaElement.source) {
+                            if (value['source'] === null) {
                                 value['source'] = mediaElement.source;
                             } else {
-                                if(!value['source'].includes(mediaElement.source)) {
+                                if (!value['source'].includes(mediaElement.source)) {
                                     value['source'] = value['source'] + ',' + mediaElement.source;
                                 }
                             }
@@ -371,7 +357,7 @@
                 if (value.category) {
                     this.form.category = {label: value.category.name, value: value.category.id};
                 }
-                if(value.supplier) {
+                if (value.supplier) {
                     this.form.supplier = value.supplier;
                 }
                 this.form.language = value.language;
@@ -385,13 +371,20 @@
             },
 
             async submitMedia(media) {
-                await this.$store.dispatch('media/submitUpload', {media: media, form: this.form});
-                this.form.reset();
-                this.$emit('submitted');
+
+                try {
+                    const {data} = await this.$store.dispatch('media/submitUpload', {media: media, form: this.form});
+                    this.form.reset();
+                    this.$emit('submitted');
+                    this.clearAll();
+                }
+                catch (err) {
+                }
+
             },
 
-            async submitMultipleMedia(mediaIdArray) {
-                let mediaIdSlug = this.arrayToSlug(mediaIdArray);
+            async submitMultipleMedia() {
+                let mediaIdSlug = this.arrayToSlug(this.getSelectedMediaArray());
                 await this.$store.dispatch('media/submitMultipleUpload', {mediaArray: mediaIdSlug, form: this.form});
                 this.form.reset();
                 this.$emit('submitted');
@@ -417,13 +410,26 @@
 
             checkLicenseIsSet() {
                 var isSet = true;
-                this.selectedMedias.forEach(function (media) {
+                this.selectedMedia.forEach(function (media) {
                     if (!media.license) {
                         isSet = false;
                     }
                 });
                 this.licenseSet = isSet;
             },
+
+            getSelectedMediaArray() {
+                var mediaSubmit = [];
+                this.selectedMedia.forEach(function(media) {
+                    mediaSubmit.push(media.id);
+                });
+                return mediaSubmit;
+            },
+
+            noEnter(e) {
+                e.preventDefault();
+                return false;
+            }
 
         }
     };

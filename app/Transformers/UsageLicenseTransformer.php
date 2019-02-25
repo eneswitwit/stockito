@@ -27,6 +27,7 @@ class UsageLicenseTransformer extends AbstractTransformer
             'id' => $model->id,
             'type' => $model->license ? $model->license->getLicenseTitle() : '',
             'license_type' => $model->license ? $model->license->license_type : '',
+            'file_name' => $model->license->media->file_name ? $model->license->media->file_name : '',
             'printrun' => $model->printrun,
             'usage' => $model->usage,
             'territory' => $model->territory,

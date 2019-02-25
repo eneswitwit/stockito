@@ -15,9 +15,8 @@
                                     @click="shareMediaObjects = [media.id]; showShareModal = true">{{
                                 $t('share') }}
                             </button>
-                            <a v-if="canAccess(media) || isActiveEditing()" :href="media.downloadLink"
-                               class="btn btn-primary btn-block">{{ $t('download')
-                                }}</a>
+                            <a v-if="canAccess(media) || isActiveEditing()" @click="downloadSelectedMedia(media.id)"
+                               class="btn btn-primary btn-block">{{ $t('download') }}</a>
                         </div>
                     </div>
 
@@ -25,7 +24,7 @@
                         <div class="card-header dashboard-card">
                             Meta Data
                         </div>
-                        <div class="card-body">
+                        <div class="card-body" v-if="media.imageInfo">
                             <table class="widget-table upload-ftp">
                                 <tr>
                                     <td class="label">File info</td>
@@ -69,7 +68,7 @@
                     <div class="card">
                         <table class="table">
                             <thead>
-                            <tr>
+                            <tr v-if="media.licenses && media.licenses[0]">
                                 <th>
                                     License Type
                                 </th>
@@ -97,13 +96,13 @@
                                 <th></th>
                             </tr>
                             </thead>
-                            <tbody>
 
 
+                            <tbody v-if="media.licenses && media.licenses[0]">
                             <tr v-if="media.licenses.length > 0" v-for="license in usageLicenses">
                                 <td>
                                     <span :style="{color: media.license.color}"
-                                        class="license-badge" @click="showLicenseModal = true">
+                                          class="license-badge" @click="showLicenseModal = true">
                                         {{ media.licenses[0] ? media.licenses[0].type : '-' }}
                                     </span>
                                 </td>
@@ -144,8 +143,6 @@
                                     </button>
                                 </td>
                             </tr>
-
-
                             </tbody>
                         </table>
                     </div>
@@ -153,11 +150,16 @@
                 </div>
             </div>
 
-            <set-usage-license-modal
-                    :show.sync="showLicenseModal"
-                    :parentLicense="media.licenses[0]"
-                    :license="license"
-            ></set-usage-license-modal>
+
+            <div v-if="media.licenses && media.licenses[0]">
+                <set-usage-license-modal
+                        v-if="media.licenses"
+                        :show.sync="showLicenseModal"
+                        :parentLicense="media.licenses[0]"
+                        :license="license"
+                        @saved="savedLicense"
+                ></set-usage-license-modal>
+            </div>
 
             <share-media-modal-component
                     v-if="media"
@@ -171,6 +173,7 @@
 </template>
 
 <script>
+    import axios from 'axios';
     import Modal from '../../components/Modal/ModalLarge.vue';
     import ModalHeader from '../../components/Modal/ModalHeader.vue';
     import ModalBody from '../../components/Modal/ModalBody.vue';
@@ -210,6 +213,17 @@
             media: 'media/selectedMedia',
         }),
 
+        watch: {
+            show() {
+                this.media;
+                this.setLicenses();
+            },
+            showLicenseModal() {
+                this.media;
+                this.setLicenses();
+            }
+        },
+
         data: () => ({
             shareMediaObjects: [],
             showShareModal: false,
@@ -222,19 +236,6 @@
             mainLicense: null
         }),
 
-        watch: {
-            show() {
-                this.media;
-                this.setLicenses();
-            },
-
-            showLicenseModal() {
-                this.media;
-                this.setLicenses();
-                this.onClose();
-            }
-        },
-
         props: {
             mediaId: {},
             show: {
@@ -245,7 +246,15 @@
         methods: {
 
             onClose() {
-                console.log('closed');
+                this.$emit('close');
+                this.clearAll();
+            },
+
+            /**
+             * clear all
+             */
+            clearAll() {
+                this.$store.dispatch('media/resetSelectedMedia');
             },
 
             showModal(license) {
@@ -254,15 +263,43 @@
                 } else {
                     this.license = license;
                 }
-                this.parentLicense = this.media.licenses[0];
+                if(this.media.licenses && this.media.licenses[0]) {
+                    this.parentLicense = this.media.licenses[0];
+                }
                 this.showLicenseModal = true;
             },
 
             setLicenses() {
-                console.log(this.media);
-                this.mainLicense = this.media.licenses[0];
-                this.usageLicenses = this.media.licenses[0].usageLicenses;
-            }
+                if(this.media.licenses && this.media.licenses[0]) {
+                    this.mainLicense = this.media.licenses[0];
+                }
+                axios.get('/api/medias/' + this.media.id).then(({data}) => {
+                    if(data.licenses && data.licenses[0] && data.licenses[0].usageLicenses) {
+                        this.usageLicenses = data.licenses[0].usageLicenses;
+                    }
+                });
+
+            },
+
+            savedLicense(licenses) {
+                axios.get('/api/medias/' + this.media.id).then(({data}) => {
+                    if(data.licenses && data.licenses[0] && data.licenses[0].usageLicenses) {
+                        this.usageLicenses = data.licenses[0].usageLicenses;
+                    }
+                });
+
+                this.license = null;
+                this.$emit('update:show', false)
+            },
+
+            /**
+             * download
+             */
+            downloadSelectedMedia(id) {
+                axios.get('/api/medias/download-multiple', {params: {media: [id]}}).then((response) => {
+                    window.open(response.data.url);
+                });
+            },
         },
 
         directives: {

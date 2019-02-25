@@ -4,6 +4,8 @@
 namespace App\Providers;
 
 // use
+use App\Console\Commands\SendLicenseExpirationReminder;
+use App\Mail\ReminderExpirationLicense;
 use App\Managers\Processors\AIFileProcessor;
 use App\Managers\Processors\EPSFileProcessor;
 use App\Managers\Processors\ImageFileProcessor;
@@ -62,5 +64,6 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(Mp4FileProcessor::class, Mp4FileProcessor::class);
         $this->app->bind(AIFileProcessor::class, AIFileProcessor::class);
         $this->app->bind(EPSFileProcessor::class, EPSFileProcessor::class);
+        $this->app->bind(ReminderExpirationLicense::class, ReminderExpirationLicense::class);
     }
 }

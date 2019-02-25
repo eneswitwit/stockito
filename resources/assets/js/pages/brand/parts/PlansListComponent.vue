@@ -16,7 +16,7 @@
                                     <li>Analytics &amp; Reports</li>
                                 </ul>
                                 <p></p>
-                                <a href="#" class="btn btn-xl btn-outline-primary">Choose this plan</a>
+                                <button @click="changePlan(plan)" class="btn btn-xl btn-outline-primary">Choose this plan</button>
                             </div>
                         </div>
                     </b-col>
@@ -40,7 +40,7 @@
                                         <li>Analytics &amp; Reports</li>
                                     </ul>
                                     <p></p>
-                                    <a href="#" class="btn btn-xl btn-outline-primary">Choose this plan</a>
+                                    <button @click="changePlan(plan)" class="btn btn-xl btn-outline-primary">Choose this plan</button>
                                 </div>
                             </div>
                         </b-col>
@@ -63,7 +63,7 @@
                                         <li>Analytics &amp; Reports</li>
                                     </ul>
                                     <p></p>
-                                    <a href="#" class="btn btn-xl btn-outline-primary">Choose this plan</a>
+                                    <button @click="changePlan(plan)" class="btn btn-xl btn-outline-primary">Choose this plan</button>
                                 </div>
                             </div>
                         </b-col>

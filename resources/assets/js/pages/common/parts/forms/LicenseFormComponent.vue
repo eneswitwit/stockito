@@ -128,9 +128,13 @@
 
         props: [
             'license',
-            'media',
-            'selectedMedia'
+            'media'
         ],
+
+        computed: mapGetters({
+            selectedBrand: 'creative/selectedBrand',
+            selectedMedia: 'media/selectedMedia'
+        }),
 
         data: () => ({
             licenseTypes: [],
@@ -212,7 +216,7 @@
         },
 
         mounted() {
-            this.form.selectedMedia = this.selectedMedia;
+            this.form.selectedMedia = this.getSelectedMediaArray();
             if (this.license) {
                 this.form.id = this.license.id;
                 this.form.usage = this.license.usage;
@@ -227,13 +231,7 @@
                 this.date.startDate.time = this.license.startAt ? this.license.startAt.Ymd : '';
                 this.date.expireDate.time = this.license.expiredAt ? this.license.expiredAt.Ymd : '';
             }
-
         },
-
-        computed: mapGetters({
-            selectedBrand: 'creative/selectedBrand',
-
-        }),
 
         watch: {
             license() {
@@ -251,24 +249,24 @@
                     this.date.startDate.time = this.license.startAt ? this.license.startAt.Ymd : '';
                     this.date.expireDate.time = this.license.expiredAt ? this.license.expiredAt.Ymd : '';
                 }
-            },
-
-            selectedMedia() {
-                if(typeof this.selectedMedia[0] == 'undefined') {
-                    this.selectedMedia = [this.media.id];
-                }
-                this.form.selectedMedia = this.selectedMedia;
             }
         },
 
         methods: {
 
+            getSelectedMediaArray() {
+                var mediaSubmit = [];
+                this.selectedMedia.forEach(function(media) {
+                    mediaSubmit.push(media.id);
+                });
+                return mediaSubmit;
+            },
             submitCreateLicense() {
                 this.form.startDate = this.date.startDate.time;
                 this.form.expireDate = this.date.expireDate.time;
                 this.form.selectedBrand = this.selectedBrand ? this.selectedBrand.id : '';
 
-                this.form.selectedMedia = this.selectedMedia;
+                this.form.selectedMedia = this.getSelectedMediaArray();
 
                 this.$store.dispatch('license/createLicense', {form: this.form}).then(({data}) => {
                     delete this.form.billFile;

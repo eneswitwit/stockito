@@ -25,41 +25,47 @@
                     </div>
                 </div>
 
-                <div class="row uploaded-media" v-if="!!medias.length">
+                <div class="row uploaded-media" v-if="!!mediaDisplayed.length">
 
-                    <div class="card media-card"
-                         v-for="(media, index) in medias"
-                         v-bind:id="media.id"
-                         @click="showMedia = media"
-                    >
+                    <div v-for="(media, index) in mediaDisplayed" v-bind:id="media.id">
 
-                        <div class="card-body nopadding" @click="toggleCheckbox(media.id)">
+                        <div class="card media-card" @click="showMedia = media">
 
-                            <div class="img-wrapper">
+                            <img :id="media.thumbnail + '-load'" :src="require('../../../images/loading.gif')"
+                                 height="300px"/>
 
-                                <div class="play-button" :class="{play_visible: !checkVideoType(media)}">
-                                    <img src="../../../view/player/play-button.png" alt="">
-                                </div>
+                            <div class="card-body nopadding" @click="toggleCheckbox(media)" :id="media.thumbnail"
+                                 style="display:none;">
 
-                                <div class="select-checkbox">
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" name="multipleSelection[]" :value="media.id"
-                                               class="custom-control-input" v-model="selectedMedia"
-                                               :id="'select-checkbox-'+media.id">
-                                        <label class="custom-control-label"
-                                               :for="'select-checkbox-'+media.id"></label>
+                                <div class="img-wrapper">
+
+                                    <div class="play-button" :class="{play_visible: !checkVideoType(media)}">
+                                        <img src="../../../view/player/play-button.png" alt="">
                                     </div>
+
+                                    <div class="select-checkbox">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" name="multipleSelection[]" v-bind:value="media"
+                                                   class="custom-control-input" v-model.lazy.number="selectedMedia"
+                                                   :id="'select-checkbox-'+media.id"
+                                                   @change="checkCheckbox(media.thumbnail)">
+                                            <label class="custom-control-label"
+                                                   :for="'select-checkbox-'+media.id"></label>
+                                        </div>
+                                    </div>
+
+                                    <div class="wrapper-img">
+                                        <img class="card-img-top" :src="media.thumbnail" alt="Card image cap"
+                                             @load="imageLoaded(media.thumbnail)">
+                                    </div>
+
+                                    <span v-if="media.license" class="license-label"
+                                          :style="{color: getLicenseColor(media.license.type)}">{{ media.license.type }}</span>
+
                                 </div>
-
-                                <div class="wrapper-img">
-                                    <img class="card-img-top" :src="media.thumbnail" alt="Card image cap">
-                                </div>
-
-                                <span v-if="media.license" class="license-label"
-                                      :style="{color: getLicenseColor(media.license.type)}">{{ media.license.type }}</span>
-
                             </div>
                         </div>
+
                     </div>
 
                 </div>
@@ -67,8 +73,10 @@
                 <div class="row" v-else>
                     <div class="col-lg-12">
                         <div v-if="isGotUploads">
-                            <div class="alert alert-info text-center" role="alert" style="padding: 20px;margin-top: 1px;">
-                                You did not upload any files. You can overview your <router-link :to="{name: 'medias'}"> Media </router-link>
+                            <div class="alert alert-info text-center" role="alert"
+                                 style="padding: 20px;margin-top: 1px;">
+                                You did not upload any files. You can overview your
+                                <router-link :to="{name: 'medias'}"> Media</router-link>
                                 files or upload new files.
                             </div>
                         </div>
@@ -88,10 +96,9 @@
                     <button class="btn btn-link" @click.prevent="refreshList">Refresh</button>
                 </card>
 
-                <edit-media-details @submitted="showMedia = null" v-if="showMedia && !!medias.length"
+                <edit-media-details @submitted="showMedia = null" v-if="showMedia && !!mediaDisplayed.length"
                                     :media="showMedia"
-                                    :medias="medias"
-                                    :selectedMedia="selectedMedia"
+                                    :medias="mediaDisplayed"
                                     v-bind:getMedias="getMedias"
                                     v-bind:refreshList="refreshList"
                                     v-bind:clearAll="clearAll">
@@ -115,6 +122,8 @@
     import VideoImageComponent from '../common/parts/VideoImageComponent.vue';
     import ShareMediaModalComponent from '../../components/Modals/ShareMediaModalComponent.vue';
 
+    const MAX = 20;
+
     export default {
 
         middleware: [
@@ -134,18 +143,19 @@
         name: 'uploaded',
 
         created() {
-            this.getMedias();
+            //this.getMedias();
         },
 
         data: () => ({
             showMedia: null,
             isGotUploads: false,
             showPage: false,
-            selectedMedia: [],
             showSearch: false,
             openedShareMediaModal: false,
             shareMediaObjects: [],
-            isGotMedias: false
+            isGotMedias: false,
+            isLoading: false,
+            counter: 0
         }),
 
         computed: {
@@ -153,19 +163,91 @@
             medias() {
                 return this.$store.getters['media/uploads'];
             },
-
+            mediaDisplayed() {
+                return this.$store.getters['media/mediaDisplayed'];
+            },
             selectedBrand() {
                 return this.$store.getters['creative/selectedBrand'];
+            },
+            selectedMedia() {
+                return this.$store.getters['media/selectedMedia'];
             }
         },
 
         watch: {
-            selectedMedia: function () {
-                return this.selectedMedia;
+            counter: function () {
+                if (this.counter === MAX) {
+                    this.counter = 0;
+                    this.isLoading = false;
+                }
             }
         },
 
+        beforeMount() {
+            this.setSelectedBrand();
+            this.getInitialMedia();
+        },
+
         methods: {
+
+            checkCheckbox(id) {
+                var card = document.getElementById(id);
+                card.click();
+            },
+
+            getSelectedMediaArray() {
+                var mediaSubmit = [];
+                this.selectedMedia.forEach(function (media) {
+                    mediaSubmit.push(media.id);
+                });
+                return mediaSubmit;
+            },
+
+            imageLoaded(id) {
+                var loading = document.getElementById(id + "-load");
+                if (loading && loading.parentNode) {
+                    loading.parentNode.removeChild(loading);
+                }
+                var wrapper = document.getElementById(id);
+                if (wrapper && wrapper.style.display === "none") {
+                    this.counter++;
+                    wrapper.style.display = "block";
+                }
+            },
+
+            async getMediaStep(taken, toTake) {
+                var selectedBrandId = this.getSelectedBrandId();
+                await this.$store.dispatch('media/getUploadsStep', {
+                    taken: taken,
+                    toTake: toTake,
+                    selectedBrandId: selectedBrandId
+                });
+            },
+
+            async getInitialMedia() {
+                var selectedBrandId = this.getSelectedBrandId();
+                await this.$store.dispatch('media/getUploadsStep', {
+                    taken: 0,
+                    toTake: 20,
+                    selectedBrandId: selectedBrandId
+                });
+                this.isGotUploads = true;
+                this.showPage = true;
+            },
+
+            mediaNextStep() {
+                this.isLoading = true;
+                this.getMediaStep(this.mediaDisplayed.length, MAX);
+            },
+
+            scroll() {
+                window.onscroll = () => {
+                    let bottomOfWindow = Math.abs(document.documentElement.scrollTop + window.innerHeight - document.documentElement.offsetHeight) < 3;
+                    if (bottomOfWindow && !this.isLoading) {
+                        this.mediaNextStep();
+                    }
+                };
+            },
 
             /**
              * Open share
@@ -178,7 +260,7 @@
              * clear all
              */
             clearAll() {
-                this.selectedMedia = [];
+                this.$store.dispatch('media/resetSelectedMedia');
             },
 
 
@@ -188,20 +270,8 @@
              * @returns {Promise<void>}
              */
             async getMedias() {
-
-                var url = window.location.href;
-                var index = url.indexOf("uploaded/");
-                var substring = url.substring(index+9, url.length);
-
-                var selectedBrandId = null;
-                if(substring !== '') {
-                    selectedBrandId = parseInt(substring);
-                } else {
-                    selectedBrandId = this.selectedBrand ? this.selectedBrand.id : null;
-                }
-
-                await
-                    this.$store.dispatch('media/getUploads', {selectedBrandId: selectedBrandId});
+                var selectedBrandId = this.getSelectedBrandId();
+                await this.$store.dispatch('media/getUploads', {selectedBrandId: selectedBrandId});
                 this.isGotUploads = true;
                 this.showPage = true;
             },
@@ -210,14 +280,12 @@
              * refresh list
              */
             refreshList() {
-                this.getMedias();
-
                 var url = window.location.href;
                 var index = url.indexOf("uploaded/");
-                var substring = url.substring(index+9, url.length);
+                var substring = url.substring(index + 9, url.length);
 
                 var selectedBrandId = null;
-                if(substring !== '') {
+                if (substring !== '') {
                     selectedBrandId = parseInt(substring);
                 } else {
                     selectedBrandId = this.selectedBrand ? this.selectedBrand.id : null;
@@ -230,7 +298,8 @@
              * download
              */
             downloadSelectedMedia() {
-                axios.get('/api/medias/download-multiple', {params: {media: this.selectedMedia}}).then((response) => {
+                var selectedMedia = this.getSelectedMediaArray();
+                axios.get('/api/medias/download-multiple', {params: {media: selectedMedia}}).then((response) => {
                     window.open(response.data.url);
                 });
             },
@@ -249,7 +318,8 @@
              * Share multiple media files
              */
             shareMultipleMedia() {
-                this.shareMediaObjects = this.selectedMedia;
+                var selectedMedia = this.getSelectedMediaArray();
+                this.shareMediaObjects = selectedMedia;
                 this.openShareModal();
             },
 
@@ -258,6 +328,7 @@
              * Delete multiple media files
              */
             deleteMultipleMedia() {
+                var selectedMedia = this.getSelectedMediaArray();
                 this.$swal({
                     title: "Delete files",
                     text: "Are you sure?",
@@ -267,9 +338,9 @@
                     confirmButtonText: "Yes, delete it.",
                     closeOnConfirm: true
                 }).then(() => {
-                    axios.delete('/api/medias/remove-multiple', {params: {media: this.selectedMedia}}).then(({data}) => {
+                    axios.delete('/api/medias/remove-multiple', {params: {media: selectedMedia}}).then(({data}) => {
                         if (data.success) {
-                            this.$store.dispatch('media/removeMedias', {medias: this.selectedMedia});
+                            this.$store.dispatch('media/removeMedias', {medias: selectedMedia});
                             this.clearAll();
                             this.refreshList();
                         }
@@ -287,19 +358,8 @@
                 return (media.content_type === 'video/mp4' || media.content_type === 'video/quicktime');
             },
 
-            /**
-             * when picture is clicked add to selected media
-             *
-             * @param {int} id
-             * @returns {void}
-             */
-            toggleCheckbox(id) {
-                let itemIndex = this.selectedMedia.indexOf(id);
-                if (itemIndex > -1) {
-                    this.selectedMedia.splice(itemIndex, 1);
-                } else {
-                    this.selectedMedia.push(id);
-                }
+            toggleCheckbox(media) {
+                this.$store.dispatch('media/addSelectedMedia', {media: media});
             },
 
             getLicenseColor(license) {
@@ -317,7 +377,41 @@
                         return 'blue';
 
                 }
-            }
+            },
+
+            getSelectedBrandId() {
+                var url = window.location.href;
+                var index = url.indexOf("uploaded/");
+                var substring = url.substring(index + 9, url.length);
+
+                var selectedBrandId = null;
+                if (substring !== '') {
+                    selectedBrandId = parseInt(substring);
+                } else {
+                    selectedBrandId = this.selectedBrand ? this.selectedBrand.id : null;
+                }
+                return selectedBrandId;
+            },
+
+
+            setSelectedBrand() {
+                var url = window.location.href;
+                var index = url.indexOf("uploaded/");
+                var substring = url.substring(index + 9, url.length);
+
+                var selectedBrandId = null;
+                if (substring !== '') {
+                    selectedBrandId = parseInt(substring);
+                } else {
+                    selectedBrandId = this.selectedBrand ? this.selectedBrand.id : null;
+                }
+                this.$store.dispatch('creative/setSelectedBrand', {selectedBrandId});
+            },
+
+        },
+
+        mounted() {
+            this.scroll();
         }
     }
 </script>

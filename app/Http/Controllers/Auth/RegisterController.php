@@ -183,7 +183,6 @@ class RegisterController extends Controller
             'password' => 'required|min:6|confirmed',
             'first_name' => 'required|min:2',
             'last_name' => 'required|min:2',
-            'company' => 'required|min:2',
             'terms_conditions' => 'accepted',
             'privacy_policy' => 'accepted'
         ]);

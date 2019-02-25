@@ -52,7 +52,7 @@ class LicensesController extends Controller
             $brand->media->whereStrict('published',1)->pluck('license')->pluck('id')->toArray()
         )->orderBy(
             'expired_at',
-            'ASC'
+            'desc'
         )->with('license')->with('license.media')->with('license.media.brand')->with('license.media.supplier')->get();
 
         return new JsonResponse(new TransformerEngine($licenses, new UsageLicenseTransformer()));
@@ -199,7 +199,8 @@ class LicensesController extends Controller
         try {
             $view = view('pdf.licenses', ['licenses' => $licenses, 'brand' => $brand])->render();
             $pdf->loadHTML($view)
-                ->setPaper('a4', 'landscape');
+                ->setPaper('a4', 'landscape')
+                ->setWarnings(false);
         } catch (\Exception $e) {
             dd($e->getMessage());
         }

@@ -25,7 +25,7 @@
                                     ></datatable-cell>
                                 </template>
                                 <td>
-                                    <button type="button"
+                                    <button type="button" style="word-break: normal;"
                                             v-if="!isActiveEditing()"
                                             class="btn btn-primary btn-sm"
                                             @click="showModal(row)">
@@ -131,7 +131,7 @@
                             return '<img class="preview-img" src="' + media.media.thumbnail + '" />';
                         }, interpolate: true, filterable: false, sortable: false
                     },
-                    {label: 'Number', field: 'id', filterable: true},
+                    {label: 'Number', field: 'file_name', filterable: true},
                     {label: 'License', field: 'type', filterable: false},
                     {label: 'Origin', field: 'origin', filterable: false},
                     {label: 'Added By', field: 'createdBy', filterable: false},
@@ -150,7 +150,7 @@
                                     return '<span style="color: green"> ' + expirationDate + ' </span>';
                                 }
                             }
-                        }, interpolate: true, filterable: false
+                        }, interpolate: true, filterable: false, sortable: false
                     },
                 ],
                 page: 1,

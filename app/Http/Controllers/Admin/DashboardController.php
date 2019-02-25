@@ -10,10 +10,12 @@ use App\Models\Product;
 use App\Models\Share;
 use App\Models\User;
 use App\Models\Activity;
+use Response;
 use Illuminate\Database\Eloquent\Builder;
 use SleepingOwl\Admin\Display\Column\Link;
 use SleepingOwl\Admin\Display\Column\Text;
 use SleepingOwl\Admin\Display\DisplayDatatablesAsync;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Class CreativeController
@@ -49,5 +51,53 @@ class DashboardController extends Controller
             'products' => $products,
             'activities' => $activities,
         ]));
+    }
+
+    public function exportNewsletter()
+    {
+
+        $headers = array(
+            "Content-type" => "text/csv",
+            "Content-Disposition" => "attachment; filename=file.csv",
+            "Pragma" => "no-cache",
+            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Expires" => "0"
+        );
+
+        $users = User::where('agree_newsletter', '!=', null)->get();
+
+        $columns = array('Email Address', 'Title', 'First Name', 'Last Name', 'Brand Name');
+
+        $callback = function () use ($users, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+
+            foreach ($users as $user) {
+                $brand = $user->brand;
+                $creative = $user->creative;
+                if ($brand) {
+                    fputcsv($file, array(
+                        $user->email,
+                        $brand->contact_title,
+                        $brand->contact_first_name,
+                        $brand->contact_last_name,
+                        $brand->brand_name
+                    ));
+                } elseif ($creative) {
+                    fputcsv($file, array(
+                        $user->email,
+                        '',
+                        $creative->first_name,
+                        $creative->last_name,
+                        ''
+                    ));
+                }
+
+
+            }
+            fclose($file);
+        };
+
+        return (new StreamedResponse($callback, 200, $headers))->sendContent();
     }
 }
