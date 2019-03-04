@@ -87,6 +87,8 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     Route::group(['prefix' => 'medias'], function () {
 
+        Route::get('uploads/step/{taken}/{toTake}/{brandId?}', 'Api\MediaController@getUploads');
+
         Route::get('processing/{brandId?}', 'Api\MediaController@processing');
         Route::get('types', 'Api\MediaController@types');
         Route::delete('remove-multiple', 'Api\MediaController@removeMultiple');
@@ -105,7 +107,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('categories', 'Api\MediaController@categories');
 
         Route::get('uploads/{brandId?}', 'Api\MediaController@uploads');
-        Route::get('uploads/step/{taken}/{toTake}/{brandId?}', 'Api\MediaController@getUploads');
+
 
         Route::get('', 'Api\MediaController@index');
         Route::get('{taken}/{toTake}', 'Api\MediaController@indexStep');
