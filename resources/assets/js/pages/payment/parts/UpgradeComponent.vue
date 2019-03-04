@@ -19,7 +19,9 @@
 
             <img v-if="requesting" :src="require('../../../../images/loading.gif')"/>
 
-            <div v-if="errors"> <strong style="color: red;"> Something went wrong. Please contact the support! </strong> </div>
+            <div v-if="errors">
+                <strong style="color: red;"> Something went wrong. Please contact the support! </strong>
+            </div>
 
         </card>
     </form>
@@ -109,7 +111,6 @@
                             this.$router.push({name: 'dashboard'});
                         });
                     } else {
-
                         this.errors = data.errors;
                         this.requesting = false;
                     }

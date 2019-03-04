@@ -212,6 +212,8 @@
 
             uploadError(file, message, xhr) {
                 this.errors = message.errors;
+                console.log(message);
+                console.log(xhr);
             },
 
             async successUploaded(file, response) {

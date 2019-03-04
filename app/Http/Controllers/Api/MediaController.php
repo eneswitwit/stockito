@@ -76,16 +76,20 @@ class MediaController extends Controller
      */
     public function processing($brandId = null): JsonResponse
     {
+
         /**
          * @var User $user
          * @var Collection $medias
          */
+
+
         $user = auth()->user();
         $brand = $user->brand;
         $creative = $user->creative;
 
 
         if ($creative && !$brand) {
+
             $creativeBrand = Brand::find($brandId);
             if ($creativeBrand) {
                 $result['processing'] = (new FTPFile())::notHandled()->where('username',
@@ -101,13 +105,17 @@ class MediaController extends Controller
         } else {
             if ($brand && !$creative) {
 
+
                 $result['processing'] = (new FTPFile())::notHandled()->where('username',
                     $brand->ftpUser->userid)->where('processing', true)->count();
 
                 $result['queuing'] = (new FTPFile())::notHandled()->where('username',
                     $brand->ftpUser->userid)->where('queuing',
                     true)->count();
+
+
             } else {
+
                 return new JsonResponse();
             }
         }
@@ -248,9 +256,13 @@ class MediaController extends Controller
             });
         }
 
-        Log::info($medias->count());
-
         $medias = $medias->skip($taken)->take($toTake)->get();
+
+        $medias->map(function (Media $media) {
+            if (!Storage::disk('s3')->exists($media->getFilePath())) {
+                $media->delete();
+            }
+        });
 
         return new JsonResponse(new TransformerEngine($medias, new MediaTransformer()));
     }
@@ -487,6 +499,10 @@ class MediaController extends Controller
                 ->skip($taken)
                 ->take($toTake)
                 ->get();
+            if(sizeof($medias) === 0) {
+                return new JsonResponse();
+            }
+
         } else {
             return new JsonResponse();
         }
@@ -830,6 +846,7 @@ class MediaController extends Controller
      */
     public function remove(Media $media, UploadService $uploadService): JsonResponse
     {
+
         try {
             $status = $uploadService->removeMedia($media);
             if (!$status) {
@@ -851,6 +868,8 @@ class MediaController extends Controller
      */
     public function removeMultiple(Request $request, UploadService $uploadService): JsonResponse
     {
+
+
 
         $mediaFiles = (new Media)->whereIn('id', $request->input('media'))->get();
 

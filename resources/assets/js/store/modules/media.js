@@ -1,5 +1,5 @@
-import axios from 'axios'
-import * as types from '../mutation-types'
+import axios from "axios"
+import * as types from "../mutation-types"
 
 // state
 export const state = {
@@ -61,12 +61,14 @@ export const mutations = {
         state.creativeRole = creativeRole;
     },
     [types.ADD_MEDIA_DISPLAYED](state, {medias}) {
-        medias.forEach(function (media) {
-            let findMedia = state.mediaDisplayed.find(m => m.id === media.id);
-            if(!findMedia) {
-                state.mediaDisplayed.push(media)
-            }
-        });
+        if(medias.length > 0) {
+            medias.forEach(function (media) {
+                let findMedia = state.mediaDisplayed.find(m => m.id === media.id);
+                if (!findMedia) {
+                    state.mediaDisplayed.push(media)
+                }
+            });
+        }
     },
     [types.REMOVE_MEDIA](state, {media}) {
         state.medias = state.medias.filter(m => m.id !== media.id);
@@ -177,7 +179,7 @@ export const mutations = {
 // actions
 export const actions = {
     async fetchMedia({commit}, mediaId) {
-        let {data} = await axios.get('/api/medias/' + mediaId);
+        let {data} = await axios.get("/api/medias/" + mediaId);
         commit(types.FETCH_MEDIA_SUCCESS, {media: data});
     },
     addMedia({commit}, {media}) {
@@ -199,44 +201,44 @@ export const actions = {
         commit(types.ADD_UPLOAD, {media: media})
     },
     async getMedias({commit, state}) {
-        const {data} = await axios.get('/api/medias', {params: state.filter});
+        const {data} = await axios.get("/api/medias", {params: state.filter});
         commit(types.FETCH_MEDIAS_SUCCESS, {medias: data})
     },
     async getBrandMedias({commit}, {creative_brand_id}) {
-        const {data} = await axios.get('/api/medias/brand/' + creative_brand_id);
+        const {data} = await axios.get("/api/medias/brand/" + creative_brand_id);
         commit(types.FETCH_MEDIAS_SUCCESS, {medias: data.medias, creativeRole: data.creativeRole})
     },
     async getMediasStep({commit, state}, {taken, toTake}) {
-        const {data} = await axios.get('/api/medias/' + taken + '/' + toTake, {params: state.filter});
+        const {data} = await axios.get("/api/medias/" + taken + "/" + toTake, {params: state.filter});
         commit(types.ADD_MEDIAS_DISPLAYED, {medias: data})
     },
     async getBrandMediaStep({commit}, {taken, toTake, creative_brand_id}) {
-        const {data} = await axios.get('/api/medias/brand/' + taken + '/' + toTake + '/' + creative_brand_id);
+        const {data} = await axios.get("/api/medias/brand/" + taken + "/" + toTake + "/" + creative_brand_id);
         commit(types.ADD_MEDIAS_DISPLAYED_CREATIVE, {medias: data.medias, creativeRole: data.creativeRole})
     },
     async getUploads({commit}, {selectedBrandId}) {
-        let url = selectedBrandId ? ('/api/medias/uploads' + '/' + selectedBrandId) : '/api/medias/uploads';
+        let url = selectedBrandId ? ("/api/medias/uploads" + "/" + selectedBrandId) : "/api/medias/uploads";
         const {data} = await axios.get(url);
         commit(types.FETCH_UPLOADS_SUCCESS, {uploads: data})
     },
     async getUploadsStep({commit}, {taken, toTake, selectedBrandId}) {
-        let url = selectedBrandId ? ('/api/medias/uploads/step/' + taken + '/' + toTake + '/' + selectedBrandId) : ('/api/medias/uploads/step/' + taken + '/' + toTake);
+        let url = selectedBrandId ? ("/api/medias/uploads/step/" + taken + "/" + toTake + "/" + selectedBrandId) : ("/api/medias/uploads/step/" + taken + "/" + toTake);
         const {data} = await axios.get(url);
         commit(types.ADD_MEDIA_DISPLAYED, {medias: data})
     },
     async getProcessing({commit}, {selectedBrandId}) {
-        commit(types.SET_REQUESTING_PROCESSING, {status: true})
-        let url = selectedBrandId ? ('/api/medias/processing' + '/' + selectedBrandId) : '/api/medias/processing';
+        commit(types.SET_REQUESTING_PROCESSING, {status: true});
+        let url = selectedBrandId ? "/api/medias/processing" + "/" + selectedBrandId : "/api/medias/processing";
         const {data} = await axios.get(url);
         commit(types.FETCH_PROCESSING_SUCCESS, {processing: data})
         commit(types.SET_REQUESTING_PROCESSING, {status: false})
     },
     async submitUpload({commit}, {media, form}) {
-        let {data} = await form.post('/api/medias/' + media.id + '/submit');
+        let {data} = await form.post("/api/medias/" + media.id + "/submit");
         commit(types.SUBMITTED_UPLOAD, {upload: data})
     },
     async submitMultipleUpload({commit}, {form}) {
-        let {data} = await form.post('/api/medias/submit-multiple');
+        let {data} = await form.post("/api/medias/submit-multiple");
         commit(types.SUBMITTED_MULTIPLE_UPLOAD, {uploads: data})
     },
     async setSelectedMedia({commit}, {mediaId}) {
@@ -248,7 +250,7 @@ export const actions = {
     },
     updateMedia({commit}, {form}) {
         return new Promise(async (resolve, reject) => {
-            let {data} = await form.put('/api/medias/' + form.id);
+            let {data} = await form.put("/api/medias/" + form.id);
             commit(types.UPDATE_MEDIA, {media: data});
             commit(types.RESET_MEDIAS);
             resolve();
@@ -262,8 +264,8 @@ export const actions = {
     },
     async setLicenseUpload({commit, dispatch}, {upload, form}) {
         return new Promise((resolve, reject) => {
-            form.post('/api/medias/' + upload.id + '/add-license').then(({data}) => {
-                dispatch('updateUpload', {upload: data});
+            form.post("/api/medias/" + upload.id + "/add-license").then(({data}) => {
+                dispatch("updateUpload", {upload: data});
                 resolve();
             }).catch(({response}) => {
                 reject(response.data.errors);
@@ -273,13 +275,13 @@ export const actions = {
     setFilter({commit, dispatch}, {filter}) {
         commit(types.SET_FILTER, {filter});
         commit(types.RESET_MEDIAS);
-        dispatch('getMedias');
-        dispatch('getMediasStep', {taken: 0, toTake: 30});
+        dispatch("getMedias");
+        dispatch("getMediasStep", {taken: 0, toTake: 30});
     },
     setFilterQuery({commit, dispatch}, {query}) {
         commit(types.SET_FILTER_QUERY, {query});
         commit(types.RESET_MEDIAS);
-        dispatch('getMediasStep', {taken: 0, toTake: 30});
+        dispatch("getMediasStep", {taken: 0, toTake: 30});
     },
     resetSelectedMedia({commit}) {
         commit(types.RESET_SELECTED_MEDIA);

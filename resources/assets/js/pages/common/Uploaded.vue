@@ -329,6 +329,9 @@
              */
             deleteMultipleMedia() {
                 var selectedMedia = this.getSelectedMediaArray();
+
+                console.log('delete multiple medias');
+
                 this.$swal({
                     title: "Delete files",
                     text: "Are you sure?",
@@ -343,6 +346,8 @@
                             this.$store.dispatch('media/removeMedias', {medias: selectedMedia});
                             this.clearAll();
                             this.refreshList();
+                        } else {
+                            console.log('not success');
                         }
                     });
                 })

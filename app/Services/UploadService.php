@@ -199,7 +199,7 @@ class UploadService
             throw new \LogicException('You can\'t upload more files');
         }
         $file = $request->file('file');
-        if (self::calculateUsedStorageFull($brand) + $file->getSize() >= $brand->getProduct()->storage) {
+        if (self::calculateUsedStorage($brand)['used'] + $file->getSize() >= $brand->getProduct()->storage) {
             throw new \LogicException('This file bigger than you have the free space');
         }
 

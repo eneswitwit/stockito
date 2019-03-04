@@ -87,6 +87,10 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     Route::group(['prefix' => 'medias'], function () {
 
+        Route::get('processing/{brandId?}', 'Api\MediaController@processing');
+        Route::get('types', 'Api\MediaController@types');
+        Route::delete('remove-multiple', 'Api\MediaController@removeMultiple');
+
         Route::group(['prefix' => '{media}'], function () {
             Route::post('submit', 'Api\MediaController@submit');
             Route::get('download', 'Api\MediaController@download');
@@ -95,13 +99,14 @@ Route::group(['middleware' => 'auth:api'], function () {
             Route::put('', 'Api\MediaController@update');
             Route::delete('', 'Api\MediaController@remove');
         });
+
         Route::get('get/{id}', 'Api\MediaController@show');
         Route::get('get-multiple', 'Api\MediaController@getMultiple');
         Route::get('categories', 'Api\MediaController@categories');
-        Route::get('types', 'Api\MediaController@types');
+
         Route::get('uploads/{brandId?}', 'Api\MediaController@uploads');
         Route::get('uploads/step/{taken}/{toTake}/{brandId?}', 'Api\MediaController@getUploads');
-        Route::get('processing/{brandId?}', 'Api\MediaController@processing');
+
         Route::get('', 'Api\MediaController@index');
         Route::get('{taken}/{toTake}', 'Api\MediaController@indexStep');
         Route::get('/brand/{brand_id}', 'Api\MediaController@getBrandMedias');
@@ -112,7 +117,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::post('share-to-email', 'Api\MediaController@shareEmail');
         Route::get('download-multiple', 'Api\MediaController@downloadMultiple');
         Route::post('submit-multiple', 'Api\MediaController@submitMultiple');
-        Route::delete('remove-multiple', 'Api\MediaController@removeMultiple');
+
 
     });
 

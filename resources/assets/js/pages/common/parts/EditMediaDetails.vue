@@ -404,6 +404,7 @@
 
             getTypes() {
                 axios.get('/api/medias/types').then(({data}) => {
+                    console.log(data);
                     this.types = data;
                 });
             },

@@ -109,7 +109,7 @@ class FTPFilesManager
         $brand = $ftpFile->ftpUser->brand;
         $user = $ftpFile->ftpUser->user;
 
-        if (UploadService::calculateUsedStorageFull($brand) + $file->getSize() >= $brand->getProduct()->storage) {
+        if (UploadService::calculateUsedStorage($brand)['used'] + $file->getSize() >= $brand->getProduct()->storage) {
             $ftpFile->delete();
             //throw new \LogicException('This file bigger than you have the free space');
             return null;

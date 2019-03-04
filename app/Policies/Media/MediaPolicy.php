@@ -6,6 +6,7 @@ use App\Models\Media;
 use App\Models\User;
 use App\Services\UploadService;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Log;
 
 class MediaPolicy
 {
@@ -40,7 +41,7 @@ class MediaPolicy
         if ($brand = $user->brand) {
             if ($user->subscribed('main')) {
                 if ($ftpUser = $brand->getProduct()) {
-                    return $brand->getProduct()->storage > UploadService::calculateUsedStorageFull($brand);
+                    return $brand->getProduct()->storage > UploadService::calculateUsedStorage($brand)['used'];
                 }
             }
         }
