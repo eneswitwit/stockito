@@ -85,7 +85,7 @@
                                         </td>
                                     </tr>
                                 </table>
-                                 <span class="ftp-info"> Only MP4 and MOV files are allowed </span>
+                                <span class="ftp-info"> Only MP4 and MOV files are allowed </span>
                             </div>
                         </div>
                         <div class="card" v-if="selectedBrand">
@@ -112,16 +112,16 @@
                                         <td class="label">
                                             User
                                         </td>
-                                        <td style="word-break: break-word !important;">
-                                            {{  ftp.userid }}
+                                        <td v-if="ftp" style="word-break: break-word !important;">
+                                            {{ ftp.userid }}
                                         </td>
                                     </tr>
                                     <tr>
                                         <td class="label">
                                             Password
                                         </td>
-                                        <td style="word-break: break-word !important;">
-                                            {{  ftp.passwd }}
+                                        <td v-if="ftp" style="word-break: break-word !important;">
+                                            {{ ftp.passwd }}
                                         </td>
                                     </tr>
                                 </table>
@@ -172,7 +172,7 @@
 
         props: ['modalShow'],
 
-        created() {
+        beforeMount() {
             this.getFTPUser();
         },
 
@@ -194,26 +194,25 @@
             }
         },
 
-        watch: {
-            selectedBrand: function() {
-                this.getFTPUser();
-            }
-        },
-
         methods: {
 
             closeModal() {
                 this.$refs.myVueDropzone.removeAllFiles();
                 if (this.filesUploaded) {
-                    this.$router.push({name: 'uploaded'});
+                    if (this.brand) {
+                        this.$router.push({name: 'uploaded'});
+                    } else {
+                        this.$router.push({
+                            name: 'creative.brand.uploaded',
+                            params: {creative_brand_id: this.selectedBrand.id}
+                        });
+                    }
                 }
                 this.$emit('close');
             },
 
             uploadError(file, message, xhr) {
                 this.errors = message.errors;
-                console.log(message);
-                console.log(xhr);
             },
 
             async successUploaded(file, response) {
@@ -221,7 +220,9 @@
                 await this.$store.dispatch('media/addUpload', {media: response.data});
                 this.filesUploaded = true;
                 this.countUploadFiles--;
+                console.log('push router 4');
                 if (this.countUploadFiles === 0) {
+                    console.log('push router 5');
                     this.closeModal();
                 }
             },
@@ -242,13 +243,13 @@
                 let selectedBrandId = this.selectedBrand ? this.selectedBrand.id : null;
 
                 var url = '';
-                if(selectedBrandId !== null) {
-                    url = `api/ftp/${this.user.id}/${selectedBrandId}`;
+                if (selectedBrandId !== null && this.user) {
+                    url = `/api/ftp/${this.user.id}/${selectedBrandId}`;
                 } else {
-                    url = `api/ftp/${this.user.id}`;
+                    url = `/api/ftp/${this.user.id}`;
                 }
 
-                axios.get(url).then(response => {
+                axios.post(url).then(response => {
                     this.ftp = response.data;
                 });
 

@@ -5,13 +5,17 @@ namespace App\Http\Controllers\Api;
 
 // use
 use App\Models\BrandCreative;
+use App\Models\Brand;
 use App\Transformers\CreativeBrandsTransformer;
 use App\Transformers\UserTransformer;
+use App\Transformers\BrandTransformer;
+use App\Transformers\MinorBrandTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use LukeVear\LaravelTransformer\TransformerEngine;
 use App\Http\Controllers\Controller;
+use Log;
 
 /**
  * Class CreativeController
@@ -31,6 +35,16 @@ class CreativeController extends Controller
         return new JsonResponse(new TransformerEngine($user, new CreativeBrandsTransformer()));
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     * @throws \Exception
+     */
+    public function getCreativeBrand($brand) : JsonResponse
+    {
+        $brand = Brand::find($brand);
+        return new JsonResponse(new TransformerEngine($brand, new MinorBrandTransformer()));
+    }
 
     /**
      * @param Request $request

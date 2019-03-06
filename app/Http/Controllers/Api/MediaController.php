@@ -37,7 +37,6 @@ use Illuminate\Support\Facades\Storage;
 use LukeVear\LaravelTransformer\TransformerEngine;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\Support\Facades\Validator;
-use Log;
 
 
 /**
@@ -313,7 +312,7 @@ class MediaController extends Controller
         if (!$brandCreative) {
             throw new \Exception('Creative not in brand team!');
         }
-        $medias = $brand->media()->published()->orderBy('created_at', 'desc')->skip($taken)->take($toTake)->get();
+        $medias = $brand->media()->with('licenses')->published()->orderBy('created_at', 'desc')->skip($taken)->take($toTake)->get();
 
         $brandCreativeResponse = new TransformerEngine($brandCreative, new BrandCreativesTransformer());
         $response = new TransformerEngine($medias, new MediaTransformer());
@@ -348,17 +347,8 @@ class MediaController extends Controller
                 ->get();
 
             $ftpFiles->each(function (FTPFile $FTPFile) {
-
                 $FTPFile->queuing = true;
                 $FTPFile->save();
-
-                $processFTP = new ProcessFTPFile($FTPFile);
-                $processFTP->handle($this->ftpFilesManager);
-
-                /*$this->ftpFilesManager->handleFTPFile($FTPFile);
-                $FTPFile->queuing = true;
-                $FTPFile->save();*/
-                ProcessFTPFile::dispatch($FTPFile);
             });
 
 
@@ -376,17 +366,8 @@ class MediaController extends Controller
 
 
                     $ftpFiles->each(function (FTPFile $FTPFile) {
-
                         $FTPFile->queuing = true;
                         $FTPFile->save();
-
-                        $processFTP = new ProcessFTPFile($FTPFile);
-                        $processFTP->handle($this->ftpFilesManager);
-
-                        /*$this->ftpFilesManager->handleFTPFile($FTPFile);
-                        $FTPFile->queuing = true;
-                        $FTPFile->save();*/
-                        ProcessFTPFile::dispatch($FTPFile);
                     });
                 } else {
                     return new JsonResponse();
@@ -430,65 +411,10 @@ class MediaController extends Controller
          * @var FTPFile[] $ftpFiles
          */
         $user = auth()->user();
-        $brand = $user->brand;
-        $creative = $user->creative;
-
-        if ($brand && !$creative) {
-
-            $ftpFiles = (new FTPFile())
-                ->where('handled', false)
-                ->where('processing', false)
-                ->where('username', $brand->ftpUser->userid)
-                ->get();
-
-            $ftpFiles->each(function (FTPFile $FTPFile) {
-
-                $FTPFile->queuing = true;
-                $FTPFile->save();
-
-                $processFTP = new ProcessFTPFile($FTPFile);
-                $processFTP->handle($this->ftpFilesManager);
-
-                /*$this->ftpFilesManager->handleFTPFile($FTPFile);
-                $FTPFile->queuing = true;
-                $FTPFile->save();*/
-                ProcessFTPFile::dispatch($FTPFile);
-            });
-
-
+        if ($brandId !== null) {
+            $brand = Brand::find($brandId);
         } else {
-            if (!$brand && $creative) {
-
-                $brand = Brand::find($brandId);
-                if ($brand) {
-
-                    $ftpFiles = (new FTPFile())
-                        ->where('handled', false)
-                        ->where('processing', false)
-                        ->where('username', $creative->getFTPUsername($brand))
-                        ->get();
-
-
-                    $ftpFiles->each(function (FTPFile $FTPFile) {
-
-                        $FTPFile->queuing = true;
-                        $FTPFile->save();
-
-                        $processFTP = new ProcessFTPFile($FTPFile);
-                        $processFTP->handle($this->ftpFilesManager);
-
-                        /*$this->ftpFilesManager->handleFTPFile($FTPFile);
-                        $FTPFile->queuing = true;
-                        $FTPFile->save();*/
-                        ProcessFTPFile::dispatch($FTPFile);
-                    });
-                } else {
-                    return new JsonResponse();
-                }
-
-            } else {
-                return new JsonResponse();
-            }
+            $brand = $user->brand;
         }
 
         if ($brand) {
@@ -498,8 +424,9 @@ class MediaController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->skip($taken)
                 ->take($toTake)
+                ->with('licenses')
                 ->get();
-            if(sizeof($medias) === 0) {
+            if (sizeof($medias) === 0) {
                 return new JsonResponse();
             }
 
@@ -868,7 +795,6 @@ class MediaController extends Controller
      */
     public function removeMultiple(Request $request, UploadService $uploadService): JsonResponse
     {
-
 
 
         $mediaFiles = (new Media)->whereIn('id', $request->input('media'))->get();

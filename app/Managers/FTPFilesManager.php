@@ -86,8 +86,6 @@ class FTPFilesManager
      * @param \App\Models\FTPFile $ftpFile
      *
      * @return \App\Models\Media
-     * @throws \App\Exceptions\FtpFileNotFoundException
-     * @throws \ImagickException
      * @throws \Exception
      */
     public function handleFTPFile(FTPFile $ftpFile)
@@ -95,7 +93,6 @@ class FTPFilesManager
 
         if (!file_exists($ftpFile->file)) {
             $ftpFile->delete();
-            //throw new \LogicException('The file was not found');
             return null;
         }
 

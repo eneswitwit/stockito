@@ -23,40 +23,44 @@ export const getters = {
 
 // mutations
 export const mutations = {
-    [types.SET_SELECTED_BRAND] (state, {selectedBrand}) {
+    [types.SET_SELECTED_BRAND](state, {selectedBrand}) {
         state.selectedBrand = selectedBrand
     },
-    [types.SET_BRANDS] (state, {brands}) {
+    [types.SET_BRANDS](state, {brands}) {
         state.brands = brands
     },
-    [types.SET_EDIT_CREATIVE] (state, {editCreative}) {
+    [types.SET_EDIT_CREATIVE](state, {editCreative}) {
         state.editCreative.id = editCreative.id,
-        state.editCreative.role = editCreative.role,
-        state.editCreative.position = editCreative.position,
-        state.showEditModal = true
+            state.editCreative.role = editCreative.role,
+            state.editCreative.position = editCreative.position,
+            state.showEditModal = true
     },
-    [types.HIDE_EDIT_MODAL] (state) {
+    [types.HIDE_EDIT_MODAL](state) {
         state.showEditModal = false
     },
 }
 
 // actions
 export const actions = {
-    setSelectedBrand ({ commit }, {selectedBrand}) {
-        commit(types.SET_SELECTED_BRAND, { selectedBrand })
+    setSelectedBrand({commit}, {selectedBrand}) {
+        commit(types.SET_SELECTED_BRAND, {selectedBrand})
     },
-    setBrands({ commit }, {brands})  {
-        commit(types.SET_BRANDS, { brands: brands })
+    async setSelectedBrandId({commit}, {selectedBrandId}) {
+        const {data} = await axios.post(`/api/brands/${selectedBrandId}`);
+        commit(types.SET_SELECTED_BRAND, {selectedBrand: data})
     },
-    async setEditCreative({ commit }, {creativeId})  {
-        const { data } = await axios.get(`api/brand/creatives/${creativeId}`);
-        commit(types.SET_EDIT_CREATIVE, { editCreative: data })
+    setBrands({commit}, {brands}) {
+        commit(types.SET_BRANDS, {brands: brands})
     },
-    hideEditModal({ commit })  {
+    async setEditCreative({commit}, {creativeId}) {
+        const {data} = await axios.get(`api/brand/creatives/${creativeId}`);
+        commit(types.SET_EDIT_CREATIVE, {editCreative: data})
+    },
+    hideEditModal({commit}) {
         commit(types.HIDE_EDIT_MODAL)
     },
-    async setApiBrands ({ commit }) {
-        const { data } = await axios.get('api/brands');
-        commit(types.SET_BRANDS, { brands: data })
+    async setApiBrands({commit}) {
+        const {data} = await axios.get('api/brands');
+        commit(types.SET_BRANDS, {brands: data})
     },
 }

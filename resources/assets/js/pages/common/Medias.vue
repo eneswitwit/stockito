@@ -2,6 +2,12 @@
 
     <div>
 
+        <div class="row" v-if="!showPage">
+            <div class="col-md-12" style="text-align:center;">
+                <img :src="require('../../../images/loading.gif')" height="300px"/>
+            </div>
+        </div>
+
         <a @click.prevent="showSearch = true">
             <div v-if="!showSearch" class="advanced-search">
 
@@ -144,6 +150,7 @@
 
         data: () => ({
             showSearch: false,
+            showPage: false,
             openedShareMediaModal: false,
             shareMediaObjects: [],
             isGotMedias: false,
@@ -153,7 +160,7 @@
         }),
 
         computed: {
-            checkLoadPage() {
+            /*checkLoadPage() {
                 if (this.isCreative && !this.selectedBrand) {
                     this.$router.push({name: 'dashboard'});
                     return false;
@@ -163,7 +170,7 @@
                     this.$router.push({name: 'dashboard'});
                     return false;
                 }
-            },
+            },*/
             medias() {
                 return this.$store.getters['media/medias'];
             },
@@ -191,7 +198,8 @@
         },
 
         beforeMount() {
-            this.checkAccess();
+            this.clearAll();
+            //this.checkAccess();
             this.getInitialMedia();
         },
 
@@ -213,15 +221,16 @@
             },
 
             async getInitialMedia() {
-                if (this.creative_brand_id) {
+                if (this.selectedBrand) {
                     await this.$store.dispatch('media/getBrandMediaStep', {
                         taken: 0,
                         toTake: 25,
-                        creative_brand_id: this.creative_brand_id
+                        creative_brand_id: this.selectedBrand.id
                     });
                 } else {
-                    await this.$store.dispatch('media/getMediasStep', {taken: 0, toTake: 20});
+                    await this.$store.dispatch('media/getMediasStep', {taken: 0, toTake: 25});
                 }
+                this.showPage = true;
                 this.isGotUploads = true;
             },
 
@@ -238,11 +247,11 @@
             },
 
             async getMediaStep(taken, toTake) {
-                if (this.creative_brand_id) {
+                if (this.selectedBrand) {
                     await this.$store.dispatch('media/getBrandMediaStep', {
                         taken: taken,
                         toTake: toTake,
-                        creative_brand_id: this.creative_brand_id
+                        creative_brand_id: this.selectedBrand.id
                     });
                 } else {
                     await this.$store.dispatch('media/getMediasStep', {taken: taken, toTake: toTake});

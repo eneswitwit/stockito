@@ -14,7 +14,13 @@
                     </div>
                 </div>
             </div>
-            <button class="btn btn-primary btn-block" :disabled="requesting" type="submit">
+            <div class="row">
+                <div class="col-md-12" style="text-align: center;">
+                    <img style="text-align: center;" :src="require('../../../images/loading.gif')"/>
+                </div>
+            </div>
+
+            <button class="btn btn-primary btn-block" :class="{ 'd-none' : requesting}" type="submit">
                 Submit
             </button>
         </form>
@@ -24,6 +30,7 @@
 <script>
 
     import debounce from 'lodash/debounce'
+    import axios from 'axios';
 
     export default {
 
@@ -32,7 +39,9 @@
         data: () => ({
             error: '',
             errors: {},
-            stripe: Stripe('pk_test_liDTANMEZoxjT5okqvFofeUO')
+            token: '',
+            stripe: Stripe('pk_test_liDTANMEZoxjT5okqvFofeUO'),
+            requesting: false
         }),
 
         updated: debounce(function () {
@@ -102,10 +111,30 @@
 
         methods: {
 
-            changeCreditcard() {
+            async changeCreditcard() {
+                this.requesting = true;
+                const {token, error} = await this.stripe.createToken(this.cardNumber);
+                if (error) {
+                    this.error = error.message;
+                } else {
+                    this.token = token;
+                    this.error = '';
 
-            }
-            ,
+                    axios.post('/api/subscription/change-creditcard', {
+                        token: this.token
+                    }).then(({data}) => {
+                        if (data.success) {
+                            this.$store.dispatch('auth/fetchUser').then(() => {
+                                this.$router.push({name: 'payment.details'});
+                            });
+                        } else {
+                            this.errors = data.errors;
+                            this.requesting = false;
+                        }
+                    });
+
+                }
+            },
 
             mountStripe() {
 

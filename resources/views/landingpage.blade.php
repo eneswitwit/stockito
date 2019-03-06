@@ -7,6 +7,7 @@
     <meta property="og:title" content="Stockito - Media storage with license manager ">
     <meta property="og:type" content="website">
     <meta property="og:image" content="images/screen.jpg">
+    <link rel="shortcut icon" href="{{{ asset('images/favicon.png') }}}">
 
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 

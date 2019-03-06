@@ -53,18 +53,11 @@ class UploadService
     public static function calculateUsedStorage(Brand $brand): array
     {
         $sData = [];
-        $used = 0;
-
-        $dir = \Storage::disk('s3')->allFiles($brand->getImagePath());
-
-
-        foreach ($dir as $file) {
-            $used += \Storage::disk('s3')->size($file);
-        }
-
+        $disk = \Storage::disk('s3');
+        $sData['used'] = array_sum(array_map(function ($file) {
+            return (int)$file['size'];
+        }, $disk->listContents($brand->getImagePath(), true /*<- recursive*/)));
         $sData['all'] = $brand->getProduct() ? $brand->getProduct()->storage : 0;
-        $sData['used'] = $used;
-
         return $sData;
     }
 

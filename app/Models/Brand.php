@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
+use Log;
 
 /**
  * App\Models\Brand
@@ -332,9 +333,14 @@ class Brand extends AbstractBrandModel
     public function getProduct(): ?Product
     {
         $user = $this->user;
-        $subscription = (new Subscription())->where('user_id', $user->id)->where(function (Builder $builder) {
-            $builder->orWhere('ends_at', null)->orWhere('ends_at', '>', Carbon::now());
-        })->orderBy('created_at', 'DESC')->first();
+
+        if ($user) {
+            $subscription = (new Subscription())->where('user_id', $user->id)->where(function (Builder $builder) {
+                $builder->orWhere('ends_at', null)->orWhere('ends_at', '>', Carbon::now());
+            })->orderBy('created_at', 'DESC')->first();
+        } else {
+            return null;
+        }
         return $subscription && $subscription->plan ? $subscription->plan->product : null;
     }
 

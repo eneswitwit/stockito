@@ -9,6 +9,7 @@ use App\Models\License;
 use App\Rules\ExtensionsRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
+use Log;
 
 /**
  * Class CreateLicenseRequest
@@ -26,11 +27,7 @@ class CreateLicenseRequest extends FormRequest
      */
     public function authorize(Request $request): bool
     {
-        $brand = $this->user()->brand;
-        if (!$brand && $request->get('selectedBrand')) {
-            $brand = Brand::find($request->get('selectedBrand'));
-        }
-
+        $brand = $this->user()->brand ? $this->user()->brand : Brand::find($request->get('selectedBrand'));
         return (bool)$brand;
     }
 

@@ -43,6 +43,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('send:license-expiration-reminder')->daily();
+        $schedule->command('handle:ftp-files')->everyMinute();
     }
 
     /**

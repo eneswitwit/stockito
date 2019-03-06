@@ -43,8 +43,6 @@ class SendLicenseExpirationReminder extends Command
     public function handle()
     {
 
-        Log::info('fired');
-
         $usageLicenses = UsageLicense::where('expired_at', Carbon::now()->startOfDay()->addDays(14)->toDateTimeString())->with([
             'license',
             'license.media',
@@ -86,8 +84,6 @@ class SendLicenseExpirationReminder extends Command
                 $usageLicense->invoice_number,
                 1));
         }
-
-        Log::info('end of fired');
 
     }
 }

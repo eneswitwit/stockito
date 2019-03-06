@@ -30,7 +30,6 @@ class UsageLicenseController extends Controller
     public function create(CreateLicenseRequest $request): JsonResponse
     {
 
-        Log::info($request);
         $license = License::find($request->get('licenseId'));
         $media = $license->media;
 

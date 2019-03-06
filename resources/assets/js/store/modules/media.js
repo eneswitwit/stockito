@@ -33,7 +33,7 @@ export const getters = {
 export const mutations = {
     [types.ADD_SELECTED_MEDIA](state, {media}) {
         let media_ = state.selectedMedia.find(m => m.id === media.id);
-        if(media_) {
+        if (media_) {
             state.selectedMedia = state.selectedMedia.filter(m => m.id !== media.id);
         } else {
             state.selectedMedia.push(media);
@@ -45,7 +45,7 @@ export const mutations = {
     [types.ADD_MEDIAS_DISPLAYED](state, {medias}) {
         medias.forEach(function (media) {
             let findMedia = state.mediasDisplayed.find(m => m.id === media.id);
-            if(!findMedia) {
+            if (!findMedia) {
                 state.mediasDisplayed.push(media)
             }
         });
@@ -53,7 +53,7 @@ export const mutations = {
     [types.ADD_MEDIAS_DISPLAYED_CREATIVE](state, {medias, creativeRole}) {
         medias.forEach(function (media) {
             let findMedia = state.mediasDisplayed.find(m => m.id === media.id);
-            if(!findMedia) {
+            if (!findMedia) {
                 state.mediasDisplayed.push(media)
             } else {
             }
@@ -61,7 +61,7 @@ export const mutations = {
         state.creativeRole = creativeRole;
     },
     [types.ADD_MEDIA_DISPLAYED](state, {medias}) {
-        if(medias.length > 0) {
+        if (medias.length > 0) {
             medias.forEach(function (media) {
                 let findMedia = state.mediaDisplayed.find(m => m.id === media.id);
                 if (!findMedia) {
@@ -75,7 +75,7 @@ export const mutations = {
         state.mediasDisplayed = state.mediasDisplayed.filter(m => m.id !== media.id);
     },
     [types.REMOVE_MEDIAS](state, {medias}) {
-        medias.forEach(function(media){
+        medias.forEach(function (media) {
             state.medias = state.medias.filter(m => m.id !== media);
             state.mediaDisplayed = state.mediaDisplayed.filter(m => m.id !== media);
             state.mediasDisplayed = state.mediasDisplayed.filter(m => m.id !== media);
@@ -101,25 +101,16 @@ export const mutations = {
     },
     [types.ATTACH_UPLOAD_LICENSES](state, {uploads, licenses}) {
         let i = 0;
-        uploads.forEach(function(upload){
+        uploads.forEach(function (upload) {
             let mediaDisplayed = state.mediaDisplayed.find(m => m.id === upload.id);
-            if(mediaDisplayed) {
+            if (mediaDisplayed) {
                 mediaDisplayed.license = licenses[i];
             }
-                i++;
+            i++;
         });
     },
     [types.ATTACH_MEDIAS_LICENSES](state, {medias, licenses}) {
-        let i = 0;
-        //console.log(medias.license);
         medias.licenses.push(licenses);
-        /*medias.forEach(function(media){
-            let media_ = state.medias.find(m => m.id === media.id);
-            if(media_) {
-                media_.license = licenses[i];
-            }
-            i++;
-        });*/
     },
     [types.FETCH_MEDIA_SUCCESS](state, {media}) {
         state.media = media
@@ -136,7 +127,7 @@ export const mutations = {
         state.mediaDisplayed = state.mediaDisplayed.filter(up => up.id !== upload.id);
     },
     [types.SUBMITTED_MULTIPLE_UPLOAD](state, {uploads}) {
-        uploads.forEach(function(upload){
+        uploads.forEach(function (upload) {
             state.uploads = state.uploads.filter(up => up.id !== upload.id);
             state.mediaDisplayed = state.mediaDisplayed.filter(up => up.id !== upload.id);
         });
@@ -149,10 +140,10 @@ export const mutations = {
         state.selectedMedia = [];
     },
     [types.SET_FILTER](state, {filter}) {
-        if(state.filter.q !== undefined) {
-            if(filter === "") {
+        if (state.filter.q !== undefined) {
+            if (filter === "") {
                 var newFilter = {};
-                newFilter["q"]  = state.filter.q;
+                newFilter["q"] = state.filter.q;
                 state.filter = newFilter;
             } else {
                 filter["q"] = state.filter.q;
@@ -163,7 +154,8 @@ export const mutations = {
         }
     },
     [types.SET_SELECTED_MEDIA](state, {selectedMedia}) {
-        state.selectedMedia = selectedMedia;
+        state.selectedMedia = state.selectedMedia.filter(m => m.id !== selectedMedia.id);
+        state.selectedMedia.push(selectedMedia);
     },
     [types.SET_FILTER_QUERY](state, {query}) {
         state.filter = query;
@@ -242,7 +234,8 @@ export const actions = {
         commit(types.SUBMITTED_MULTIPLE_UPLOAD, {uploads: data})
     },
     async setSelectedMedia({commit}, {mediaId}) {
-        let {data} = await axios.get(`/api/medias/${mediaId}`);
+
+        let {data} = await axios.get('/api/medias/' + mediaId);
         commit(types.SET_SELECTED_MEDIA, {selectedMedia: data})
     },
     updateUpload({commit}, {upload}) {

@@ -29,7 +29,7 @@ class MediaTransformer extends AbstractTransformer
             'id' => $model->id,
             'title' => $model->title,
             'license' => $model->license ? new TransformerEngine($model->license, new LicenseTransformer()) : null,
-            'created_by' => $model->createdBy,
+            'created_by' => $model->createdBy ? new TransformerEngine($model->createdBy, new UserTransformer()) : null,
             'file_name' => $model->file_name,
             'content_type' => $model->content_type,
             'origin_name' => $model->origin_name,

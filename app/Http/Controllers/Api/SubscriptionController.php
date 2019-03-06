@@ -327,6 +327,31 @@ class SubscriptionController extends Controller
     }
 
     /**
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function changeCreditcard(Request $request): JsonResponse
+    {
+        /**
+         * @var User $user
+         */
+        $user = $request->user();
+        $user->defaultCard()->delete();
+        $user->updateCard($request->input('token')['id']);
+        $user->updateCardFromStripe();
+        $user->save();
+
+        // Update expiration date
+        $expMount = $request->input('token')['card']['exp_month'];
+        $expYear = $request->input('token')['card']['exp_year'];
+        $expirationDate = Carbon::createFromDate($expYear, $expMount);
+        User::where('id', $user->id)->update(['trial_ends_at' => $expirationDate]);
+
+        return new JsonResponse(['success' => true]);
+    }
+
+    /**
      * @return int|null
      */
     public function getTaxPercentage() {

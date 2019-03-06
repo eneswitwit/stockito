@@ -3,12 +3,14 @@
 namespace App\Console\Commands;
 
 use App\Managers\FTPFilesManager;
-use App\Managers\MediaManager;
 use App\Models\FTPFile;
-use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 
+/**
+ * Class HandleFTPFilesCommand
+ * @package App\Console\Commands
+ */
 class HandleFTPFilesCommand extends Command
 {
     /**
@@ -32,6 +34,7 @@ class HandleFTPFilesCommand extends Command
 
     /**
      * HandleFTPFilesCommand constructor.
+     *
      * @param FTPFilesManager $ftpFilesManager
      */
     public function __construct(FTPFilesManager $ftpFilesManager)
@@ -41,24 +44,32 @@ class HandleFTPFilesCommand extends Command
     }
 
     /**
-     * Execute the console command.
-     *
-     * @return mixed
+     * @throws \Exception
      */
     public function handle()
     {
         /**
          * @var FTPFile[]|Collection $ftpFiles
          */
-        $ftpFiles = (new FTPFile())->where('handled', false)->get();
-
-        $count = $ftpFiles->count();
-
-        $this->info($count.' files for handling');
+        $ftpFiles = (new FTPFile())->where('handled', false)->where('processing', false)->get();
 
         foreach ($ftpFiles as $key => $ftpFile) {
-            $this->info('Handling '.++$key.' of '.$count.' ('.$ftpFile->file.')');
-            $this->ftpFilesManager->handleFTPFile($ftpFile);
+
+            if (!$ftpFile->processing) {
+                \DB::beginTransaction();
+
+                try {
+                    $ftpFile->processing = true;
+                    $ftpFile->save();
+                    $this->ftpFilesManager->handleFTPFile($ftpFile);
+                } catch (\Exception $exception) {
+                    $ftpFile->processing = false;
+                    $ftpFile->handled = false;
+                    $ftpFile->save();
+                    \DB::rollBack();
+                }
+                \DB::commit();
+            }
         }
     }
 }

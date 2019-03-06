@@ -1,9 +1,17 @@
 <template>
 
-    <div class="container-fluid" v-if="showPage">
-        <div class="row show-page" v-if="showPage">
-            <div class="col-lg-9">
+    <div class="container-fluid">
 
+        <div class="row" v-if="!showPage">
+            <div class="col-md-12" style="text-align:center;">
+                <img :src="require('../../../images/loading.gif')" height="300px"/>
+            </div>
+        </div>
+
+
+        <div class="row show-page" v-if="showPage">
+
+            <div class="col-lg-9">
                 <div class="row">
                     <div class="col-lg-12">
                         <card class="mb-4" v-if="selectedMedia.length">
@@ -101,7 +109,8 @@
                                     :medias="mediaDisplayed"
                                     v-bind:getMedias="getMedias"
                                     v-bind:refreshList="refreshList"
-                                    v-bind:clearAll="clearAll">
+                                    v-bind:clearAll="clearAll"
+                                    v-bind:selectedBrand="selectedBrand">
                 </edit-media-details>
 
             </div>
@@ -142,10 +151,6 @@
 
         name: 'uploaded',
 
-        created() {
-            //this.getMedias();
-        },
-
         data: () => ({
             showMedia: null,
             isGotUploads: false,
@@ -155,7 +160,8 @@
             shareMediaObjects: [],
             isGotMedias: false,
             isLoading: false,
-            counter: 0
+            counter: 0,
+            imagesLoading: true
         }),
 
         computed: {
@@ -168,6 +174,9 @@
             },
             selectedBrand() {
                 return this.$store.getters['creative/selectedBrand'];
+            },
+            brandLogged() {
+                return this.$store.getters['auth/brand'];
             },
             selectedMedia() {
                 return this.$store.getters['media/selectedMedia'];
@@ -184,11 +193,41 @@
         },
 
         beforeMount() {
-            this.setSelectedBrand();
+            this.clearAll();
             this.getInitialMedia();
         },
 
         methods: {
+
+            getSelectedBrandId() {
+                var url = window.location.href;
+                var page = "uploaded/";
+                var index = url.indexOf(page);
+                if (index === -1) {
+                    page = "medias/";
+                    index = url.indexOf(page)
+                }
+                var substring = url.substring(index + page.length, url.length);
+
+                var selectedBrandId = null;
+                if (substring !== '') {
+                    selectedBrandId = parseInt(substring);
+                } else {
+                    selectedBrandId = this.selectedBrand ? this.selectedBrand.id : null;
+                }
+                return selectedBrandId;
+
+            },
+
+
+            setSelectedBrand() {
+                if (!!this.brandLogged) {
+                    var selectedBrandId = this.getSelectedBrandId();
+                    if (selectedBrandId) {
+                        this.$store.dispatch('creative/setSelectedBrandId', {selectedBrandId});
+                    }
+                }
+            },
 
             checkCheckbox(id) {
                 var card = document.getElementById(id);
@@ -204,6 +243,7 @@
             },
 
             imageLoaded(id) {
+                this.imagesLoading = false;
                 var loading = document.getElementById(id + "-load");
                 if (loading && loading.parentNode) {
                     loading.parentNode.removeChild(loading);
@@ -228,7 +268,7 @@
                 var selectedBrandId = this.getSelectedBrandId();
                 await this.$store.dispatch('media/getUploadsStep', {
                     taken: 0,
-                    toTake: 20,
+                    toTake: 25,
                     selectedBrandId: selectedBrandId
                 });
                 this.isGotUploads = true;
@@ -330,8 +370,6 @@
             deleteMultipleMedia() {
                 var selectedMedia = this.getSelectedMediaArray();
 
-                console.log('delete multiple medias');
-
                 this.$swal({
                     title: "Delete files",
                     text: "Are you sure?",
@@ -347,7 +385,6 @@
                             this.clearAll();
                             this.refreshList();
                         } else {
-                            console.log('not success');
                         }
                     });
                 })
@@ -382,35 +419,6 @@
                         return 'blue';
 
                 }
-            },
-
-            getSelectedBrandId() {
-                var url = window.location.href;
-                var index = url.indexOf("uploaded/");
-                var substring = url.substring(index + 9, url.length);
-
-                var selectedBrandId = null;
-                if (substring !== '') {
-                    selectedBrandId = parseInt(substring);
-                } else {
-                    selectedBrandId = this.selectedBrand ? this.selectedBrand.id : null;
-                }
-                return selectedBrandId;
-            },
-
-
-            setSelectedBrand() {
-                var url = window.location.href;
-                var index = url.indexOf("uploaded/");
-                var substring = url.substring(index + 9, url.length);
-
-                var selectedBrandId = null;
-                if (substring !== '') {
-                    selectedBrandId = parseInt(substring);
-                } else {
-                    selectedBrandId = this.selectedBrand ? this.selectedBrand.id : null;
-                }
-                this.$store.dispatch('creative/setSelectedBrand', {selectedBrandId});
             },
 
         },

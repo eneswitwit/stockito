@@ -213,10 +213,12 @@
             axios.get('/api/licenses/types-long').then(({data}) => {
                 this.licenseTypes = data;
             });
+            this.setSelectedBrand();
         },
 
         mounted() {
             this.form.selectedMedia = this.getSelectedMediaArray();
+            this.setSelectedBrand();
             if (this.license) {
                 this.form.id = this.license.id;
                 this.form.usage = this.license.usage;
@@ -254,6 +256,34 @@
 
         methods: {
 
+            setSelectedBrand() {
+                var url = window.location.href;
+                var index = url.indexOf("uploaded/");
+                var substring = url.substring(index + 9, url.length);
+
+                var selectedBrandId = null;
+                if (substring !== '') {
+                    selectedBrandId = parseInt(substring);
+                } else {
+                    selectedBrandId = this.selectedBrand ? this.selectedBrand.id : null;
+                }
+                this.$store.dispatch('creative/setSelectedBrand', {selectedBrandId});
+            },
+
+            getSelectedBrandId() {
+                var url = window.location.href;
+                var index = url.indexOf("uploaded/");
+                var substring = url.substring(index + 9, url.length);
+
+                var selectedBrandId = null;
+                if (substring !== '') {
+                    selectedBrandId = parseInt(substring);
+                } else {
+                    selectedBrandId = this.selectedBrand ? this.selectedBrand.id : null;
+                }
+                return selectedBrandId;
+            },
+
             getSelectedMediaArray() {
                 var mediaSubmit = [];
                 this.selectedMedia.forEach(function(media) {
@@ -264,7 +294,7 @@
             submitCreateLicense() {
                 this.form.startDate = this.date.startDate.time;
                 this.form.expireDate = this.date.expireDate.time;
-                this.form.selectedBrand = this.selectedBrand ? this.selectedBrand.id : '';
+                this.form.selectedBrand = this.selectedBrand ? this.selectedBrand.id : this.getSelectedBrandId();
 
                 this.form.selectedMedia = this.getSelectedMediaArray();
 

@@ -51,6 +51,7 @@
         },
 
         methods: {
+
             savedLicense(licenses) {
                 this.$store.dispatch('media/attachLicenses', {uploads: this.selectedMedia, licenses: licenses}).then(() => {
                     this.$emit('update:show', false);

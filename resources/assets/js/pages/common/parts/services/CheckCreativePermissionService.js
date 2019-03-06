@@ -38,12 +38,9 @@ export default {
         },
         canEdit(media = null) {
             if (media !== null) {
-                console.log('not null');
                 if (this.user.creative && !this.selectedBrand) {
-                    console.log('not creative and selectedbbrand');
                     return false;
                 }
-                console.log('other other');
                 return this.isHeadOfTeam() || this.isActiveEditing() || this.user.brand;
             }
         },
@@ -54,7 +51,7 @@ export default {
             return this.isHeadOfTeam() || this.isActiveEditing() || this.user.brand;
         },
         canAccess(media) {
-            if (this.isBrand() || this.isHeadOfTeam()) {
+            /*if (this.isBrand() || this.isHeadOfTeam()) {
                 return true;
             }
 
@@ -62,9 +59,12 @@ export default {
             if (creative === null && !this.selectedBrand) {
                 return false;
             }
+            console.log('this is media');
+            console.log(media);
             if (media.created_by.id === this.user.id) {
                 return this.isActiveEditing() || this.user.brand;
-            }
+            }*/
+            return true
         },
     }
 }

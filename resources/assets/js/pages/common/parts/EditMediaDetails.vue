@@ -201,10 +201,14 @@
             },
             medias: {
                 'default': undefined
+            },
+            selectedBrand: {
+                'default': undefined,
             }
         },
 
         created() {
+            this.setSelectedBrand();
             this.getCategories();
             this.getPeopleAttributes();
             this.getSuppliers();
@@ -243,13 +247,13 @@
                 this.setValues(value);
             },
             selectedMedia() {
+                this.setSelectedBrand();
                 this.setMultipleValues();
                 this.checkLicenseIsSet();
             },
             showLicenseModal() {
                 this.checkLicenseIsSet();
             },
-
             licenseSet() {
                 this.checkLicenseIsSet();
             }
@@ -259,9 +263,6 @@
 
             selectedMedia() {
                 return this.$store.getters['media/selectedMedia'];
-            },
-            brand() {
-                return this.$store.getters['auth/brand'] ? this.$store.getters['auth/brand'] : this.$store.getters['creative/selectedBrand'];
             },
             peopleAttributesOptions() {
                 return this.peopleAttributes ? this.peopleAttributes.map((el) => {
@@ -277,10 +278,45 @@
                 return this.suppliers ? this.suppliers.map((el) => {
                     return {label: el.name, value: el.id};
                 }) : [];
+            },
+            brandLogged() {
+                return this.$store.getters['auth/brand'];
+            },
+            brand() {
+                return this.brandLogged? this.brandLogged : this.selectedBrand;
             }
         },
 
         methods: {
+
+            getSelectedBrandId() {
+                var url = window.location.href;
+                var page = "uploaded/";
+                var index = url.indexOf(page);
+                if(index === -1) {
+                    page = "medias/";
+                    index = url.indexOf(page)
+                }
+                var substring = url.substring(index + page.length, url.length);
+
+                var selectedBrandId = null;
+                if (substring !== '') {
+                    selectedBrandId = parseInt(substring);
+                } else {
+                    selectedBrandId = this.selectedBrand ? this.selectedBrand.id : null;
+                }
+                return selectedBrandId;
+            },
+
+
+            setSelectedBrand() {
+                if(!this.brandLogged) {
+                    var selectedBrandId = this.getSelectedBrandId();
+                    if (selectedBrandId) {
+                        this.$store.dispatch('creative/setSelectedBrandId', {selectedBrandId});
+                    }
+                }
+            },
 
             async uploadMultiple() {
                 this.form.mediaId = this.getSelectedMediaArray();
@@ -299,7 +335,7 @@
                 let value = [];
                 value['title'] = null;
                 value['origin_name'] = null;
-                value['fileType'] = null;
+                //value['fileType'] = null;
                 value['keywords'] = null;
                 value['category'] = null;
                 value['source'] = null;
@@ -319,9 +355,9 @@
                         if (mediaElement.origin_name) {
                             value['origin_name'] = mediaElement.origin_name;
                         }
-                        if (mediaElement.fileType) {
+                        /*if (mediaElement.fileType) {
                             value['fileType'] = mediaElement.fileType;
-                        }
+                        }*/
                         if (mediaElement.keywords) {
                             if (value['keywords'] === null) {
                                 value['keywords'] = mediaElement.keywords;
@@ -352,7 +388,9 @@
             setValues(value) {
                 this.form.title = value.title;
                 this.form.originName = value.origin_name;
-                this.form.fileType = value.fileType;
+                if(value.fileType) {
+                    this.form.fileType = value.fileType;
+                }
                 this.form.keywords = value.keywords;
                 if (value.category) {
                     this.form.category = {label: value.category.name, value: value.category.id};
@@ -404,7 +442,6 @@
 
             getTypes() {
                 axios.get('/api/medias/types').then(({data}) => {
-                    console.log(data);
                     this.types = data;
                 });
             },

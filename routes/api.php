@@ -55,6 +55,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('img-to-base64', 'Api\ToolsController@imgToBase64');
 
     Route::get('used-storage', 'Api\BrandController@getUsedStorage');
+    Route::get('brand/select-brand/{selectedBrandId}', 'Api\BrandController@getBrand');
 
     Route::get('activities', 'Api\ActivitiesController@index');
     Route::get('cards', 'Api\CardController@index');
@@ -66,6 +67,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('{brandId?}', 'Api\LicensesController@index');
     });
     Route::get('brands', 'Api\CreativeController@getCreativeBrands');
+    Route::post('brands/{brand}', 'Api\CreativeController@getCreativeBrand');
     Route::get('brands/{brand}/people-attributes', 'Api\BrandController@getPeopleAttributes');
     Route::get('brands/{brand}/suppliers', 'Api\BrandController@getSuppliers');
     Route::get('brands/{brand}/categories', 'Api\BrandController@getCategories');
@@ -112,7 +114,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('', 'Api\MediaController@index');
         Route::get('{taken}/{toTake}', 'Api\MediaController@indexStep');
         Route::get('/brand/{brand_id}', 'Api\MediaController@getBrandMedias');
-        Route::get('/brand/{taken}/{toTake}/{brand_id}', 'Api\MediaController@getBrandMediasStep');
+        Route::get('/brand/{taken}/{toTake}/{id}', 'Api\MediaController@getBrandMediasStep');
         Route::post('upload', 'Api\MediaController@upload');
         Route::post('image/{name}', 'Api\MediaController@image');
         Route::post('share', 'Api\MediaController@share');
@@ -131,6 +133,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::post('downgrade', 'Api\SubscriptionController@downgrade');
         Route::post('cancel-subscription', 'Api\SubscriptionController@cancelSubscription');
         Route::post('resume-subscription', 'Api\SubscriptionController@resumeSubscription');
+        Route::post('change-creditcard', 'Api\SubscriptionController@changeCreditcard');
     });
 
     Route::group(['prefix' => 'licenses'], function () {
@@ -140,7 +143,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     });
 
     Route::group(['prefix' => 'ftp'], function () {
-        Route::get('{email}/{brand_id?}', 'Api\FtpController@show');
+        Route::post('{email}/{brand_id?}', 'Api\FtpController@show');
     });
 
     Route::group(['prefix' => 'usage-license'], function () {

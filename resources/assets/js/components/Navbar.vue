@@ -30,8 +30,13 @@
 
             <div class="nav-item" style="margin:auto;">
                 <span v-if="selectedBrand">
-                    <img v-if="selectedBrand.logo" :class="'brand-logo-nav'" :src="logoConvert(selectedBrand.logo)">
-                    {{ selectedBrand.company_name.substring(0,8) + '...' }}
+                    <img v-if="selectedBrand.logo && selectedBrand.logo !== '/storage/' " :class="'brand-logo-nav'" :src="logoConvert(selectedBrand.logo)">
+                    <span v-if="selectedBrand.company_name.length > 8">
+                        {{ selectedBrand.company_name.substring(0,8) + '...' }}
+                    </span>
+                    <span v-else>
+                        {{ selectedBrand.company_name }}
+                    </span>
                 </span>
                 <button v-if="user && canUpload()" class="btn btn-primary" @click="showUploadModal = true">Upload File</button>
             </div>
@@ -129,6 +134,7 @@
     import Card from './Card.vue';
     import UploadFileModalComponent from './Modals/UploadFIleModalComponent.vue';
     import CheckCreativePermission from '../pages/common/parts/services/CheckCreativePermissionService';
+    import axios from 'axios';
 
     export default {
 
@@ -144,15 +150,16 @@
             }
         }),
 
+        mounted() {
+            //this.getBrand(33);
+        },
+
         computed: {
             selectedBrand() {
                 return this.$store.getters['creative/selectedBrand'];
             },
             user() {
                 return this.$store.getters['auth/user'];
-            },
-            selectedBrand() {
-                return this.$store.getters['creative/selectedBrand'];
             },
             creativeRole() {
                 return this.$store.getters[ 'media/creativeRole'];
@@ -169,17 +176,32 @@
 
         methods: {
 
+
+        /*async setSelectedBrand() {
+                var url = window.location.href;
+                var index = url.indexOf("uploaded/");
+                var substring = url.substring(index + 9, url.length);
+
+                var selectedBrandId = null;
+                if (substring !== '') {
+                    selectedBrandId = parseInt(substring);
+                }
+                await this.$store.dispatch('creative/setSelectedBrandId', {selectedBrandId: selectedBrandId});
+            },
+
+            getBrand(id) {
+                axios.get('api/brands/' + id).then(response => {
+                    console.log(response.data);
+                    return response.data;
+                });
+            },*/
+
             showDashboard() {
                 window.location.href = '/';
             },
             closeModal() {
                 this.showUploadModal = false;
             },
-            /*computed: {
-                user() {
-                    return this.$store.getter['auth/user'];
-                }
-            },*/
             async logout() {
                 // Log out the user.
                 this.$store.dispatch('creative/setSelectedBrand', {selectedBrand: null});
@@ -199,7 +221,11 @@
                     document.getElementById('closeAdvancedSearch').click();
                 }
                 this.$store.dispatch('media/setFilter', {filter: ''});
-                this.$router.push({name: 'medias'})
+                if(this.selectedBrand) {
+                    this.$router.push({name: 'creative.brand.medias', params: { creative_brand_id: this.selectedBrand.id  }});
+                } else {
+                    this.$router.push({name: 'medias'})
+                }
             },
             logoConvert(path) {
                 return path.replace("public", "/storage");

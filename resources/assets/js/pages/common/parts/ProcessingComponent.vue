@@ -3,7 +3,7 @@
         <loader v-if="requestingProcessing"></loader>
         <template v-else>
             <p><span class="badge badge-primary">{{ processing.processing }}</span> files in processing</p>
-            <p><span class="badge badge-primary">{{ processing.queuing }}</span> in queue</p>
+            <p><span class="badge badge-primary">{{ processing.queuing }}</span> files in queue</p>
             <!-- <p><button class="btn btn-link" @click="refresh">Refresh</button></p> -->
         </template>
     </card>
@@ -50,6 +50,7 @@
                 }
 
                 await this.$store.dispatch('media/getProcessing', {selectedBrandId: selectedBrandId});
+
             }
         }
     };

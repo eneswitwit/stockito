@@ -12,6 +12,7 @@ use App\Models\BrandCreative;
 use App\Models\User;
 use App\Services\UploadService;
 use App\Transformers\BrandCreativesTransformer;
+use App\Transformers\MinorBrandTransformer;
 use App\Transformers\CategoryTransformer;
 use App\Transformers\EditCreativeTransformer;
 use App\Transformers\InvoiceTransformer;
@@ -21,6 +22,7 @@ use Illuminate\Http\Request;
 use LukeVear\LaravelTransformer\TransformerEngine;
 use Illuminate\Support\Facades\Mail;
 use App\Services\FTPService;
+use Log;
 
 /**
  * Class BrandController
@@ -29,6 +31,18 @@ use App\Services\FTPService;
  */
 class BrandController extends Controller
 {
+    /**
+     * @param $selectedBrandId
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     */
+    public function getBrand($selectedBrandId): JsonResponse
+    {
+
+        $brand = Brand::find($selectedBrandId);
+        return new JsonResponse(new TransformerEngine($brand, new MinorBrandTransformer()));
+    }
 
     /**
      * @param Request $request
@@ -101,22 +115,28 @@ class BrandController extends Controller
          * @var Brand $brand
          */
         $brand = $user->brand ?? Brand::find($brandId);
-        $creativeUser = User::where('email', $request->email)->first();
-        if ($creativeUser) {
-            if (!Brand::where('id', $creativeUser->id)->exists()) {
-                // check if creative is already belonging to the brand
-                $creative = $creativeUser->creative;
-                if (!BrandCreative::where('brand_id', $brand->id)->where('creative_id', $creative->id)->exists()) {
-                    $brand->creatives()->attach($creative, [
-                        'role' => $request->role,
-                        'position' => $request->position
-                    ]);
+        $email = $request['email'];
+        Log::info($email);
+        $creativeUser = User::where('email', '=', strtolower($email))->first();
+        Log::info($creativeUser);
 
-                    $ftpUser = FTPService::makeFTPUserForBrand($brand, $creativeUser->email . '/' . $brand->id, str_random(8), $creative);
-                    $ftpUser->save();
 
-                    Mail::to($request->email)->send(new CreativeInviteExist($brand->brand_name, $request->role));
-                }
+        if ($creativeUser && $creativeUser->creative) {
+            $creativeUser = $creativeUser->creative;
+            Log::info($creativeUser);
+            if (!BrandCreative::where('brand_id', $brand->id)->where('creative_id', $creativeUser->id)->exists()) {
+                $brand->creatives()->attach($creativeUser, [
+                    'role' => $request->role,
+                    'position' => $request->position
+                ]);
+
+                $ftpUser = FTPService::makeFTPUserForBrand($brand, $creativeUser->email . '/' . $brand->id,
+                    str_random(8), $creativeUser);
+                $ftpUser->save();
+
+                Mail::to($request->email)->send(new CreativeInviteExist($brand->brand_name, $request->role));
+            } else {
+                Mail::to($request->email)->send(new CreativeInviteNew($brand, $request->role, $request->position));
             }
         } else {
             Mail::to($request->email)->send(new CreativeInviteNew($brand, $request->role, $request->position));
