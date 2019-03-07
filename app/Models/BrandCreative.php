@@ -4,6 +4,7 @@
 namespace App\Models;
 
 // use
+use App\Support\Database\CacheQueryBuilder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -28,6 +29,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class BrandCreative extends  Model
 {
+
+    use CacheQueryBuilder;
 
 	protected $table = 'brand_creative';
 

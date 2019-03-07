@@ -4,6 +4,7 @@
 namespace App\Models;
 
 // use
+use App\Support\Database\CacheQueryBuilder;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -36,6 +37,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  */
 class UsageLicense extends Model
 {
+
+    use CacheQueryBuilder;
 
     /**
      * @var array

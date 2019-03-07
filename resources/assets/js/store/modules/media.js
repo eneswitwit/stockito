@@ -43,31 +43,35 @@ export const mutations = {
         state.medias.push(media)
     },
     [types.ADD_MEDIAS_DISPLAYED](state, {medias}) {
-        medias.forEach(function (media) {
-            let findMedia = state.mediasDisplayed.find(m => m.id === media.id);
-            if (!findMedia) {
-                state.mediasDisplayed.push(media)
+        if (medias.length && medias.length > 0) {
+            for (var i = 0, len = medias.length; i < len; i++) {
+                let findMedia = state.mediasDisplayed.find(m => m.id === medias[i].id);
+                if (!findMedia) {
+                    state.mediasDisplayed.push(medias[i])
+                }
             }
-        });
+        }
     },
     [types.ADD_MEDIAS_DISPLAYED_CREATIVE](state, {medias, creativeRole}) {
-        medias.forEach(function (media) {
-            let findMedia = state.mediasDisplayed.find(m => m.id === media.id);
-            if (!findMedia) {
-                state.mediasDisplayed.push(media)
-            } else {
+        if (medias.length && medias.length > 0) {
+            for (var i = 0, len = medias.length; i < len; i++) {
+                let findMedia = state.mediasDisplayed.find(m => m.id === medias[i].id);
+                if (!findMedia) {
+                    state.mediasDisplayed.push(medias[i])
+                } else {
+                }
             }
-        });
+        }
         state.creativeRole = creativeRole;
     },
     [types.ADD_MEDIA_DISPLAYED](state, {medias}) {
-        if (medias.length > 0) {
-            medias.forEach(function (media) {
-                let findMedia = state.mediaDisplayed.find(m => m.id === media.id);
+        if (medias.length && medias.length > 0) {
+            for (var i = 0, len = medias.length; i < len; i++) {
+                let findMedia = state.mediaDisplayed.find(m => m.id === medias[i].id);
                 if (!findMedia) {
-                    state.mediaDisplayed.push(media)
+                    state.mediaDisplayed.push(medias[i])
                 }
-            });
+            }
         }
     },
     [types.REMOVE_MEDIA](state, {media}) {
@@ -75,11 +79,13 @@ export const mutations = {
         state.mediasDisplayed = state.mediasDisplayed.filter(m => m.id !== media.id);
     },
     [types.REMOVE_MEDIAS](state, {medias}) {
-        medias.forEach(function (media) {
-            state.medias = state.medias.filter(m => m.id !== media);
-            state.mediaDisplayed = state.mediaDisplayed.filter(m => m.id !== media);
-            state.mediasDisplayed = state.mediasDisplayed.filter(m => m.id !== media);
-        });
+        if (medias.length && medias.length > 0) {
+            for (var i = 0, len = medias.length; i < len; i++) {
+                state.medias = state.medias.filter(m => m.id !== medias[i]);
+                state.mediaDisplayed = state.mediaDisplayed.filter(m => m.id !== medias[i]);
+                state.mediasDisplayed = state.mediasDisplayed.filter(m => m.id !== medias[i]);
+            }
+        }
     },
     [types.REMOVE_UPLOAD](state, {media}) {
         state.uploads = state.uploads.filter(m => m.id !== media.id);
@@ -201,12 +207,27 @@ export const actions = {
         commit(types.FETCH_MEDIAS_SUCCESS, {medias: data.medias, creativeRole: data.creativeRole})
     },
     async getMediasStep({commit, state}, {taken, toTake}) {
+        var t0 = performance.now();
+        console.log('perfomance now brand media step');
+        console.log(t0);
         const {data} = await axios.get("/api/medias/" + taken + "/" + toTake, {params: state.filter});
+        var t1 = performance.now();
+        console.log("Call axios.get tooks " + (t1 - t0) + " milliseconds.");
+        t0 = performance.now();
+        console.log(t0);
         commit(types.ADD_MEDIAS_DISPLAYED, {medias: data})
     },
     async getBrandMediaStep({commit}, {taken, toTake, creative_brand_id}) {
+        var t0 = performance.now();
+        console.log('perfomance now brand media step');
+        console.log(t0);
         const {data} = await axios.get("/api/medias/brand/" + taken + "/" + toTake + "/" + creative_brand_id);
+        var t1 = performance.now();
+        console.log("Call axios.get tooks " + (t1 - t0) + " milliseconds.");
+        t0 = performance.now();
         commit(types.ADD_MEDIAS_DISPLAYED_CREATIVE, {medias: data.medias, creativeRole: data.creativeRole})
+        t1 = performance.now();
+        console.log("Call commit took " + (t1 - t0) + " milliseconds.");
     },
     async getUploads({commit}, {selectedBrandId}) {
         let url = selectedBrandId ? ("/api/medias/uploads" + "/" + selectedBrandId) : "/api/medias/uploads";

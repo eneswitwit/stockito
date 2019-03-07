@@ -6,6 +6,7 @@ namespace App\Transformers;
 // use
 use App\Managers\MediaManager;
 use App\Services\UploadService;
+use App\Support\Database\CacheQueryBuilder;
 use App\Transformers\Media\LicenseTransformer;
 use LukeVear\LaravelTransformer\AbstractTransformer;
 use LukeVear\LaravelTransformer\TransformerEngine;
@@ -17,6 +18,9 @@ use LukeVear\LaravelTransformer\TransformerEngine;
  */
 class MediaTransformer extends AbstractTransformer
 {
+
+    use CacheQueryBuilder;
+
     /**
      * @param \App\Models\Media $model
      *

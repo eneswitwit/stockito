@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Storage;
 use Longman\LaravelLodash\Eloquent\UserIdentities;
 use PHPExif\Exif;
+use App\Support\Database\CacheQueryBuilder;
 use phpDocumentor\Reflection\Types\Boolean;
 use PHPExif\Reader\Reader;
 use Log;
@@ -101,6 +102,7 @@ use Log;
 class Media extends Model implements TargetActivityInterface
 {
     use UserIdentities;
+    use CacheQueryBuilder;
 
     public const FILE_PREFIX = 'f-';
 

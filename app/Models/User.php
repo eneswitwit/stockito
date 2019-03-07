@@ -6,6 +6,7 @@ namespace App\Models;
 
 // use
 use App\Notifications\MailUserRegistration;
+use App\Support\Database\CacheQueryBuilder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Laravel\Cashier\Billable;
@@ -75,6 +76,7 @@ class User extends Authenticatable implements JWTSubject
     // use
     use Notifiable;
     use Billable;
+    use CacheQueryBuilder;
 
 
     /**

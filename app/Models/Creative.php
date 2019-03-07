@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Database\CacheQueryBuilder;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -34,6 +35,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Creative extends AbstractCreativeModel
 {
+
+    use CacheQueryBuilder;
+
     /**
      * The attributes that are mass assignable.
      *

@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use App\Support\Database\CacheQueryBuilder;
+
 
 /**
  * App\Models\License
@@ -65,6 +67,9 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  */
 class License extends AbstractUserIdentitiesModel
 {
+
+    use CacheQueryBuilder;
+
     public const RF = 1;
     public const RM = 2;
     public const RE = 3;

@@ -49,11 +49,11 @@ class LicensesController extends Controller
 
         $licenses = (new UsageLicense)->whereIn(
             'license_id',
-            $brand->media->whereStrict('published',1)->pluck('license')->pluck('id')->toArray()
+            $brand->media->whereStrict('published', 1)->pluck('license')->pluck('id')->toArray()
         )->orderBy(
             'expired_at',
             'desc'
-        )->with('license')->with('license.media')->with('license.media.brand')->with('license.media.supplier')->get();
+        )->with('license', 'license.media', 'license.media.brand', 'license.media.supplier')->get();
 
         return new JsonResponse(new TransformerEngine($licenses, new UsageLicenseTransformer()));
     }
@@ -95,7 +95,7 @@ class LicensesController extends Controller
                 $media->license_id = $license->id;
                 $media->save();
             } else {
-                if($media->published === 0) {
+                if ($media->published === 0) {
                     $licensesMedia[0] = $licenseModelManager->editUnprocessedLicense($licensesMedia[0], $requestSingle);
                 } else {
                     $licensesMedia[0] = $licenseModelManager->fillFromRequest($licensesMedia[0], $requestSingle);

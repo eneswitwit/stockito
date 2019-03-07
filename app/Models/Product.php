@@ -5,6 +5,7 @@ namespace App\Models;
 
 // use
 use App\Services\UploadService;
+use App\Support\Database\CacheQueryBuilder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -36,6 +37,9 @@ use Stripe\Product as StripProduct;
  */
 class Product extends Model
 {
+
+    use CacheQueryBuilder;
+
     /**
      * @var array
      */

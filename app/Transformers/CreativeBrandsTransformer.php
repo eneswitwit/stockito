@@ -5,6 +5,7 @@ namespace App\Transformers;
 
 // use
 use App\Models\User;
+use App\Support\Database\CacheQueryBuilder;
 use LukeVear\LaravelTransformer\AbstractTransformer;
 
 
@@ -15,6 +16,9 @@ use LukeVear\LaravelTransformer\AbstractTransformer;
  */
 class CreativeBrandsTransformer extends AbstractTransformer
 {
+
+    use CacheQueryBuilder;
+
     /**
      * @param User $model
      * @return array

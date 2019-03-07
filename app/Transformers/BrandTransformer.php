@@ -2,11 +2,15 @@
 
 namespace App\Transformers;
 
+use App\Support\Database\CacheQueryBuilder;
 use LukeVear\LaravelTransformer\AbstractTransformer;
 use LukeVear\LaravelTransformer\TransformerEngine;
 
 class BrandTransformer extends AbstractTransformer
 {
+
+    use CacheQueryBuilder;
+
     /**
      * @param \App\Models\Brand $model
      *

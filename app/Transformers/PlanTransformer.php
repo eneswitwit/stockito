@@ -3,12 +3,16 @@
 namespace App\Transformers;
 
 use App\Models\Plan;
+use App\Support\Database\CacheQueryBuilder;
 use Illuminate\Support\Arr;
 use LukeVear\LaravelTransformer\AbstractTransformer;
 use Stripe\Product as StripeProduct;
 
 class PlanTransformer extends AbstractTransformer
 {
+
+    use CacheQueryBuilder;
+
     /**
      * @param Plan $model
      * @return array

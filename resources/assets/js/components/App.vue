@@ -1,10 +1,7 @@
 <template>
 
     <div id="app">
-
-        <link rel="shortcut icon" href="../../static/favicon.png">
         <loading ref="loading"/>
-
         <transition name="page" mode="out-in">
             <component v-if="layout" :is="layout"></component>
         </transition>
@@ -50,20 +47,9 @@
             }
         },
 
-        mounted() {
+        async mounted() {
             this.$loading = this.$refs.loading
-            this.setSelectedBrand();
-        },
-
-        created() {
-            this.setSelectedBrand();
-        },
-
-        watch: {
-            selectedBrand:function() {
-                this.setSelectedBrand();
-                return this.selectedBrand();
-            }
+            //this.setSelectedBrand();
         },
 
         methods: {
@@ -89,10 +75,10 @@
 
 
             setSelectedBrand() {
-                var selectedBrandId = this.getSelectedBrandId();
+                /*var selectedBrandId = this.getSelectedBrandId();
                 if(selectedBrandId) {
                     this.$store.dispatch('creative/setSelectedBrandId', {selectedBrandId});
-                }
+                }*/
             },
 
             /**

@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Stripe\Subscription as StripeSubscription;
+use App\Support\Database\CacheQueryBuilder;
+
 
 /**
  * App\Models\Subscription
@@ -42,6 +44,9 @@ use Stripe\Subscription as StripeSubscription;
  */
 class Subscription extends Model
 {
+
+    use CacheQueryBuilder;
+
     /**
      * @var array
      */

@@ -150,10 +150,6 @@
             }
         }),
 
-        mounted() {
-            //this.getBrand(33);
-        },
-
         computed: {
             selectedBrand() {
                 return this.$store.getters['creative/selectedBrand'];
@@ -175,26 +171,6 @@
         },
 
         methods: {
-
-
-        /*async setSelectedBrand() {
-                var url = window.location.href;
-                var index = url.indexOf("uploaded/");
-                var substring = url.substring(index + 9, url.length);
-
-                var selectedBrandId = null;
-                if (substring !== '') {
-                    selectedBrandId = parseInt(substring);
-                }
-                await this.$store.dispatch('creative/setSelectedBrandId', {selectedBrandId: selectedBrandId});
-            },
-
-            getBrand(id) {
-                axios.get('api/brands/' + id).then(response => {
-                    console.log(response.data);
-                    return response.data;
-                });
-            },*/
 
             showDashboard() {
                 window.location.href = '/';

@@ -22,6 +22,7 @@ use App\Models\Share;
 use App\Models\Supplier;
 use App\Models\User;
 use App\Services\UploadService;
+use App\Support\Database\CacheQueryBuilder;
 use App\Transformers\BrandCreativesTransformer;
 use App\Transformers\MediaExtendedTransformer;
 use App\Transformers\MediaTransformer;
@@ -37,6 +38,7 @@ use Illuminate\Support\Facades\Storage;
 use LukeVear\LaravelTransformer\TransformerEngine;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\Support\Facades\Validator;
+use Log;
 
 
 /**
@@ -46,6 +48,9 @@ use Illuminate\Support\Facades\Validator;
  */
 class MediaController extends Controller
 {
+
+    use CacheQueryBuilder;
+
     /**
      * @var UploadService
      */
@@ -208,6 +213,10 @@ class MediaController extends Controller
      */
     public function indexStep(Request $request, $taken, $toTake): JsonResponse
     {
+        $start = microtime(true);
+
+        Log::info('start microtime');
+        Log::info($start);
         /**
          * @var User $user
          */
@@ -263,6 +272,11 @@ class MediaController extends Controller
             }
         });
 
+        $start = microtime(true);
+
+        Log::info('end microtime');
+        Log::info($start);
+
         return new JsonResponse(new TransformerEngine($medias, new MediaTransformer()));
     }
 
@@ -303,6 +317,11 @@ class MediaController extends Controller
      */
     public function getBrandMediasStep(Request $request, $taken, $toTake, $id): JsonResponse
     {
+        $start = microtime(true);
+
+        Log::info('start microtime');
+        Log::info($start);
+
         $creative = $request->user()->creative;
         $brand = Brand::find($id);
         if (!$brand) {
@@ -312,11 +331,61 @@ class MediaController extends Controller
         if (!$brandCreative) {
             throw new \Exception('Creative not in brand team!');
         }
-        $medias = $brand->media()->with('licenses')->published()->orderBy('created_at', 'desc')->skip($taken)->take($toTake)->get();
+        $medias = $brand->media()->skip($taken)->take($toTake)->with([
+            'licenses',
+            'licenses.usageLicenses',
+            'licenses.usageLicenses.license',
+            'license',
+            'category',
+            'supplier',
+            'createdBy',
+            'brand',
+            'peopleAttributes'
+        ])->published()->orderBy('created_at', 'desc')->get();
+
+        if ($request->input('licenseType', false)) {
+            $medias->whereHas('license', function (Builder $q) use ($request) {
+                $q->where('license_type', $request->input('licenseType'));
+            });
+        }
+
+        if ($request->input('categoryId', false)) {
+            $medias->where('category_id', $request->input('categoryId'));
+        }
+
+        if ($request->input('peoplesAttribute', false)) {
+            $medias->where('peoples_attribute', $request->input('peoplesAttribute'));
+        }
+
+        if ($request->input('supplierId', false)) {
+            $medias->where('supplier_id', $request->input('supplierId'));
+        }
+
+        if ($request->input('orientation', false)) {
+            $medias->where('orientation', $request->input('orientation'));
+        }
+
+        if ($request->input('q', false)) {
+            $medias->where(function (Builder $builder) use ($request) {
+                $builder->orWhere('keywords', 'LIKE', '%' . $request->input('q') . '%')
+                    ->orWhere('source', 'LIKE', '%' . $request->input('q') . '%')
+                    ->orWhere('origin_name', 'LIKE', '%' . $request->input('q') . '%')
+                    ->orWhere('notes', 'LIKE', '%' . $request->input('q') . '%')
+                    ->orWhere('title', 'LIKE', '%' . $request->input('q') . '%');
+            });
+        }
 
         $brandCreativeResponse = new TransformerEngine($brandCreative, new BrandCreativesTransformer());
         $response = new TransformerEngine($medias, new MediaTransformer());
 
+        $time_elapsed_secs = microtime(true) - $start;
+
+        Log::info('time elapsed in function');
+        Log::info($time_elapsed_secs);
+
+
+        Log::info('to the json response');
+        Log::info(microtime(true));
         return new JsonResponse(['medias' => $response, 'creativeRole' => $brandCreativeResponse]);
     }
 

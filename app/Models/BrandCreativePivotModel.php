@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use App\Support\Database\CacheQueryBuilder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class BrandCreativePivotModel extends Pivot
 {
+
+    use CacheQueryBuilder;
+
     /**
      * @var string
      */

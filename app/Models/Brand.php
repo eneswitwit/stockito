@@ -5,6 +5,7 @@ namespace App\Models;
 
 // use
 use App\Models\Media\Category;
+use App\Support\Database\CacheQueryBuilder;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -87,6 +88,9 @@ use Log;
  */
 class Brand extends AbstractBrandModel
 {
+
+    use CacheQueryBuilder;
+
     const HEAD_OF_TEAM_PERMISSION = 1;
     const ACTIVE_EDITING_USER_PERMISSION = 2;
     const SEARCH_ONLY_USER_PERMISSION = 3;

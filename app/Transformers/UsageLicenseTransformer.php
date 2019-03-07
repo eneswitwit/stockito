@@ -5,6 +5,7 @@ namespace App\Transformers;
 
 // use
 use App\Classes\DateClass;
+use App\Support\Database\CacheQueryBuilder;
 use LukeVear\LaravelTransformer\AbstractTransformer;
 use LukeVear\LaravelTransformer\TransformerEngine;
 
@@ -15,6 +16,9 @@ use LukeVear\LaravelTransformer\TransformerEngine;
  */
 class UsageLicenseTransformer extends AbstractTransformer
 {
+
+    use CacheQueryBuilder;
+
     /**
      * @param \App\Models\UsageLicense $model
      *

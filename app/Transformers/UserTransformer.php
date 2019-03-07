@@ -5,6 +5,7 @@ namespace App\Transformers;
 
 // use
 use App\Classes\DateClass;
+use App\Support\Database\CacheQueryBuilder;
 use Carbon\Carbon;
 use LukeVear\LaravelTransformer\AbstractTransformer;
 use LukeVear\LaravelTransformer\TransformerEngine;
@@ -16,6 +17,9 @@ use LukeVear\LaravelTransformer\TransformerEngine;
  */
 class UserTransformer extends AbstractTransformer
 {
+
+    use CacheQueryBuilder;
+
     /**
      * @param \App\Models\User $model
      *

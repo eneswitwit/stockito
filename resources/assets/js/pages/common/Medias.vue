@@ -144,10 +144,6 @@
             'creative_brand_id'
         ],
 
-        created() {
-            //this.getMedias();
-        },
-
         data: () => ({
             showSearch: false,
             showPage: false,
@@ -197,7 +193,7 @@
             }
         },
 
-        beforeMount() {
+        async beforeMount() {
             this.clearAll();
             //this.checkAccess();
             this.getInitialMedia();
@@ -221,15 +217,18 @@
             },
 
             async getInitialMedia() {
+                var t0 = performance.now();
                 if (this.selectedBrand) {
                     await this.$store.dispatch('media/getBrandMediaStep', {
                         taken: 0,
-                        toTake: 25,
+                        toTake: 5,
                         creative_brand_id: this.selectedBrand.id
                     });
                 } else {
-                    await this.$store.dispatch('media/getMediasStep', {taken: 0, toTake: 25});
+                    await this.$store.dispatch('media/getMediasStep', {taken: 0, toTake: 5});
                 }
+                var t1 = performance.now();
+                console.log("Call getinitialmedia " + (t1 - t0) + " milliseconds.");
                 this.showPage = true;
                 this.isGotUploads = true;
             },
