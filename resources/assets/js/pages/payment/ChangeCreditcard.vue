@@ -14,7 +14,8 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
+
+            <div class="row" v-if="requesting">
                 <div class="col-md-12" style="text-align: center;">
                     <img style="text-align: center;" :src="require('../../../images/loading.gif')"/>
                 </div>
@@ -116,6 +117,7 @@
                 const {token, error} = await this.stripe.createToken(this.cardNumber);
                 if (error) {
                     this.error = error.message;
+                    this.requesting = false;
                 } else {
                     this.token = token;
                     this.error = '';

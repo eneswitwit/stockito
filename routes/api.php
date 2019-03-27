@@ -13,7 +13,8 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::group(['middleware' => 'auth:api'], function () {
+Route::group(['middleware' => ['auth:api']], function () {
+    Route::get('/medias/{taken}/{toTake}', 'Api\MediaController@indexStep');
     Route::post('logout', 'Auth\LoginController@logout');
 
     Route::get('user', 'Auth\AuthController@user');
@@ -25,7 +26,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::put('settings/profile/brand', 'Settings\ProfileController@updateBrand');
 });
 
-Route::group(['middleware' => 'guest:api'], function () {
+Route::group(['middleware' => ['guest:api']], function () {
     Route::post('login', 'Auth\LoginController@login');
     Route::post('register', 'Auth\RegisterController@register');
     Route::post('register/brand', 'Auth\RegisterController@registerBrand');
@@ -51,7 +52,7 @@ Route::group(['prefix' => 'plans'], function () {
 
 Route::get('countries', 'Api\CountriesController@index');
 
-Route::group(['middleware' => 'auth:api'], function () {
+Route::group(['middleware' => ['auth:api']], function () {
     Route::post('img-to-base64', 'Api\ToolsController@imgToBase64');
 
     Route::get('used-storage', 'Api\BrandController@getUsedStorage');
@@ -64,7 +65,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('types-long', 'Api\LicensesController@typesLong');
         Route::get('soon-expiring', 'Api\LicensesController@soonExpiring');
         Route::get('export/{brandId?}', 'Api\LicensesController@exportToPdf');
-        Route::get('{brandId?}', 'Api\LicensesController@index');
+        Route::post('get/{brandId?}', 'Api\LicensesController@index');
     });
     Route::get('brands', 'Api\CreativeController@getCreativeBrands');
     Route::post('brands/{brand}', 'Api\CreativeController@getCreativeBrand');
@@ -73,10 +74,10 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('brands/{brand}/categories', 'Api\BrandController@getCategories');
 
     Route::group(['prefix' => 'brand'], function () {
-        Route::get('{brandId?}/creatives', 'Api\BrandController@getBrandCreatives');
-        Route::get('creatives', 'Api\BrandController@getBrandCreatives');
+        Route::post('{brandId?}/creatives', 'Api\BrandController@getBrandCreatives');
+        Route::post('creatives', 'Api\BrandController@getBrandCreatives');
         Route::get('invoices', 'Api\BrandController@getBrandInvoices');
-        Route::get('creatives/{id}', 'Api\BrandController@getBrandCreative');
+        Route::post('creatives/{id}/{brandId?}', 'Api\BrandController@getBrandCreative');
         Route::post('{brandId?}/invite-creative', 'Api\BrandController@inviteCreative');
         Route::post('invite-creative', 'Api\BrandController@inviteCreative');
         Route::post('edit-creative', 'Api\BrandController@editCreative');
@@ -98,6 +99,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::group(['prefix' => '{media}'], function () {
             Route::post('submit', 'Api\MediaController@submit');
             Route::get('download', 'Api\MediaController@download');
+            Route::get('download/mp4', 'Api\MediaController@downloadMP4');
             Route::post('add-license', 'Api\MediaController@addLicense');
             Route::get('', 'Api\MediaController@show');
             Route::put('', 'Api\MediaController@update');
@@ -111,7 +113,6 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('uploads/{brandId?}', 'Api\MediaController@uploads');
 
 
-        Route::get('', 'Api\MediaController@index');
         Route::get('{taken}/{toTake}', 'Api\MediaController@indexStep');
         Route::get('/brand/{brand_id}', 'Api\MediaController@getBrandMedias');
         Route::get('/brand/{taken}/{toTake}/{id}', 'Api\MediaController@getBrandMediasStep');
@@ -132,18 +133,19 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::post('upgrade', 'Api\SubscriptionController@upgrade');
         Route::post('downgrade', 'Api\SubscriptionController@downgrade');
         Route::post('cancel-subscription', 'Api\SubscriptionController@cancelSubscription');
+        Route::post('cancel-downgrade', 'Api\SubscriptionController@cancelDowngrade');
         Route::post('resume-subscription', 'Api\SubscriptionController@resumeSubscription');
         Route::post('change-creditcard', 'Api\SubscriptionController@changeCreditcard');
     });
 
     Route::group(['prefix' => 'licenses'], function () {
-        Route::get('{license}', 'Api\LicensesController@show');
-        Route::put('{license}', 'Api\LicensesController@update');
+        Route::get('get/{license}', 'Api\LicensesController@show');
+        Route::post('update', 'Api\LicensesController@update');
         Route::post('', 'Api\LicensesController@create');
     });
 
     Route::group(['prefix' => 'ftp'], function () {
-        Route::post('{email}/{brand_id?}', 'Api\FtpController@show');
+        Route::get('{email}/{brand_id?}', 'Api\FtpController@show');
     });
 
     Route::group(['prefix' => 'usage-license'], function () {

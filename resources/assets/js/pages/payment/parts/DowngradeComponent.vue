@@ -5,11 +5,15 @@
             <p style="padding: 20px;">
                 Your plan will automatically downgraded to Plan {{ plan.title }} after the expiration of the current
                 plan in
-                {{ leftDays() }} days
+                {{ leftDays() }} days.
+                To avoid troubles with the downgrade make sure that you only use the storage that the plan offers that you are downgrading to in {{ leftDays() }} days.
             </p>
             <button class="btn btn-primary" type="submit">
                 {{ 'Submit' }}
             </button>
+            <a href="/dashboard" class="btn btn-warning">
+                {{ 'Cancel' }}
+            </a>
         </card>
 
     </form>
@@ -55,6 +59,10 @@
         },
 
         methods: {
+
+            cancel() {
+                this.$router.push({name: 'dashboard'});
+            },
 
             async downgradeSubscription() {
 

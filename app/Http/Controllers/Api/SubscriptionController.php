@@ -140,6 +140,34 @@ class SubscriptionController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws \Exception
      */
+    public function cancelDowngrade(Request $request) {
+        /**
+         * @var User $user
+         */
+        $user = $request->user();
+        if ($user->subscription('main')) {
+            Subscription::where('user_id', $user->id)->first()->cancelDowngrade();
+
+            return new JsonResponse([
+                'canceled' => true,
+                'message' => 'Downgrade has been canceled',
+                'data' => new TransformerEngine($user, new UserTransformer())
+            ]);
+        }
+
+        return new JsonResponse([
+            'canceled' => false,
+            'message' => 'User is not subscribed.',
+            'data' => new TransformerEngine($user, new UserTransformer())
+        ]);
+    }
+
+    /**
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     */
     public function downgradeSubscription(Request $request): JsonResponse
     {
 

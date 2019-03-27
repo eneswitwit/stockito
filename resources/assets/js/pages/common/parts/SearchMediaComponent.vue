@@ -3,7 +3,8 @@
         <div class="card">
             <div class="card-header" style="border-radius: 0 !important;">
                 <span> Advanced Search Options </span>
-                <span id="closeAdvancedSearch" class="btn btn-link remove-btn float-md-right" @click="closeAdvancedSearch">
+                <span id="closeAdvancedSearch" class="btn btn-link remove-btn float-md-right"
+                      @click="closeAdvancedSearch">
                     <fa icon="times" fixed-width/>
                 </span>
             </div>
@@ -35,12 +36,13 @@
                 <div class="form-group">
                     <label for="filter-people-attributes">People Attributes</label>
                     <select id="filter-people-attributes"
-                              @change="setFilter"
-                              v-model="localFilter.peoplesAttribute"
-                              class="form-control"
-                        ><option :value="undefined"></option>
-                        <option :value="'No people'"> No people </option>
-                        <option :value="'With people'"> With people </option>
+                            @change="setFilter"
+                            v-model="localFilter.peoplesAttribute"
+                            class="form-control"
+                    >
+                        <option :value="undefined"></option>
+                        <option :value="'No people'"> No people</option>
+                        <option :value="'With people'"> With people</option>
                     </select>
                 </div>
 
@@ -136,6 +138,25 @@
             closeAdvancedSearch() {
                 this.$emit('closeAdvancedSearch', false);
                 this.$store.dispatch('media/setFilter', {filter: ''});
+                if (this.selectedBrand) {
+                    var newFilter = {
+                        licenseType: undefined,
+                        categoryId: undefined,
+                        supplierId: undefined,
+                        peoplesAttribute: [],
+                        selectedBrand: this.selectedBrand.id
+                    };
+                    this.$store.dispatch('media/setFilter', {filter: newFilter});
+                } else {
+                    var newFilter = {
+                        licenseType: undefined,
+                        categoryId: undefined,
+                        supplierId: undefined,
+                        peoplesAttribute: [],
+                        selectedBrand: undefined
+                    };
+                    this.$store.dispatch('media/setFilter', {filter: newFilter});
+                }
             }
         }
     }

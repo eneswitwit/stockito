@@ -10,8 +10,10 @@ use App\Console\Commands\CheckThumbnailsCommand;
 use App\Console\Commands\HandleFTPFilesCommand;
 use App\Console\Commands\RemoveProductsCommand;
 use App\Console\Commands\SendLicenseExpirationReminder;
+use App\Console\Commands\SendMailStorageFull;
 use App\Console\Commands\SyncProductsCommand;
 use App\Mail\ReminderExpirationLicense;
+
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -31,7 +33,8 @@ class Kernel extends ConsoleKernel
         CheckFTPUsersCommand::class,
         HandleFTPFilesCommand::class,
         ClearProcessingCommand::class,
-        SendLicenseExpirationReminder::class
+        SendLicenseExpirationReminder::class,
+        SendMailStorageFull::class
     ];
 
     /**
@@ -43,6 +46,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('send:license-expiration-reminder')->daily();
+        $schedule->command('send:storage-full-reminder')->everyMinute();
         $schedule->command('handle:ftp-files')->everyMinute();
     }
 

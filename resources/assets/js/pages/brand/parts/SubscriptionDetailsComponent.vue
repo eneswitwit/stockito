@@ -40,6 +40,9 @@
                 <span class="mb-4">
                     <div v-if="getIfDowngrade()" class="box-info mb-2">
                         <p>Plan will be downgraded automatically after expiration</p>
+                            <button v-if="getIfDowngrade" class="btn btn-success mr-2" @click="cancelDowngrade">
+                                Cancel Downgrade
+                            </button>
                     </div>
                     <div class="box-info mb-4">
                         <p v-if="user.subscribed && !user.onGracePeriod"> Plan will automatically renew itself</p>
@@ -189,6 +192,15 @@
                     this.$store.dispatch('auth/updateUser', {user: data.data});
                     this.$swal(data.message, '', 'success');
                 });
+            },
+
+            cancelDowngrade() {
+                axios.post('/api/subscription/cancel-downgrade').then(({data}) => {
+                    this.$store.dispatch('auth/updateUser', {user: data.data});
+                    this.$swal(data.message, '', 'success');
+                    location.reload();
+                });
+
             }
 
         }

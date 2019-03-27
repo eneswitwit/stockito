@@ -156,6 +156,7 @@ class UploadService
         }
 
         \Storage::disk('s3')->delete($media->getFilePath());
+        \Storage::disk('s3')->delete($media->getFilePath() . '.mp4');
 
         return $status && $media->delete();
     }

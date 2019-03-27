@@ -26,6 +26,7 @@ class FtpController extends Controller
      */
     public function show ($user_id, $brand_id = 0): JsonResponse
     {
+
         if($brand_id === 0) {
             $ftpUser = FTPUser::where('user_id', $user_id)->first();
         } else {

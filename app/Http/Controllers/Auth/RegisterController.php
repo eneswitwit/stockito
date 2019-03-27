@@ -38,11 +38,9 @@ class RegisterController extends Controller
     }
 
     /**
-     * Handle a registration request for the application.
+     * @param \Illuminate\Http\Request $request
      *
-     * @param  \Illuminate\Http\Request $request
-     *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      * @throws \Exception
      */
     public function registerCreative(Request $request)
@@ -83,8 +81,7 @@ class RegisterController extends Controller
                     'position' => $data['position']
                 ]);
 
-                $ftpUser = FTPService::makeFTPUserForBrand($brand, $request->get('email') . '/' . $brand->id, str_random(8), $creative);
-                $ftpUser->save();
+                FTPService::makeFTPUserForBrandCreative($brand, $creative);
             }
         }
 

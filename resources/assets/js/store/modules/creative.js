@@ -8,7 +8,8 @@ export const state = {
     editCreative: {
         id: '',
         role: '',
-        position: ''
+        position: '',
+        brandCreativeId: ''
     },
     showEditModal: false,
 }
@@ -31,6 +32,7 @@ export const mutations = {
     },
     [types.SET_EDIT_CREATIVE](state, {editCreative}) {
         state.editCreative.id = editCreative.id,
+            state.editCreative.brandCreativeId = editCreative.brandCreativeId,
             state.editCreative.role = editCreative.role,
             state.editCreative.position = editCreative.position,
             state.showEditModal = true
@@ -52,8 +54,8 @@ export const actions = {
     setBrands({commit}, {brands}) {
         commit(types.SET_BRANDS, {brands: brands})
     },
-    async setEditCreative({commit}, {creativeId}) {
-        const {data} = await axios.get(`api/brand/creatives/${creativeId}`);
+    async setEditCreative({commit}, {creativeId, brandId}) {
+        const {data} = await axios.post(`https://stockito.com/api/brand/creatives/${creativeId}/${brandId}`);
         commit(types.SET_EDIT_CREATIVE, {editCreative: data})
     },
     hideEditModal({commit}) {

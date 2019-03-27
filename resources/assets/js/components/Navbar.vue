@@ -30,7 +30,8 @@
 
             <div class="nav-item" style="margin:auto;">
                 <span v-if="selectedBrand">
-                    <img v-if="selectedBrand.logo && selectedBrand.logo !== '/storage/' " :class="'brand-logo-nav'" :src="logoConvert(selectedBrand.logo)">
+                    <img v-if="selectedBrand.logo && selectedBrand.logo !== '/storage/' " :class="'brand-logo-nav'"
+                         :src="logoConvert(selectedBrand.logo)">
                     <span v-if="selectedBrand.company_name.length > 8">
                         {{ selectedBrand.company_name.substring(0,8) + '...' }}
                     </span>
@@ -38,7 +39,8 @@
                         {{ selectedBrand.company_name }}
                     </span>
                 </span>
-                <button v-if="user && canUpload()" class="btn btn-primary" @click="showUploadModal = true">Upload File</button>
+                <button v-if="user && canUpload()" class="btn btn-primary" @click="showUploadModal = true">Upload File
+                </button>
             </div>
 
             <!-- Authenticated -->
@@ -63,18 +65,37 @@
                         {{ $t('settings') }}
                     </router-link>
                     <div style="padding: .25rem 1.5rem;" v-if="selectedBrand"> {{ selectedBrand.company_name }}</div>
-                    <div v-if="user.creative && selectedBrand" style="padding: .25rem 1.5rem;"> <hr style="margin-top:0;"> </div>
+                    <div v-if="user.creative && selectedBrand" style="padding: .25rem 1.5rem;">
+                        <hr style="margin-top:0;">
+                    </div>
                     <router-link
-                            v-if="user && (user.brand || ((isHeadOfTeam() || isActiveEditing()) && selectedBrand))"
-                            :to="{ name: 'brand.creatives' }" class="dropdown-item pl-3">
+                            v-if="user && user.brand"
+                            :to="{ name: 'brand.creatives' }"
+                            class="dropdown-item pl-3">
                         <fa icon="fire" fixed-width/>
                         {{ $t('creatives') }}
                     </router-link>
+                    <router-link
+                            v-if="user && selectedBrand"
+                            :to="{ name: 'brand.creatives', params: { creative_brand_id: selectedBrand.id  } }"
+                            class="dropdown-item pl-3">
+                        <fa icon="fire" fixed-width/>
+                        {{ $t('creatives') }}
+                    </router-link>
+
                     <router-link v-if="user.brand" :to="{ name: 'medias' }" class="dropdown-item pl-3">
                         <fa icon="image" fixed-width/>
                         {{ $t('media') }}
                     </router-link>
-                    <router-link v-if="user.brand" class="dropdown-item pl-3" :to="{ name: 'licenses' }">
+                    <router-link v-if="user.brand"
+                                 class="dropdown-item pl-3"
+                                 :to="{ name: 'licenses', params: { creative_brand_id: null  } }">
+                        <fa icon="list-ul" fixed-width/>
+                        {{ $t('licenses') }}
+                    </router-link>
+                    <router-link v-if="user && selectedBrand"
+                                 class="dropdown-item pl-3"
+                                 :to="{ name: 'licenses', params: { creative_brand_id: selectedBrand.id  } }">
                         <fa icon="list-ul" fixed-width/>
                         {{ $t('licenses') }}
                     </router-link>
@@ -88,15 +109,17 @@
                         <fa icon="image" fixed-width/>
                         {{ $t('uploads') }}
                     </router-link>
-                    <router-link v-if="user.creative && !isSearchOnly() && selectedBrand"
-                                 :to="{ name: 'uploaded', params: { creative_brand_id: selectedBrand.id  }}"
+                    <router-link v-if="(isHeadOfTeam() || isActiveEditing()) && selectedBrand"
+                                 :to="{ name: 'creative.brand.uploaded', params: { creative_brand_id: selectedBrand.id  }}"
                                  class="dropdown-item pl-3">
                         <fa icon="image" fixed-width/>
                         {{ $t('uploads') }}
                     </router-link>
 
 
-                    <div style="padding: .25rem 1.5rem;"> <hr style="margin:0;"> </div>
+                    <div style="padding: .25rem 1.5rem;">
+                        <hr style="margin:0;">
+                    </div>
                     <a @click.prevent="logout" class="dropdown-item pl-3" href="#">
                         <fa icon="sign-out-alt" style="color: rgb(199,212,230);" fixed-width/>
                         {{ $t('logout') }}
@@ -158,7 +181,7 @@
                 return this.$store.getters['auth/user'];
             },
             creativeRole() {
-                return this.$store.getters[ 'media/creativeRole'];
+                return this.$store.getters['media/creativeRole'];
             }
         },
 
@@ -175,17 +198,21 @@
             showDashboard() {
                 window.location.href = '/';
             },
+
             closeModal() {
                 this.showUploadModal = false;
             },
+
             async logout() {
                 // Log out the user.
                 this.$store.dispatch('creative/setSelectedBrand', {selectedBrand: null});
                 await this.$store.dispatch('auth/logout');
 
                 // Redirect to login.
-                this.$router.push({name: 'login'})
+                this.$router.push({name: 'login'});
+                location.reload();
             },
+
             submitSearch() {
                 this.searchQuery.q = this.search;
                 if (this.selectedBrand) {
@@ -197,12 +224,16 @@
                     document.getElementById('closeAdvancedSearch').click();
                 }
                 this.$store.dispatch('media/setFilter', {filter: ''});
-                if(this.selectedBrand) {
-                    this.$router.push({name: 'creative.brand.medias', params: { creative_brand_id: this.selectedBrand.id  }});
+                if (this.selectedBrand) {
+                    this.$router.push({
+                        name: 'creative.brand.medias',
+                        params: {creative_brand_id: this.selectedBrand.id}
+                    });
                 } else {
                     this.$router.push({name: 'medias'})
                 }
             },
+
             logoConvert(path) {
                 return path.replace("public", "/storage");
             }

@@ -108,20 +108,16 @@ class LicensesController extends Controller
         return new JsonResponse(new TransformerEngine($licenses, new LicenseTransformer()));
     }
 
+
     /**
-     * @param UpdateLicenseRequest $request
-     * @param string $usageLicense
-     * @param UsageLicenseModelManager $usageLicenseModelManager
+     * @param \App\Http\Requests\License\UpdateLicenseRequest $request
+     * @param \App\ModelManagers\UsageLicenseModelManager $usageLicenseModelManager
      *
-     * @return JsonResponse
+     * @return \Illuminate\Http\JsonResponse
      * @throws \Exception
      */
-    public function update(
-        UpdateLicenseRequest $request,
-        $usageLicense,
-        UsageLicenseModelManager $usageLicenseModelManager
-    ): JsonResponse {
-
+    public function update(UpdateLicenseRequest $request, UsageLicenseModelManager $usageLicenseModelManager): JsonResponse
+    {
         $usageLicense = UsageLicense::find(intval($request->input('id')));
         $usageLicense = $usageLicenseModelManager->fillFromRequest($usageLicense, $request);
 

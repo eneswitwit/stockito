@@ -39,7 +39,7 @@ class LicenseTransformer extends AbstractTransformer
             'createdAt' => $model->created_at,
             'expiredAt' => $model->expired_at ? DateClass::transformCarbon($model->expired_at) : '',
             'startAt' => $model->start_at ? DateClass::transformCarbon($model->start_at) : '',
-            'createdBy' => $model->createdBy->getType()->name,
+            'createdBy' => $model->createdBy ? $model->createdBy->getType()->name : '',
             'billFile' => $model->bill_file,
             'billFileOriginName' => $model->bill_file_origin_name,
             'brandName' => $model->media->brand ? $model->media->brand->name : '',

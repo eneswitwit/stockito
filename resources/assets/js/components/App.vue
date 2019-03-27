@@ -1,13 +1,10 @@
 <template>
-
     <div id="app">
         <loading ref="loading"/>
         <transition name="page" mode="out-in">
             <component v-if="layout" :is="layout"></component>
         </transition>
-
     </div>
-
 </template>
 
 <script>
@@ -29,6 +26,8 @@
     export default {
         el: '#app',
 
+        middleware: ['auth'],
+
         components: {
             Loading
         },
@@ -49,7 +48,19 @@
 
         async mounted() {
             this.$loading = this.$refs.loading
-            //this.setSelectedBrand();
+            this.setSelectedBrand();
+        },
+
+        created() {
+            this.setSelectedBrand();
+        },
+
+
+        watch: {
+            selectedBrand: function () {
+                this.setSelectedBrand();
+                return this.selectedBrand();
+            }
         },
 
         methods: {
@@ -58,7 +69,7 @@
                 var url = window.location.href;
                 var page = "uploaded/";
                 var index = url.indexOf(page);
-                if(index === -1) {
+                if (index === -1) {
                     page = "medias/";
                     index = url.indexOf(page)
                 }
@@ -75,10 +86,10 @@
 
 
             setSelectedBrand() {
-                /*var selectedBrandId = this.getSelectedBrandId();
-                if(selectedBrandId) {
+                var selectedBrandId = this.getSelectedBrandId();
+                if (selectedBrandId) {
                     this.$store.dispatch('creative/setSelectedBrandId', {selectedBrandId});
-                }*/
+                }
             },
 
             /**

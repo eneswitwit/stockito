@@ -3,14 +3,22 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Models\User;
+use App\Support\Database\CacheQueryBuilder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Carbon\Carbon;
+use Session;
 
+/**
+ * Class LoginController
+ * @package App\Http\Controllers\Auth
+ */
 class LoginController extends Controller
 {
+
+    use CacheQueryBuilder;
     use AuthenticatesUsers;
 
     /**
@@ -78,10 +86,10 @@ class LoginController extends Controller
     }
 
     /**
-     * Handle a login request to the application.
+     * @param \Illuminate\Http\Request $request
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response|\Illuminate\Http\JsonResponse
+     * @return array|\Illuminate\Http\JsonResponse|\Symfony\Component\HttpFoundation\Response|void
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function login(Request $request)
     {

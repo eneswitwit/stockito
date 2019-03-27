@@ -85,12 +85,11 @@ class BrandController extends Controller
      * @return JsonResponse
      * @throws \Exception
      */
-    public function getBrandCreative(Request $request, $id): JsonResponse
+    public function getBrandCreative(Request $request, $id, $brandId = null): JsonResponse
     {
-        $barndId = BrandCreative::whereCreativeId($id)->firstOrFail()->brand_id;
-        $user = $request->user();
-        $brand = $user->brand ?? Brand::find($barndId);
+        $brand = $request->user()->brand ?? Brand::find($brandId);
         $creative = $brand->creatives()->where('creative_id', $id)->firstOrFail();
+        $creative['brandCreativeId'] = $creative->brandCreative($brand->id)->id;
 
         return new JsonResponse(new TransformerEngine($creative, new EditCreativeTransformer()));
     }
@@ -116,27 +115,19 @@ class BrandController extends Controller
          */
         $brand = $user->brand ?? Brand::find($brandId);
         $email = $request['email'];
-        Log::info($email);
         $creativeUser = User::where('email', '=', strtolower($email))->first();
-        Log::info($creativeUser);
-
 
         if ($creativeUser && $creativeUser->creative) {
-            $creativeUser = $creativeUser->creative;
-            Log::info($creativeUser);
-            if (!BrandCreative::where('brand_id', $brand->id)->where('creative_id', $creativeUser->id)->exists()) {
-                $brand->creatives()->attach($creativeUser, [
+            $creativeUserCreative = $creativeUser->creative;
+            if (!BrandCreative::where('brand_id', $brand->id)->where('creative_id', $creativeUserCreative->id)->exists()) {
+                $brand->creatives()->attach($creativeUserCreative, [
                     'role' => $request->role,
                     'position' => $request->position
                 ]);
 
-                $ftpUser = FTPService::makeFTPUserForBrand($brand, $creativeUser->email . '/' . $brand->id,
-                    str_random(8), $creativeUser);
-                $ftpUser->save();
+                FTPService::makeFTPUserForBrandCreative($brand,  $creativeUserCreative);
 
                 Mail::to($request->email)->send(new CreativeInviteExist($brand->brand_name, $request->role));
-            } else {
-                Mail::to($request->email)->send(new CreativeInviteNew($brand, $request->role, $request->position));
             }
         } else {
             Mail::to($request->email)->send(new CreativeInviteNew($brand, $request->role, $request->position));
@@ -155,20 +146,15 @@ class BrandController extends Controller
     {
         $this->validate($request, [
             'id' => 'required',
+            'brandCreativeId' => 'required',
             'role' => 'required|string',
             'position' => 'required'
         ]);
 
-        $user = $request->user();
-        $barndId = BrandCreative::whereCreativeId($request->id)->firstOrFail()->brand_id;
-        $brand = $user->brand ?? Brand::find($barndId);
-
-        if ($creative = $brand->creatives()->where('creative_id', $request->id)->first()) {
-            $creative->pivot->update([
-                'role' => $request->role,
-                'position' => $request->position
-            ]);
-        }
+        $brandCreative = BrandCreative::findOrFail($request->brandCreativeId);
+        $brandCreative->role = $request->role;
+        $brandCreative->position = $request->position;
+        $brandCreative->save();
 
         return new JsonResponse(['success' => true]);
     }

@@ -43,7 +43,7 @@ class UsageLicenseTransformer extends AbstractTransformer
             'billFile' => $model->bill_file,
             'billFileOriginName' => $model->bill_file_origin_name,
             'url' => route('license', $model->bill_file),
-            'createdBy' => $model->license->createdBy->getType()->name,
+            'createdBy' => $model->license->createdBy ? $model->license->createdBy->getType()->name : '',
             'brandName' => $model->license->media->brand ? $model->license->media->brand->name : '',
             'origin' => $model->license->media->supplier_id ? $model->license->media->supplier->name : '',
         ];

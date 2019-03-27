@@ -12,7 +12,9 @@ export const state = {
     creativeRole: null,
     selectedMedia: [],
     processing: null,
-    requestingProcessing: false
+    requestingProcessing: false,
+    noResults: false,
+    isLoading: false
 }
 
 // getters
@@ -26,7 +28,9 @@ export const getters = {
     selectedMedia: state => state.selectedMedia,
     creativeRole: state => state.creativeRole ? state.creativeRole.role : null,
     processing: state => state.processing,
-    requestingProcessing: state => state.requestingProcessing
+    requestingProcessing: state => state.requestingProcessing,
+    noResults: state => state.noResults,
+    isLoading: state => state.isLoading
 }
 
 // mutations
@@ -43,6 +47,10 @@ export const mutations = {
         state.medias.push(media)
     },
     [types.ADD_MEDIAS_DISPLAYED](state, {medias}) {
+        if (state.mediasDisplayed.length === 0) {
+            state.isLoading = true;
+        }
+        state.noResults = false;
         if (medias.length && medias.length > 0) {
             for (var i = 0, len = medias.length; i < len; i++) {
                 let findMedia = state.mediasDisplayed.find(m => m.id === medias[i].id);
@@ -50,21 +58,35 @@ export const mutations = {
                     state.mediasDisplayed.push(medias[i])
                 }
             }
+            state.isLoading = false;
+            state.noResult = false;
+        } else {
+            if (state.mediasDisplayed.length === 0) {
+                state.noResults = true;
+            }
         }
+        state.isLoading = false;
     },
     [types.ADD_MEDIAS_DISPLAYED_CREATIVE](state, {medias, creativeRole}) {
+        state.noResults = false;
         if (medias.length && medias.length > 0) {
             for (var i = 0, len = medias.length; i < len; i++) {
                 let findMedia = state.mediasDisplayed.find(m => m.id === medias[i].id);
                 if (!findMedia) {
                     state.mediasDisplayed.push(medias[i])
-                } else {
                 }
             }
+            state.isLoading = false;
+        } else {
+            if (state.mediasDisplayed.length === 0) {
+                state.noResults = true;
+            }
         }
+        state.isLoading = false;
         state.creativeRole = creativeRole;
     },
     [types.ADD_MEDIA_DISPLAYED](state, {medias}) {
+        state.noResults = false;
         if (medias.length && medias.length > 0) {
             for (var i = 0, len = medias.length; i < len; i++) {
                 let findMedia = state.mediaDisplayed.find(m => m.id === medias[i].id);
@@ -72,7 +94,13 @@ export const mutations = {
                     state.mediaDisplayed.push(medias[i])
                 }
             }
+            state.isLoading = false;
+        } else {
+            if (state.mediasDisplayed.length === 0) {
+                state.noResults = true;
+            }
         }
+        state.isLoading = false;
     },
     [types.REMOVE_MEDIA](state, {media}) {
         state.medias = state.medias.filter(m => m.id !== media.id);
@@ -171,6 +199,12 @@ export const mutations = {
     },
     [types.SET_REQUESTING_PROCESSING](state, {status}) {
         state.requestingProcessing = status;
+    },
+    [types.SET_NO_RESULTS](state, {val}) {
+        state.noResults = val;
+    },
+    [types.SET_IS_LOADING](state, {val}) {
+        state.isLoading = val;
     }
 }
 
@@ -186,6 +220,12 @@ export const actions = {
     addSelectedMedia({commit}, {media}) {
         commit(types.ADD_SELECTED_MEDIA, {media: media})
     },
+    setNoResults({commit}, {val}) {
+        commit(types.SET_NO_RESULTS, {val: val})
+    },
+    setIsLoading({commit}, {val}) {
+        commit(types.SET_IS_LOADING, {val: val})
+    },
     removeMedia({commit}, {media}) {
         commit(types.REMOVE_MEDIA, {media: media})
     },
@@ -198,36 +238,17 @@ export const actions = {
     addUpload({commit}, {media}) {
         commit(types.ADD_UPLOAD, {media: media})
     },
-    async getMedias({commit, state}) {
-        const {data} = await axios.get("/api/medias", {params: state.filter});
-        commit(types.FETCH_MEDIAS_SUCCESS, {medias: data})
-    },
     async getBrandMedias({commit}, {creative_brand_id}) {
         const {data} = await axios.get("/api/medias/brand/" + creative_brand_id);
         commit(types.FETCH_MEDIAS_SUCCESS, {medias: data.medias, creativeRole: data.creativeRole})
     },
     async getMediasStep({commit, state}, {taken, toTake}) {
-        var t0 = performance.now();
-        console.log('perfomance now brand media step');
-        console.log(t0);
         const {data} = await axios.get("/api/medias/" + taken + "/" + toTake, {params: state.filter});
-        var t1 = performance.now();
-        console.log("Call axios.get tooks " + (t1 - t0) + " milliseconds.");
-        t0 = performance.now();
-        console.log(t0);
         commit(types.ADD_MEDIAS_DISPLAYED, {medias: data})
     },
-    async getBrandMediaStep({commit}, {taken, toTake, creative_brand_id}) {
-        var t0 = performance.now();
-        console.log('perfomance now brand media step');
-        console.log(t0);
-        const {data} = await axios.get("/api/medias/brand/" + taken + "/" + toTake + "/" + creative_brand_id);
-        var t1 = performance.now();
-        console.log("Call axios.get tooks " + (t1 - t0) + " milliseconds.");
-        t0 = performance.now();
+    async getBrandMediaStep({commit, state}, {taken, toTake, creative_brand_id}) {
+        const {data} = await axios.get("/api/medias/brand/" + taken + "/" + toTake + "/" + creative_brand_id, {params: state.filter});
         commit(types.ADD_MEDIAS_DISPLAYED_CREATIVE, {medias: data.medias, creativeRole: data.creativeRole})
-        t1 = performance.now();
-        console.log("Call commit took " + (t1 - t0) + " milliseconds.");
     },
     async getUploads({commit}, {selectedBrandId}) {
         let url = selectedBrandId ? ("/api/medias/uploads" + "/" + selectedBrandId) : "/api/medias/uploads";
@@ -287,17 +308,26 @@ export const actions = {
         });
     },
     setFilter({commit, dispatch}, {filter}) {
-        commit(types.SET_FILTER, {filter});
-        commit(types.RESET_MEDIAS);
-        dispatch("getMedias");
-        dispatch("getMediasStep", {taken: 0, toTake: 30});
+        if(filter) {
+            state.isLoading = true;
+            commit(types.SET_FILTER, {filter});
+            commit(types.RESET_MEDIAS);
+            dispatch("getMediasStep", {taken: 0, toTake: 20});
+        }
     },
     setFilterQuery({commit, dispatch}, {query}) {
-        commit(types.SET_FILTER_QUERY, {query});
-        commit(types.RESET_MEDIAS);
-        dispatch("getMediasStep", {taken: 0, toTake: 30});
+        if(query) {
+            state.isLoading = true;
+            commit(types.SET_FILTER_QUERY, {query});
+            commit(types.RESET_MEDIAS);
+            dispatch("getMediasStep", {taken: 0, toTake: 20});
+        }
     },
     resetSelectedMedia({commit}) {
         commit(types.RESET_SELECTED_MEDIA);
     },
+    resetMedias({commit}) {
+        commit(types.RESET_MEDIAS);
+        commit(types.RESET_SELECTED_MEDIA);
+    }
 }

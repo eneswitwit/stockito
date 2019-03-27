@@ -233,8 +233,13 @@
 
         mounted() {
 
-            this.form.type = this.parentLicense.license_type;
-            this.form.licenseId = this.parentLicense.id;
+            if(this.parentLicense) {
+                this.form.type = this.parentLicense.license_type;
+                this.form.licenseId = this.parentLicense.id;
+            } else if (this.license) {
+                this.form.type = this.license.license_type;
+                this.form.licenseId = this.license.id;
+            }
 
 
             if (this.license) {
@@ -273,8 +278,14 @@
         watch: {
             license() {
 
-                this.form.type = this.parentLicense.license_type;
-                this.form.licenseId = this.parentLicense.id;
+
+                if(this.parentLicense) {
+                    this.form.type = this.parentLicense.license_type;
+                    this.form.licenseId = this.parentLicense.id;
+                } else if (this.license) {
+                    this.form.type = this.license.license_type;
+                    this.form.licenseId = this.license.id;
+                }
 
                 if (this.license) {
                     this.form.id = this.license.id;
@@ -319,6 +330,7 @@
                     delete this.form.billFile;
                     delete this.form.removeBill;
                     this.$swal('Successfully updated', '', 'success');
+                    this.$emit('saved', data);
                     this.$emit('update:show', false)
                     this.form.reset();
                 });

@@ -26,7 +26,7 @@
                                 </template>
                                 <td>
                                     <button type="button" style="word-break: normal;"
-                                            v-if="!isActiveEditing()"
+                                            v-if="canEdit()"
                                             class="btn btn-primary btn-sm"
                                             @click="showModal(row)">
                                         {{ $t('edit') }}
@@ -39,11 +39,17 @@
                 </div>
             </div>
 
-            <set-license-modal-component :show.sync="showLicenseModal"
+            <!--<set-license-modal-component :show.sync="showLicenseModal"
                                          :media="media"
                                          :license="license"
                                          :selectedMedia="selectedMedia"
-            ></set-license-modal-component>
+            ></set-license-modal-component>-->
+
+            <set-usage-license-modal
+                    :show.sync="showLicenseModal"
+                    :license="license"
+                    @saved="savedLicense"
+            ></set-usage-license-modal>
 
         </div>
 
@@ -65,13 +71,15 @@
     import CheckCreativePermission from '../../pages/common/parts/services/CheckCreativePermissionService';
     import {mapGetters} from 'vuex';
     import SetLicenseModalComponent from './parts/SetLicenseModalComponent.vue';
+    import SetUsageLicenseModal from '../../components/Modals/SetUsageLicenseModal.vue';
 
     export default {
         components: {
             SelectRowComponent,
             SelectAllComponent,
             ButtonEditRowComponent,
-            SetLicenseModalComponent
+            SetLicenseModalComponent,
+            SetUsageLicenseModal
         },
 
         mixins: [CheckCreativePermission],
@@ -113,6 +121,10 @@
         computed: mapGetters({
             selectedBrand: 'creative/selectedBrand',
         }),
+
+        beforeMount() {
+            this.setSelectedBrand();
+        },
 
         data: () => ({
 
@@ -173,6 +185,35 @@
 
         methods: {
 
+            savedLicense() {
+                this.getLicenses();
+                this.$emit('update:show', false)
+            },
+
+            getSelectedBrandId() {
+                var url = window.location.href;
+                var page = "licenses/";
+                var index = url.indexOf(page);
+                var substring = url.substring(index + page.length, url.length);
+
+                var selectedBrandId = null;
+                if (substring !== '') {
+                    selectedBrandId = parseInt(substring);
+                } else {
+                    selectedBrandId = this.selectedBrand ? this.selectedBrand.id : null;
+                }
+                return selectedBrandId;
+
+            },
+
+
+            setSelectedBrand() {
+                var selectedBrandId = this.getSelectedBrandId();
+                if (selectedBrandId) {
+                    this.$store.dispatch('creative/setSelectedBrandId', {selectedBrandId});
+                }
+            },
+
             exportAsPDF() {
 
                 let url = this.selectedBrand ? `api/licenses/export/${this.selectedBrand.id}` : 'api/licenses/export';
@@ -196,8 +237,10 @@
             },
 
             getLicenses() {
-                let url = this.selectedBrand ? `api/licenses/${this.selectedBrand.id}` : 'api/licenses';
-                axios.get(url).then(response => {
+                var selectedBrandId = this.getSelectedBrandId();
+                var urlMain = 'https://stockito.com/';
+                let url = selectedBrandId ? `api/licenses/get/${selectedBrandId}` : 'api/licenses/get';
+                axios.post(urlMain + url).then(response => {
                     this.licenses = response.data;
                 });
             },
@@ -214,7 +257,7 @@
             showModal(row) {
                 this.media = row.media;
                 this.selectedMedia = [this.media.id];
-                this.license = row.media.license;
+                this.license = row;
                 this.showLicenseModal = true;
             },
 

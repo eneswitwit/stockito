@@ -3,6 +3,10 @@
 namespace App\Transformers;
 use LukeVear\LaravelTransformer\AbstractTransformer;
 
+/**
+ * Class EditCreativeTransformer
+ * @package App\Transformers
+ */
 class EditCreativeTransformer extends AbstractTransformer {
 
 	/**
@@ -13,6 +17,7 @@ class EditCreativeTransformer extends AbstractTransformer {
 	{
 		return [
 			'id' => $model->id,
+            'brandCreativeId' => $model->brandCreativeId,
 			'position' => $model->pivot->position,
 			'role' => $model->pivot->role
 		];

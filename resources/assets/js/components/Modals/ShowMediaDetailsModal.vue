@@ -8,14 +8,14 @@
                     <show-media-details v-bind:media="media[0]" v-bind:submit="false"></show-media-details>
                     <div class="row mb-2 mt-2">
                         <div class="col-lg-12">
-                            <router-link v-if="canAccess(media[0])" class="btn btn-primary btn-block"
+                            <router-link v-if="canAccess(media[0]) && canEdit(media[0])" class="btn btn-primary btn-block"
                                          :to="{ name: 'medias.edit', params: {id: media[0].id} }">{{ $t('edit') }}
                             </router-link>
-                            <button v-if="canAccess(media[0])|| isActiveEditing()" class="btn btn-primary btn-block"
+                            <button v-if="canAccess(media[0]) && canShare()" class="btn btn-primary btn-block"
                                     @click="shareMediaObjects = [media[0].id]; showShareModal = true">{{
                                 $t('share') }}
                             </button>
-                            <a v-if="canAccess(media[0]) || isActiveEditing()"
+                            <a v-if="canAccess(media[0]) && canDownload()"
                                @click="downloadSelectedMedia(media[0].id)"
                                class="btn btn-primary btn-block">{{ $t('download') }}</a>
                         </div>
@@ -135,7 +135,7 @@
                                         </a>
                                     </div>
                                 </td>
-                                <td v-if="canAccess(media[0])" class="text-right">
+                                <td v-if="canAccess(media[0]) && canEdit(media[0])" class="text-right">
                                     <button type="button"
                                             class="btn btn-primary btn-sm"
                                             v-on:click="showModal(license)"
@@ -147,7 +147,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <button @click="showModal()" class="btn btn-primary mt-2"> Add new license</button>
+                    <button @click="showModal()" v-if="canEdit()" class="btn btn-primary mt-2"> Add new license</button>
                 </div>
             </div>
 

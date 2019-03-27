@@ -21,11 +21,12 @@ class FTPService
      * @param string $password
      * @param string $username
      * @param Creative $creative
+     *
      * @return FTPUser
      */
     public static function makeFTPUserForBrand(Brand $brand, $username, $password, Creative $creative = null): FTPUser
     {
-        if($creative === null) {
+        if ($creative === null) {
 
             return new FTPUser([
                 'userid' => $username,
@@ -53,7 +54,27 @@ class FTPService
     }
 
     /**
+     * @param \App\Models\Brand $brand
+     * @param \App\Models\Creative $creative
+     */
+    public static function makeFTPUserForBrandCreative(Brand $brand, Creative $creative)
+    {
+        $ftpUser = new FTPUser([
+            'userid' => $creative->user->email . '/' . $brand->id,
+            'passwd' => str_random(8),
+            'brand_id' => $brand->id,
+            'user_id' => $creative->user->id,
+            'creative_id' => $creative->id,
+            'homedir' => storage_path('app/brands/' . $brand->getImagePath()),
+            'uid' => 33,
+            'gid' => 33
+        ]);
+        $ftpUser->save();
+    }
+
+    /**
      * @param Brand $brand
+     *
      * @return bool
      */
     public static function checkExistFTPUserForBrand(Brand $brand): bool
@@ -63,6 +84,7 @@ class FTPService
 
     /**
      * @param $userId
+     *
      * @return bool
      */
     protected static function checkExistUserId($userId): bool

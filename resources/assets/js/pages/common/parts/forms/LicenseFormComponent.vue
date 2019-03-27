@@ -109,33 +109,26 @@
 </template>
 
 <script>
-
     import axios from 'axios';
     import moment from 'moment';
     import Card from '../../../../components/Card.vue';
     import DatePicker from 'vue-datepicker';
     import Vform from 'vform';
     import {mapGetters} from 'vuex';
-
     export default {
-
         components: {
             Card,
             DatePicker,
         },
-
         name: 'license-form-component',
-
         props: [
             'license',
             'media'
         ],
-
         computed: mapGetters({
             selectedBrand: 'creative/selectedBrand',
             selectedMedia: 'media/selectedMedia'
         }),
-
         data: () => ({
             licenseTypes: [],
             form: new Vform({
@@ -152,7 +145,6 @@
                 billFile: null,
                 removeBill: false,
             }),
-
             date: {
                 startDate: {
                     time: moment().format('YYYY-MM-DD'),
@@ -161,7 +153,6 @@
                     time: moment().format('YYYY-MM-DD'),
                 },
             },
-
             dateOptions: {
                 type: 'day',
                 week: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'],
@@ -193,29 +184,24 @@
                     'border-radius': '.25rem',
                     'transition': 'border-color .15s ease-in-out,box-shadow .15s ease-in-out',
                 },
-
                 color: {
                     header: '#ccc',
                     headerText: '#f00',
                 },
-
                 buttons: {
                     ok: 'Ok',
                     cancel: 'Cancel',
                 },
-
                 overlayOpacity: 0.5, // 0.5 as default
                 dismissible: true // as true as default
             },
         }),
-
         created() {
             axios.get('/api/licenses/types-long').then(({data}) => {
                 this.licenseTypes = data;
             });
             this.setSelectedBrand();
         },
-
         mounted() {
             this.form.selectedMedia = this.getSelectedMediaArray();
             this.setSelectedBrand();
@@ -234,7 +220,6 @@
                 this.date.expireDate.time = this.license.expiredAt ? this.license.expiredAt.Ymd : '';
             }
         },
-
         watch: {
             license() {
                 if (this.license) {
@@ -253,14 +238,11 @@
                 }
             }
         },
-
         methods: {
-
             setSelectedBrand() {
                 var url = window.location.href;
                 var index = url.indexOf("uploaded/");
                 var substring = url.substring(index + 9, url.length);
-
                 var selectedBrandId = null;
                 if (substring !== '') {
                     selectedBrandId = parseInt(substring);
@@ -269,12 +251,10 @@
                 }
                 this.$store.dispatch('creative/setSelectedBrand', {selectedBrandId});
             },
-
             getSelectedBrandId() {
                 var url = window.location.href;
                 var index = url.indexOf("uploaded/");
                 var substring = url.substring(index + 9, url.length);
-
                 var selectedBrandId = null;
                 if (substring !== '') {
                     selectedBrandId = parseInt(substring);
@@ -283,7 +263,6 @@
                 }
                 return selectedBrandId;
             },
-
             getSelectedMediaArray() {
                 var mediaSubmit = [];
                 this.selectedMedia.forEach(function(media) {
@@ -295,9 +274,7 @@
                 this.form.startDate = this.date.startDate.time;
                 this.form.expireDate = this.date.expireDate.time;
                 this.form.selectedBrand = this.selectedBrand ? this.selectedBrand.id : this.getSelectedBrandId();
-
                 this.form.selectedMedia = this.getSelectedMediaArray();
-
                 this.$store.dispatch('license/createLicense', {form: this.form}).then(({data}) => {
                     delete this.form.billFile;
                     delete this.form.removeBill;
@@ -306,23 +283,19 @@
                     this.form.reset();
                 });
             },
-
             submitEditLicense() {
                 this.form.startDate = this.date.startDate.time;
                 this.form.expireDate = this.date.expireDate.time;
-
                 this.$store.dispatch('license/updateLicense', {form: this.form}).then(({data}) => {
                     delete this.form.billFile;
                     delete this.form.removeBill;
                     this.$swal('Successfully updated', '', 'success');
                 });
             },
-
             setFile(e) {
                 this.form.billFile = e.target.files[0];
                 document.getElementById('fileName').innerHTML = e.target.files[0]['name'];
             },
-
         },
     };
 </script>

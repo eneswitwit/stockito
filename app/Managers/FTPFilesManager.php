@@ -176,6 +176,20 @@ class FTPFilesManager
                     Media::FILE_PREFIX . $this->hashName($file)
                 );
 
+                $jpeg = storage_path('app/brands_thumbnail/' . $media->brand->id . '/' . $media->file_name . '.mp4');
+                $cmd = escapeshellcmd("ffmpeg -i {$file->getRealPath()} -vcodec libx264 -f mp4 -vb 1024k -preset slow {$jpeg}");
+                exec($cmd, $out, $return_var);
+
+                \Storage::disk('s3')->putFileAs(
+                    $media->brand->getImagePath(),
+                    new File($jpeg),
+                    Media::FILE_PREFIX . $this->hashName($file) . '.mp4'
+                );
+
+                if (file_exists($jpeg)) {
+                    unlink($jpeg);
+                }
+
             } elseif (\in_array(strtolower($file->getExtension()), ['jpeg', 'jpg'])) {
 
                 $this->mediaManager->read($file->getRealPath());

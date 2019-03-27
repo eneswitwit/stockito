@@ -162,6 +162,7 @@
         <set-license-modal-component
                 :show.sync="showLicenseModal"
                 :media="media"
+                :license="media.license"
         ></set-license-modal-component>
 
     </card>

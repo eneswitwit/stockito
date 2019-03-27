@@ -57,7 +57,7 @@ export default [
     {path: '/medias', name: 'medias', component: Medias},
 
     {path: '/medias/:creative_brand_id', name: 'creative.brand.medias', component: Medias, props: true},
-    {path: '/uploaded/:creative_brand_id', name: 'creative.brand.uploaded', component: Uploaded, props: true},
+    {path: '/uploaded/:creative_brand_id?', name: 'creative.brand.uploaded', component: Uploaded},
 
     {path: '/medias/:id/show', name: 'medias.show', component: ShowMedia},
     {path: '/medias/:id/edit', name: 'medias.edit', component: EditMedia},
@@ -66,9 +66,9 @@ export default [
     {path: '/payment-details', name: 'payment.details', component: PaymentDetails},
     {path: '/change-creditcard', name: 'change.creditcard', component: ChangeCreditcard},
     {path: '/select-plan', name: 'select-plan', component: SelectPlan},
-    {path: '/licenses', name: 'licenses', component: LicensesComponent},
+    {path: '/licenses/:creative_brand_id?', name: 'licenses', component: LicensesComponent},
     {path: '/licenses/:id/edit', name: 'licenses.edit', component: EditLicense},
-    {path: '/manage-creatives', name: 'brand.creatives', component: ManageCreatives},
+    {path: '/manage-creatives/:creative_brand_id?', name: 'brand.creatives', component: ManageCreatives},
 
     {path: '/licenses', name: 'creative.licenses', component: LicensesComponent},
     {path: '/brands', name: 'creative.brands', component: Brands},

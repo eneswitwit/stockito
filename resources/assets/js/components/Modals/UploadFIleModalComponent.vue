@@ -135,6 +135,12 @@
     </div>
 </template>
 
+<style>
+    .dz-error-mark {
+        background: "red !important";
+    }
+</style>
+
 <script>
     import axios from 'axios';
     import Modal from '../Modal/ModalLarge.vue';
@@ -160,10 +166,12 @@
             filesUploaded: false,
             dropzoneOptions: {
                 url: '/api/medias/upload',
-                thumbnailWidth: 150,
+                thumbnailWidth: 300,
                 maxFilesize: 45,
                 parallelUploads: 1,
                 createImageThumbnails: true,
+                retryChunks: true,
+                retryChunksLimit: 100
             },
             errors: {},
             countUploadFiles: false,
@@ -172,7 +180,7 @@
 
         props: ['modalShow'],
 
-        beforeMount() {
+        created() {
             this.getFTPUser();
         },
 
@@ -192,6 +200,12 @@
             selectedBrand() {
                 return this.$store.getters['creative/selectedBrand'];
             }
+        },
+
+        watch: {
+          selectedBrand() {
+              this.getFTPUser();
+          }
         },
 
         methods: {
@@ -216,13 +230,11 @@
             },
 
             async successUploaded(file, response) {
-                this.errors = {};
+                //this.errors = {};
                 await this.$store.dispatch('media/addUpload', {media: response.data});
                 this.filesUploaded = true;
                 this.countUploadFiles--;
-                console.log('push router 4');
                 if (this.countUploadFiles === 0) {
-                    console.log('push router 5');
                     this.closeModal();
                 }
             },
@@ -240,16 +252,15 @@
 
             getFTPUser() {
 
-                let selectedBrandId = this.selectedBrand ? this.selectedBrand.id : null;
-
                 var url = '';
-                if (selectedBrandId !== null && this.user) {
-                    url = `/api/ftp/${this.user.id}/${selectedBrandId}`;
-                } else {
+                if (this.selectedBrand !== null && this.user) {
+                    url = `/api/ftp/${this.user.id}/${this.selectedBrand.id}`;
+                } else if (this.user) {
                     url = `/api/ftp/${this.user.id}`;
                 }
 
-                axios.post(url).then(response => {
+                axios.get(url).then(response => {
+                    console.log(response);
                     this.ftp = response.data;
                 });
 

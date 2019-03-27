@@ -34,6 +34,7 @@ use Log;
  * @property string $eur_uid
  * @property string $homepage
  * @property string $phone
+ * @property bool $storage_full_mail
  * @property string $contact_first_name
  * @property string $contact_last_name
  * @property string $contact_title
@@ -120,7 +121,8 @@ class Brand extends AbstractBrandModel
         'user_id',
         'country_id',
         'plan_id',
-        'ftp_user_id'
+        'ftp_user_id',
+        'storage_full_mail'
     ];
 
     /**

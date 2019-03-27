@@ -39,7 +39,7 @@
                     Media Files
                 </router-link>
 
-                <router-link class="btn btn-primary"
+                <router-link class="btn btn-primary" v-if="!isSearchOnly() && selectedBrand && canUpload()"
                              :to="{ name: 'creative.brand.uploaded', params: { creative_brand_id: selectedBrand.id  }}">
                     Uploads
                 </router-link>
@@ -52,14 +52,13 @@
 <script>
 
     import {HEAD_OF_TEAM} from '../../common/parts/services/constants';
+    import CheckCreativePermission from '../../common/parts/services/CheckCreativePermissionService';
 
     export default {
 
         name: "BrandDetails",
 
-        mounted() {
-            //window.scrollTo(0, document.body.scrollHeight);
-        },
+        mixins: [CheckCreativePermission],
 
         computed: {
             selectedBrand() {

@@ -1,123 +1,119 @@
 <template>
 
-    <div class="container-fluid">
+        <div class="container-fluid">
 
-        <div class="row" v-if="!showPage">
-            <div class="col-md-12" style="text-align:center;">
-                <img :src="require('../../../images/loading.gif')" height="300px"/>
-            </div>
-        </div>
-
-
-        <div class="row show-page" v-if="showPage">
-
-            <div class="col-lg-9">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <card class="mb-4" v-if="selectedMedia.length">
-
-                            <button @click="deleteMultipleMedia" class="btn btn-link">
-                                Delete ({{ selectedMedia.length }} files)
-                            </button>
-                            <button @click="shareMultipleMedia" class="btn btn-link">
-                                Share ({{ selectedMedia.length }} files)
-                            </button>
-                            <button @click="downloadSelectedMedia" class="btn btn-link">
-                                Download ({{ selectedMedia.length }} files)
-                            </button>
-                            <button @click="clearAll" class="btn btn-link float-right">
-                                Clear all
-                            </button>
-
-                        </card>
-                    </div>
+            <div class="row" v-if="!showPage">
+                <div class="col-md-12" style="text-align:center;">
+                    <img :src="require('../../../images/loading.gif')" height="300px"/>
                 </div>
+            </div>
 
-                <div class="row uploaded-media" v-if="!!mediaDisplayed.length">
 
-                    <div v-for="(media, index) in mediaDisplayed" v-bind:id="media.id">
+            <div class="row show-page" v-if="showPage">
 
-                        <div class="card media-card" @click="showMedia = media">
+                <div class="col-lg-9">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <card class="mb-4" v-if="selectedMedia.length">
 
-                            <img :id="media.thumbnail + '-load'" :src="require('../../../images/loading.gif')"
-                                 height="300px"/>
+                                <button @click="deleteMultipleMedia" class="btn btn-link">
+                                    Delete ({{ selectedMedia.length }} files)
+                                </button>
+                                <button @click="shareMultipleMedia" class="btn btn-link">
+                                    Share ({{ selectedMedia.length }} files)
+                                </button>
+                                <button @click="downloadSelectedMedia" class="btn btn-link">
+                                    Download ({{ selectedMedia.length }} files)
+                                </button>
+                                <button @click="clearAll" class="btn btn-link float-right">
+                                    Clear all
+                                </button>
 
-                            <div class="card-body nopadding" @click="toggleCheckbox(media)" :id="media.thumbnail"
-                                 style="display:none;">
+                            </card>
+                        </div>
+                    </div>
 
-                                <div class="img-wrapper">
+                    <div class="row uploaded-media" v-if="!!mediaDisplayed.length">
 
-                                    <div class="play-button" :class="{play_visible: !checkVideoType(media)}">
-                                        <img src="../../../view/player/play-button.png" alt="">
-                                    </div>
+                        <div v-for="(media, index) in mediaDisplayed" v-bind:id="media.id">
 
-                                    <div class="select-checkbox">
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" name="multipleSelection[]" v-bind:value="media"
-                                                   class="custom-control-input" v-model.lazy.number="selectedMedia"
-                                                   :id="'select-checkbox-'+media.id"
-                                                   @change="checkCheckbox(media.thumbnail)">
-                                            <label class="custom-control-label"
-                                                   :for="'select-checkbox-'+media.id"></label>
+                            <div class="card media-card" @click="showMedia = media">
+
+                                <img :id="media.thumbnail + '-load'" :src="require('../../../images/loading.gif')"
+                                     height="300px"/>
+
+                                <div class="card-body nopadding" @click="toggleCheckbox(media)" :id="media.thumbnail"
+                                     style="display:none;">
+
+                                    <div class="img-wrapper">
+
+                                        <div class="play-button" :class="{play_visible: !checkVideoType(media)}">
+                                            <img src="../../../view/player/play-button.png" alt="">
                                         </div>
+
+                                        <div class="select-checkbox">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" name="multipleSelection[]" v-bind:value="media"
+                                                       class="custom-control-input" v-model.lazy.number="selectedMedia"
+                                                       :id="'select-checkbox-'+media.id"
+                                                       @change="checkCheckbox(media.thumbnail)">
+                                                <label class="custom-control-label"
+                                                       :for="'select-checkbox-'+media.id"></label>
+                                            </div>
+                                        </div>
+
+                                        <div class="wrapper-img">
+                                            <img class="card-img-top" :src="media.thumbnail" alt="Card image cap"
+                                                 @load="imageLoaded(media.thumbnail)">
+                                        </div>
+
+                                        <span v-if="media.license" class="license-label"
+                                              :style="{color: getLicenseColor(media.license.type)}">{{ media.license.type }}</span>
+
                                     </div>
-
-                                    <div class="wrapper-img">
-                                        <img class="card-img-top" :src="media.thumbnail" alt="Card image cap"
-                                             @load="imageLoaded(media.thumbnail)">
-                                    </div>
-
-                                    <span v-if="media.license" class="license-label"
-                                          :style="{color: getLicenseColor(media.license.type)}">{{ media.license.type }}</span>
-
                                 </div>
                             </div>
+
                         </div>
 
                     </div>
 
-                </div>
-
-                <div class="row" v-else>
-                    <div class="col-lg-12">
-                        <div v-if="isGotUploads">
-                            <div class="alert alert-info text-center" role="alert"
-                                 style="padding: 20px;margin-top: 1px;">
-                                You did not upload any files. You can overview your
-                                <router-link :to="{name: 'medias'}"> Media</router-link>
-                                files or upload new files.
+                    <div class="row" v-else>
+                        <div class="col-lg-12">
+                            <div v-if="isGotUploads">
+                                <div class="alert alert-info text-center" role="alert"
+                                     style="padding: 20px;margin-top: 1px;">
+                                    You did not upload any files. You can overview your
+                                    <router-link :to="{name: 'medias'}"> Media</router-link>
+                                    files or upload new files.
+                                </div>
+                            </div>
+                            <div v-else>
+                                <loader/>
                             </div>
                         </div>
-                        <div v-else>
-                            <loader/>
-                        </div>
                     </div>
+
                 </div>
 
+                <div class="col-lg-3">
+                    <!--<processing-component @refreshing="refreshList"></processing-component>
+                    <card class="mb-4 text-center">
+                        <button class="btn btn-link" @click.prevent="refreshList">Refresh</button>
+                    </card>-->
+                    <edit-media-details @submitted="showMedia = null" v-if="showMedia && !!mediaDisplayed.length"
+                                        :media="showMedia"
+                                        :medias="mediaDisplayed"
+                                        v-bind:getMedias="getMedias"
+                                        v-bind:refreshList="refreshList"
+                                        v-bind:clearAll="clearAll"
+                                        v-bind:selectedBrand="selectedBrand">
+                    </edit-media-details>
+                </div>
+                <share-media-modal-component v-bind:show="openedShareMediaModal" v-bind:medias="shareMediaObjects"
+                                             @close="openedShareMediaModal = false"/>
             </div>
-
-            <div class="col-lg-3">
-
-                <processing-component @refreshing="refreshList"></processing-component>
-
-                <card class="mb-4 text-center">
-                    <button class="btn btn-link" @click.prevent="refreshList">Refresh</button>
-                </card>
-
-                <edit-media-details @submitted="showMedia = null" v-if="showMedia && !!mediaDisplayed.length"
-                                    :media="showMedia"
-                                    :medias="mediaDisplayed"
-                                    v-bind:getMedias="getMedias"
-                                    v-bind:refreshList="refreshList"
-                                    v-bind:clearAll="clearAll"
-                                    v-bind:selectedBrand="selectedBrand">
-                </edit-media-details>
-
-            </div>
-            <share-media-modal-component v-bind:show="openedShareMediaModal" v-bind:medias="shareMediaObjects"
-                                         @close="openedShareMediaModal = false"/>
         </div>
-    </div>
 
 </template>
 
@@ -180,6 +176,9 @@
             },
             selectedMedia() {
                 return this.$store.getters['media/selectedMedia'];
+            },
+            user() {
+                return this.$store.getters['auth/user'];
             }
         },
 
@@ -192,8 +191,13 @@
             }
         },
 
+        created() {
+            this.setSelectedBrand();
+        },
+
         beforeMount() {
             this.clearAll();
+            this.setSelectedBrand();
             this.getInitialMedia();
         },
 
@@ -278,11 +282,13 @@
             mediaNextStep() {
                 this.isLoading = true;
                 this.getMediaStep(this.mediaDisplayed.length, MAX);
+                this.isLoading = false;
+                this.scroll();
             },
 
             scroll() {
                 window.onscroll = () => {
-                    let bottomOfWindow = Math.abs(document.documentElement.scrollTop + window.innerHeight - document.documentElement.offsetHeight) < 3;
+                    let bottomOfWindow = Math.abs(document.documentElement.scrollTop + window.innerHeight - document.documentElement.offsetHeight) < 500;
                     if (bottomOfWindow && !this.isLoading) {
                         this.mediaNextStep();
                     }

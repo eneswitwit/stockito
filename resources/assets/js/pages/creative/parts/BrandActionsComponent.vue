@@ -26,6 +26,7 @@
             changeView() {
                 let selectedBrand = this.row;
                 this.$store.dispatch('creative/setSelectedBrand', {selectedBrand});
+                this.$store.dispatch('media/resetMedias');
                 this.$router.push({name: 'creative.brand.medias', params: {creative_brand_id: selectedBrand.id}})
             },
             removeCreativeBrand() {

@@ -26,9 +26,9 @@
                     <search-media-component @closeAdvancedSearch="showSearch = $event"></search-media-component>
                 </div>
 
-                <div :class="showSearch ? 'col-lg-9 nopadding' : 'col-lg-12 nopadding'">
+                <div :class="showSearch ? 'col-lg-9 nopadding' : 'col-lg-12 nopadding'" v-if="noResults !== true">
 
-                    <card class="mb-4" v-if="selectedMedia.length">
+                    <card class="mb-4" v-if="selectedMedia.length && canUpload()">
                         <button @click="deleteMultipleMedia" class="btn btn-link">Delete ({{ selectedMedia.length }}
                             files)
                         </button>
@@ -40,6 +40,12 @@
                         </button>
                         <button @click="clearAll" class="btn btn-link float-right">Clear all</button>
                     </card>
+
+                    <div class="row" v-if="isLoading && showPage">
+                        <div class="col-md-12" style="text-align:center;">
+                            <img :src="require('../../../images/loading.gif')" height="300px"/>
+                        </div>
+                    </div>
 
                     <div class="row uploaded-media" v-show="!!mediasDisplayed.length">
 
@@ -59,12 +65,12 @@
                                             <img src="../../../view/player/play-button.png" alt="">
                                         </div>
 
-                                        <div v-if="!isSearchOnly()" class="select-checkbox">
+                                        <div v-if="!isSearchOnly() " class="select-checkbox">
                                             <div class="custom-control custom-checkbox">
                                                 <input type="checkbox" name="multipleSelection[]" v-bind:value="media"
                                                        class="custom-control-input" v-model="selectedMedia"
                                                        :id="'select-checkbox-'+media.id"
-                                                        @change="toggleCheckbox(media)">
+                                                       @change="toggleCheckbox(media)">
                                                 <label class="custom-control-label"
                                                        :for="'select-checkbox-'+media.id"></label>
                                             </div>
@@ -77,7 +83,7 @@
                                         </div>
 
                                         <span v-if="media.license" class="license-label"
-                                              :style="{color: media.license.color}">{{ media.license.type }}</span>
+                                              :style="{color: getLicenseColor(media.license.type)}">{{ media.license.type }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -93,6 +99,15 @@
                                     the top section of the site.
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                <div :class="showSearch ? 'col-lg-9 nopadding' : 'col-lg-12 nopadding'" class="row"
+                     v-if="!isLoading && noResults && showPage">
+                    <div class="col-lg-12">
+                        <div class="alert alert-info text-center" role="alert"
+                             style="padding: 20px;margin-top: 1px;">
+                            Sorry, your search returned zero results
                         </div>
                     </div>
                 </div>
@@ -151,22 +166,10 @@
             shareMediaObjects: [],
             isGotMedias: false,
             showDetailsModal: false,
-            isLoading: false,
             counter: 0
         }),
 
         computed: {
-            /*checkLoadPage() {
-                if (this.isCreative && !this.selectedBrand) {
-                    this.$router.push({name: 'dashboard'});
-                    return false;
-                } else if (this.isBrand || (this.isCreative && this.selectedBrand)) {
-                    return true;
-                } else {
-                    this.$router.push({name: 'dashboard'});
-                    return false;
-                }
-            },*/
             medias() {
                 return this.$store.getters['media/medias'];
             },
@@ -177,10 +180,27 @@
                 return this.$store.getters['creative/selectedBrand'];
             },
             selectedMedia: {
-                get: function() {
+                get: function () {
                     return this.$store.getters['media/selectedMedia'];
                 },
-                set: function() {}
+                set: function () {
+                }
+            },
+            noResults: {
+                get: function () {
+                    return this.$store.getters['media/noResults'];
+                },
+                set: function (value) {
+                    this.$store.dispatch('media/setNoResults', {val: value});
+                }
+            },
+            isLoading: {
+                get: function () {
+                    return this.$store.getters['media/isLoading'];
+                },
+                set: function (value) {
+                    this.$store.dispatch('media/setIsLoading', {val: value});
+                }
             }
         },
 
@@ -188,14 +208,35 @@
             counter: function () {
                 if (this.counter === MAX) {
                     this.counter = 0;
-                    this.isLoading = false;
                 }
+            }
+        },
+
+        created() {
+            this.$store.dispatch('media/setFilter', {filter: ''});
+            if (this.selectedBrand) {
+                var newFilter = {
+                    licenseType: undefined,
+                    categoryId: undefined,
+                    supplierId: undefined,
+                    peoplesAttribute: [],
+                    selectedBrand: this.selectedBrand.id
+                };
+                this.$store.dispatch('media/setFilter', {filter: newFilter});
+            } else {
+                var newFilter = {
+                    licenseType: undefined,
+                    categoryId: undefined,
+                    supplierId: undefined,
+                    peoplesAttribute: [],
+                    selectedBrand: undefined
+                };
+                this.$store.dispatch('media/setFilter', {filter: newFilter});
             }
         },
 
         async beforeMount() {
             this.clearAll();
-            //this.checkAccess();
             this.getInitialMedia();
         },
 
@@ -217,18 +258,15 @@
             },
 
             async getInitialMedia() {
-                var t0 = performance.now();
                 if (this.selectedBrand) {
                     await this.$store.dispatch('media/getBrandMediaStep', {
                         taken: 0,
-                        toTake: 5,
+                        toTake: 25,
                         creative_brand_id: this.selectedBrand.id
                     });
                 } else {
-                    await this.$store.dispatch('media/getMediasStep', {taken: 0, toTake: 5});
+                    await this.$store.dispatch('media/getMediasStep', {taken: 0, toTake: 25});
                 }
-                var t1 = performance.now();
-                console.log("Call getinitialmedia " + (t1 - t0) + " milliseconds.");
                 this.showPage = true;
                 this.isGotUploads = true;
             },
@@ -258,13 +296,13 @@
             },
 
             mediaNextStep() {
-                this.isLoading = true;
                 this.getMediaStep(this.mediasDisplayed.length, MAX);
+                this.scroll();
             },
 
             scroll() {
                 window.onscroll = () => {
-                    let bottomOfWindow = Math.abs(document.documentElement.scrollTop + window.innerHeight - document.documentElement.offsetHeight) < 3;
+                    let bottomOfWindow = Math.abs(document.documentElement.scrollTop + window.innerHeight - document.documentElement.offsetHeight) < 500;
                     if (bottomOfWindow && !this.isLoading) {
                         this.mediaNextStep();
                     }
@@ -363,7 +401,24 @@
              * @returns {boolean}
              */
             checkVideoType(media) {
-                return (media.content_type === 'video/mp4' || media.content_type === 'video/quicktime');
+                return (media.content_type.substring(0,5) === 'video' || media.content_type === 'application/octet-stream');
+            },
+
+            getLicenseColor(license) {
+                switch (license) {
+                    case 'RF':
+                        return 'green';
+
+                    case 'RE':
+                        return 'orange';
+
+                    case 'RM':
+                        return 'red';
+
+                    case 'BO':
+                        return 'blue';
+
+                }
             }
         },
 

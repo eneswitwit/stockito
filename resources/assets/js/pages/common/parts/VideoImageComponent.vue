@@ -52,20 +52,27 @@
                 sources: [{
                     type: 'video/mp4',
                     src: ''
-                }],
+                },
+                    {
+                        type: 'video/mp4',
+                        src: ''
+                    }],
                 poster: ''
             },
         }),
         methods: {
             checkMediaType(media) {
-                if (media.content_type === 'video/mp4' || media.content_type === 'video/quicktime') {
-                    this.playerOptions.sources[0].src = media.downloadLink;
-                    if(media.content_type === 'video/quicktime') {
+                console.log(media.content_type);
+                if (media.content_type.substring(0, 5) === 'video' || media.content_type === 'application/octet-stream') {
+                    this.playerOptions.sources[0].src = media.downloadLink + '/mp4';
+                    //this.playerOptions.sources[1].src = media.downloadLink + '.mp4';
+                    if (media.content_type === 'video/quicktime') {
                         //this.playerOptions.sources[0].type = false;
                     }
                     return true;
+                } else {
+                    return false;
                 }
-                return false;
             }
         }
     }
@@ -80,6 +87,7 @@
             height: 540px;
         }
     }
+
     .search-page-video-size {
         .video-js {
             height: $big_video_height;

@@ -13,7 +13,7 @@ class Kernel extends HttpKernel
      *
      * @var array
      */
-		protected $middleware = [
+    protected $middleware = [
         \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
@@ -58,6 +58,6 @@ class Kernel extends HttpKernel
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-        'admin' => \App\Http\Middleware\AdminAuthenticate::class,
+        'admin' => \App\Http\Middleware\AdminAuthenticate::class
     ];
 }

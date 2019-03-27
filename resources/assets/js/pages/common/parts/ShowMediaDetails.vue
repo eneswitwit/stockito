@@ -53,7 +53,7 @@
 
                 <tr>
                     <td class="label"> License </td>
-                    <td v-if="media.license">
+                    <td v-if="media.license && media.licenses">
                     <span :style="{color: media.license.color}"
                           class="license-badge" @click="showLicenseModal = true">
                         {{ media.licenses[0] ? media.licenses[0].type + ' license' : 'Set license' }}

@@ -42,7 +42,15 @@ export default {
                     return false;
                 }
                 return this.isHeadOfTeam() || this.isActiveEditing() || this.user.brand;
+            } else {
+                return this.isHeadOfTeam() || this.isActiveEditing() || this.user.brand;
             }
+        },
+        canDownload() {
+            return this.isHeadOfTeam() || this.isActiveEditing() || this.user.brand;
+        },
+        canShare() {
+            return this.isHeadOfTeam() || this.isActiveEditing() || this.user.brand;
         },
         canUpload() {
             if (this.user.creative && !this.selectedBrand) {

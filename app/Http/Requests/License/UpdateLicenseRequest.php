@@ -26,7 +26,7 @@ class UpdateLicenseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => 'required|exists:licenses,id',
+            //'id' => 'required|exists:licenses,id',
             'type' => 'required|in:'.implode(',', License::getLicenses()),
 //            'usage' => 'required_if:type,'.License::RM,
 //            'printrun' => 'required_if:type,'.implode(',', [License::RM, License::RF]),

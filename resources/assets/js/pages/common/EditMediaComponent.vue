@@ -42,7 +42,7 @@
                             <label for="media-people-attributes">Peoples Attribute</label>
                             <select id="media-people-attributes" class="form-control"
                                     v-model="form.peoplesAttribute">
-                                <option :value="'No people'" selected> No people</option>
+                                <option :value="'No people'"> No people</option>
                                 <option :value="'With people'"> With people</option>
                             </select>
                             <has-error :form="form" field="peoplesAttribute"/>
@@ -205,7 +205,7 @@
                 } else {
                     this.form.category = value.category;
                 }
-                this.form.peoplesAttribute = value.peoplesAttribute;
+                this.form.peoplesAttribute = value.peoples_attribute;
                 this.form.language = value.language;
                 this.form.source = value.source;
                 if(value.supplier.id) {

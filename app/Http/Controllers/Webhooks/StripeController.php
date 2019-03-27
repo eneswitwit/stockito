@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 use App\Models\Voucher;
 use App\Models\Invoice;
 use Carbon\Carbon;
+use Log;
 
 /**
  * Class StripeController
@@ -88,7 +89,7 @@ class StripeController extends Controller
             $invoiceStripe = new Invoice();
             $invoiceStripe->number = $number;
             $invoiceStripe->stripe_id = $data['id'];
-            $invoiceStripe->amount = $data['lines']['data'][0]['amount'];
+            $invoiceStripe->amount = $data['total'];
             $invoiceStripe->currency = $data['currency'];
             $invoiceStripe->customer = $data['customer'];
             $invoiceStripe->date = Carbon::createFromTimeStamp($data['date']);

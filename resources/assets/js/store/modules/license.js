@@ -32,20 +32,19 @@ export const mutations = {
 // actions
 export const actions = {
     async fetchLicenses({commit}) {
-        const {licenses} = await axios.get('/api/licenses')
+        const {licenses} = await axios.get('/api/licenses/get')
         commit(types.FETCH_LICENSES_SUCCESS, {licenses})
     },
     async fetchLicense({commit}, licenseId) {
-        const {data} = await axios.get('/api/licenses/' + licenseId)
+        const {data} = await axios.get('/api/licenses/get/' + licenseId)
         commit(types.FETCH_LICENSE_SUCCESS, {license: data})
     },
     updateLicense({commit}, {form}) {
         return new Promise((resolve) => {
-            form['_method'] = 'PUT';
             if (!form.billFile) {
                 delete form.billFile;
             }
-            form.post('/api/licenses/' + form.id).then(({data}) => {
+            form.post('/api/licenses/update').then(({data}) => {
                 commit(types.UPDATE_LICENSE, {data});
                 resolve({data: data});
             });

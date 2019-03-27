@@ -1,6 +1,6 @@
 <template>
     <div v-if="row.id && (selectedBrand ? (row.id !== user.creative.id) : true)">
-       <button @click="showEditModal" v-if="isHeadOfTeam() || isBrand()" class="btn btn-primary" style="word-break: keep-all;">Edit</button>
+        <button @click="showEditModal" v-if="isHeadOfTeam()" class="btn btn-primary" style="word-break: keep-all;">Edit</button>
     </div>
 </template>
 
@@ -30,7 +30,8 @@
         methods: {
             showEditModal() {
                 let creativeId = this.row.id;
-                let brandId = this.selectedBrand ? this.selectedBrand.id : this.user.brand.id;
+                let brandId = this.selectedBrand.id;
+                console.log(brandId);
                 this.$store.dispatch('creative/setEditCreative', { creativeId: creativeId, brandId: brandId});
             },
         }

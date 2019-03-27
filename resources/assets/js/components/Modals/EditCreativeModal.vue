@@ -70,6 +70,7 @@
             form() {
                 let form = new Form({
                     id: '',
+                    brandCreativeId: '',
                     role: '',
                     position: ''
                 });

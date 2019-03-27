@@ -1,21 +1,22 @@
 <template>
 
-    <modal :show.sync="show" @close="$emit('update:show', false)">
+    <keep-alive v-if="media">
+        <modal :show.sync="show" @close="$emit('update:show', false)" v-if="media">
 
-        <modal-header class="card-header" @close="$emit('update:show', false)">
-            Set License
-        </modal-header>
+            <modal-header class="card-header" @close="$emit('update:show', false)">
+                Set License
+            </modal-header>
 
-        <modal-body>
-            <license-form-component
-                    v-if="selectedMedia"
-                    @saved="savedLicense"
-                    :media="media"
-                    :license="media.license"
-            ></license-form-component>
-        </modal-body>
-
-    </modal>
+            <modal-body>
+                <license-form-component
+                        v-if="selectedMedia"
+                        @saved="savedLicense"
+                        :media="media"
+                        :license="license"
+                ></license-form-component>
+            </modal-body>
+        </modal>
+    </keep-alive>
 </template>
 
 <script>
@@ -53,7 +54,10 @@
         methods: {
 
             savedLicense(licenses) {
-                this.$store.dispatch('media/attachLicenses', {uploads: this.selectedMedia, licenses: licenses}).then(() => {
+                this.$store.dispatch('media/attachLicenses', {
+                    uploads: this.selectedMedia,
+                    licenses: licenses
+                }).then(() => {
                     this.$emit('update:show', false);
                 });
                 this.$emit('update:show', false)

@@ -111,4 +111,13 @@ class Creative extends AbstractCreativeModel
     public function getFTPUsername($brand) {
         return $this->user->email . '/' . $brand->id;
     }
+
+    /**
+     * @param $brandId
+     *
+     * @return \App\Models\BrandCreative|\Illuminate\Database\Eloquent\Model|null|object
+     */
+    public function brandCreative($brandId) {
+        return BrandCreative::where('brand_id', $brandId)->where('creative_id', $this->id)->first();
+    }
 }
